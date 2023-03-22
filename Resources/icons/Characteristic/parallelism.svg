@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -10,47 +8,48 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
-   id="svg4700"
-   version="1.1"
-   inkscape:version="0.91 r13725"
+   sodipodi:docname="parallelism.svg"
    viewBox="0 0 64 64"
-   sodipodi:docname="parallelism.svg">
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   version="1.1"
+   id="svg4700"
+   height="64"
+   width="64">
   <defs
      id="defs4702">
     <linearGradient
-       id="linearGradient4142"
-       osb:paint="gradient">
+       osb:paint="gradient"
+       id="linearGradient4142">
       <stop
-         style="stop-color:#ff7500;stop-opacity:1;"
+         id="stop4144"
          offset="0"
-         id="stop4144" />
+         style="stop-color:#ff7500;stop-opacity:1;" />
       <stop
-         style="stop-color:#ff7500;stop-opacity:0;"
+         id="stop4146"
          offset="1"
-         id="stop4146" />
+         style="stop-color:#ff7500;stop-opacity:0;" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="6.19424"
-     inkscape:cx="-8.4508343"
-     inkscape:cy="27.13654"
-     inkscape:current-layer="layer4"
-     showgrid="true"
-     inkscape:document-units="px"
+     inkscape:document-rotation="0"
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:window-height="837"
+     inkscape:window-width="1600"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1440"
-     inkscape:window-height="799"
-     inkscape:window-x="0"
-     inkscape:window-y="1"
-     inkscape:window-maximized="1" />
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:current-layer="layer4"
+     inkscape:cy="27.13654"
+     inkscape:cx="16.449688"
+     inkscape:zoom="6.19424"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -64,16 +63,26 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
+     inkscape:label="Layer 3"
      id="layer5"
-     inkscape:label="Layer 3" />
+     inkscape:groupmode="layer" />
   <g
-     inkscape:groupmode="layer"
+     inkscape:label="Layer 2"
      id="layer4"
-     inkscape:label="Layer 2">
-    <path
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50px;line-height:120.00000477%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 32.345703 9.1113281 L 19.007812 54.888672 L 21.425781 54.888672 L 34.761719 9.1113281 L 32.345703 9.1113281 z M 42.574219 9.1113281 L 29.238281 54.888672 L 31.654297 54.888672 L 44.992188 9.1113281 L 42.574219 9.1113281 z "
-       id="text3374" />
+     inkscape:groupmode="layer">
+    <text
+       transform="scale(1.017397,0.98290045)"
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-size:42.7278px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1.0682"
+       x="9.8441391"
+       y="45.149361"
+       id="text842-9"><tspan
+         style="stroke-width:1.0682"
+         sodipodi:role="line"
+         x="9.8441391"
+         y="45.149361"
+         id="tspan840-0"><tspan
+           style="font-style:normal;font-variant:normal;font-weight:700;font-size:42.7278px;font-family:Iso-Gps;fill:#ff6600;stroke-width:1.0682"
+           id="tspan838-7">Ƨ</tspan></tspan></text>
   </g>
 </svg>
