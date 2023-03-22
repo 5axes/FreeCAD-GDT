@@ -8,55 +8,55 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
-   id="svg4700"
-   version="1.1"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   sodipodi:docname="datumFeature.svg"
    viewBox="0 0 64 64"
-   sodipodi:docname="datumFeature.svg">
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   version="1.1"
+   id="svg4700"
+   height="64"
+   width="64">
   <defs
      id="defs4702">
     <linearGradient
-       id="linearGradient4142"
-       osb:paint="gradient">
+       osb:paint="gradient"
+       id="linearGradient4142">
       <stop
-         style="stop-color:#ff7500;stop-opacity:1;"
+         id="stop4144"
          offset="0"
-         id="stop4144" />
+         style="stop-color:#ff7500;stop-opacity:1;" />
       <stop
-         style="stop-color:#ff7500;stop-opacity:0;"
+         id="stop4146"
          offset="1"
-         id="stop4146" />
+         style="stop-color:#ff7500;stop-opacity:0;" />
     </linearGradient>
     <pattern
-       id="EMFhbasepattern"
-       patternUnits="userSpaceOnUse"
-       width="6"
-       height="6"
+       y="0"
        x="0"
-       y="0" />
+       height="6"
+       width="6"
+       patternUnits="userSpaceOnUse"
+       id="EMFhbasepattern" />
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="8"
-     inkscape:cx="28.64099"
-     inkscape:cy="30.856568"
-     inkscape:current-layer="layer4"
-     showgrid="true"
-     inkscape:document-units="px"
-     inkscape:grid-bbox="true"
-     inkscape:window-width="1600"
-     inkscape:window-height="837"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:document-rotation="0"
      inkscape:window-maximized="1"
-     inkscape:document-rotation="0" />
+     inkscape:window-y="-8"
+     inkscape:window-x="-8"
+     inkscape:window-height="837"
+     inkscape:window-width="1600"
+     inkscape:grid-bbox="true"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:current-layer="layer4"
+     inkscape:cy="30.856568"
+     inkscape:cx="28.64099"
+     inkscape:zoom="8"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -70,70 +70,70 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
+     inkscape:label="Layer 3"
      id="layer5"
-     inkscape:label="Layer 3" />
+     inkscape:groupmode="layer" />
   <g
-     inkscape:groupmode="layer"
+     inkscape:label="Layer 2"
      id="layer4"
-     inkscape:label="Layer 2">
+     inkscape:groupmode="layer">
     <text
-       transform="scale(0.98617257,1.0140213)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-size:27.059px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.778677"
-       x="26.655014"
+       id="text856"
        y="30.56443"
-       id="text856"><tspan
-         style="stroke-width:0.778677"
-         sodipodi:role="line"
-         x="26.655014"
+       x="25.767744"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-size:27.059px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.778677"
+       xml:space="preserve"
+       transform="scale(0.98617257,1.0140213)"><tspan
+         id="tspan854"
          y="30.56443"
-         id="tspan854"><tspan
-           dx="0"
-           dy="0"
+         x="25.767744"
+         sodipodi:role="line"
+         style="stroke-width:0.778677"><tspan
+           id="tspan850"
            style="font-style:normal;font-variant:normal;font-weight:700;font-size:27.059px;font-family:Iso-Gps;fill:#ff6600;stroke-width:0.778677"
-           id="tspan850"> </tspan><tspan
-           dx="-3.5139563"
            dy="0"
+           dx="0"> </tspan><tspan
+           id="tspan852"
            style="font-style:normal;font-variant:normal;font-weight:700;font-size:27.059px;font-family:Iso-Gps;fill:#ff6600;stroke-width:0.778677"
-           id="tspan852">ю</tspan></tspan></text>
+           dy="0"
+           dx="-3.5139563">ю</tspan></tspan></text>
     <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-size:34.75px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;"
-       x="24.936218"
+       id="text864"
        y="33.468967"
-       id="text864"><tspan
-         sodipodi:role="line"
-         x="24.936218"
+       x="24.936218"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-size:34.75px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none"
+       xml:space="preserve"><tspan
+         id="tspan862"
          y="33.468967"
-         id="tspan862"><tspan
-           dx="0"
+         x="24.936218"
+         sodipodi:role="line"><tspan
+           id="tspan858"
+           style="font-style:normal;font-variant:normal;font-weight:700;font-size:34.75px;font-family:Iso-Gps;fill:#ff6600"
            dy="0"
-           style="font-style:normal;font-variant:normal;font-weight:700;font-size:34.75px;font-family:Iso-Gps;fill:#ff6600;"
-           id="tspan858">A</tspan><tspan
-           dx="0"
+           dx="0">A</tspan><tspan
+           id="tspan860"
+           style="font-style:normal;font-variant:normal;font-weight:700;font-size:34.75px;font-family:Iso-Gps;fill:#ff6600"
            dy="0"
-           style="font-style:normal;font-variant:normal;font-weight:700;font-size:34.75px;font-family:Iso-Gps;fill:#ff6600;"
-           id="tspan860"> </tspan></tspan></text>
+           dx="0"> </tspan></tspan></text>
     <text
-       transform="scale(1.2646228,0.79074964)"
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-size:21.4427px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.617057"
-       x="21.779036"
+       id="text872"
        y="72.140198"
-       id="text872"><tspan
-         style="fill:#ff6600;stroke-width:0.617057"
-         sodipodi:role="line"
-         x="21.779036"
+       x="21.779036"
+       style="font-style:normal;font-variant:normal;font-weight:700;font-size:21.4427px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:0.617057"
+       xml:space="preserve"
+       transform="scale(1.2646228,0.79074964)"><tspan
+         id="tspan870"
          y="72.140198"
-         id="tspan870"><tspan
-           dx="0"
-           dy="0"
+         x="21.779036"
+         sodipodi:role="line"
+         style="fill:#ff6600;stroke-width:0.617057"><tspan
+           id="tspan866"
            style="font-style:normal;font-variant:normal;font-weight:700;font-size:21.4427px;font-family:Iso-Gps;fill:#ff6600;stroke-width:0.617057"
-           id="tspan866">ъ</tspan><tspan
-           dx="0"
            dy="0"
+           dx="0">ъ</tspan><tspan
+           id="tspan868"
            style="font-style:normal;font-variant:normal;font-weight:700;font-size:21.4427px;font-family:Calibri;fill:#ff6600;stroke-width:0.617057"
-           id="tspan868"> </tspan></tspan></text>
+           dy="0"
+           dx="0"> </tspan></tspan></text>
   </g>
 </svg>
