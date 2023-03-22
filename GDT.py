@@ -364,7 +364,6 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
         lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit)))
         
         # if obj.GT[i].FeatureControlFrameIcon != '' or obj.GT[i].FeatureControlFrameCode != '' :
-        print("FeatureControlFrameIcon {}".format(obj.GT[i].FeatureControlFrameIcon))
         if obj.GT[i].FeatureControlFrameIcon != '' :
             lengthToleranceValue += 2
         
@@ -510,8 +509,7 @@ def plotStrings(self, fp, points):
             auxPoint = points[3+displacement] + Vertical * (-sizeOfLine*2)
             self.points[indexSYMB].point.setValues([[auxPoint.x,auxPoint.y,auxPoint.z],[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z],[points[3+displacement].x,points[3+displacement].y,points[3+displacement].z]])
             
-
-            print("Label {}".format(fp.GT[i].Characteristic))
+            # print("Label {}".format(fp.GT[i].Characteristic))
 
             try:
                 #AP Annotation Plane
@@ -546,7 +544,7 @@ def plotStrings(self, fp, points):
                 self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[points[7+displacement].x,points[7+displacement].y,points[7+displacement].z],[points[6+displacement].x,points[6+displacement].y,points[6+displacement].z],[auxPoint2.x,auxPoint2.y,auxPoint2.z]])               
                     
                 try:
-                    print("FrameCode {}".format(fp.GT[i].FeatureControlFrameCode))
+                    FreeCAD.Console.PrintMessage("FrameCode {}\n".format(fp.GT[i].FeatureControlFrameCode))
                     self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].FeatureControlFrameCode) #Diameter
                     symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5 
                     self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
@@ -693,8 +691,7 @@ def plotStrings(self, fp, points):
                 
             else:
                 break
-
-        print("len textSYMB {}".format(len(self.textSYMB)))        
+     
         for i in range(indexSYMB,len(self.textSYMB)):
             self.textSYMB[i].string = ""
             if str(self.face[i].numVertices) != 0:
