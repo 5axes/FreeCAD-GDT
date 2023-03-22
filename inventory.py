@@ -108,8 +108,6 @@ class GDTGuiClass:
         Modify Function 
     """
     def modifyFunc(self, obj, data):
-        print("5@xes modifyFunc = {}".format(obj))
-        print("5@xes modifyFunc getType = {}".format(getType(obj)))    
         if "AnnotationPlane" == getType(obj):
             obj.Label = data.textName
             obj.Offset = data.OffsetValue

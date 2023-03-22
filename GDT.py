@@ -363,11 +363,14 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
         P3 = P1 + Horizontal * (sizeOfLine*2)
         lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit)))
         
-        if obj.GT[i].FeatureControlFrameIcon != '':
+        # if obj.GT[i].FeatureControlFrameIcon != '' or obj.GT[i].FeatureControlFrameCode != '' :
+        print("FeatureControlFrameIcon {}".format(obj.GT[i].FeatureControlFrameIcon))
+        if obj.GT[i].FeatureControlFrameIcon != '' :
             lengthToleranceValue += 2
         
-        if obj.GT[i].Circumference:
+        if obj.GT[i].Circumference :
             lengthToleranceValue += 2
+            
         P4 = P2 + Horizontal * (sizeOfLine*lengthToleranceValue)
         P5 = P3 + Horizontal * (sizeOfLine*lengthToleranceValue)
     
@@ -475,6 +478,7 @@ def plotStrings(self, fp, points):
     Vertical = fp.AP.Direction.cross(Direction).normalize()
     Horizontal = Vertical.cross(fp.AP.Direction).normalize()
     index = 0
+    indexSYMB = 0
     indexIcon = 0
     displacement = 0
     
@@ -490,54 +494,88 @@ def plotStrings(self, fp, points):
                 distance = (v.y)/2
             else:
                 distance = (v.z)/2
-                
-            if fp.GT[i].FeatureControlFrameIcon != '':
+             
+            # if fp.GT[i].FeatureControlFrameIcon != '' or fp.GT[i].FeatureControlFrameCode != '':
+            
+            if fp.GT[i].FeatureControlFrameIcon != '' :
                 distance -= sizeOfLine
                 
             if fp.GT[i].Circumference:
                 distance += sizeOfLine
+                
             centerPoint = points[5+displacement] + Horizontal * (distance)
             posToleranceValue = centerPoint + Vertical * (sizeOfLine/2)
             
             # posCharacteristic
             auxPoint = points[3+displacement] + Vertical * (-sizeOfLine*2)
-            self.points[indexIcon].point.setValues([[auxPoint.x,auxPoint.y,auxPoint.z],[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z],[points[3+displacement].x,points[3+displacement].y,points[3+displacement].z]])
-            self.face[indexIcon].numVertices = 4
-            s = 1/(sizeOfLine*2)
-            dS = FreeCAD.Vector(Horizontal) * s
-            dT = FreeCAD.Vector(Vertical) * s
-            self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
-            self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
-            displacementH = ((Horizontal*auxPoint)%(sizeOfLine*2))/(sizeOfLine*2)
-            displacementV = ((Vertical*auxPoint)%(sizeOfLine*2))/(sizeOfLine*2)
-            self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
-            filename = fp.GT[i].CharacteristicIcon
-            filename = filename.replace(':/dd/icons', iconPath)
-            self.svg[indexIcon].filename = str(filename)
-            indexIcon+=1
+            self.points[indexSYMB].point.setValues([[auxPoint.x,auxPoint.y,auxPoint.z],[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z],[points[3+displacement].x,points[3+displacement].y,points[3+displacement].z]])
             
-            # posFeactureControlFrame
-            if fp.GT[i].FeatureControlFrameIcon != '':
-                auxPoint1 = points[7+displacement] + Horizontal * (-sizeOfLine*2)
-                auxPoint2 = auxPoint1 + Vertical * (sizeOfLine*2)
-                self.points[indexIcon].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[points[7+displacement].x,points[7+displacement].y,points[7+displacement].z],[points[6+displacement].x,points[6+displacement].y,points[6+displacement].z],[auxPoint2.x,auxPoint2.y,auxPoint2.z]])
+
+            print("Label {}".format(fp.GT[i].Characteristic))
+
+            try:
+                #AP Annotation Plane
+                self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].CharacteristicCode) #Diameter
+                symbolPoint = auxPoint + Horizontal + Vertical * 0.5 
+                self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
+                self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
+            except:
+                # Compatibility Old Version
                 self.face[indexIcon].numVertices = 4
+                sZ = 1/(sizeOfLine*2)
+                dS = FreeCAD.Vector(Horizontal) * sZ
+                dT = FreeCAD.Vector(Vertical) * sZ
                 self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
                 self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
-                displacementH = ((Horizontal*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
-                displacementV = ((Vertical*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
+                displacementH = ((Horizontal*auxPoint)%(sizeOfLine*2))/(sizeOfLine*2)
+                displacementV = ((Vertical*auxPoint)%(sizeOfLine*2))/(sizeOfLine*2)
                 self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
-                filename = fp.GT[i].FeatureControlFrameIcon
+                filename = fp.GT[i].CharacteristicIcon
                 filename = filename.replace(':/dd/icons', iconPath)
                 self.svg[indexIcon].filename = str(filename)
-                indexIcon+=1
+                indexIcon+=1           
+  
+            indexSYMB+=1
+                
+            # posFeactureControlFrame
+            # if fp.GT[i].FeatureControlFrameIcon != '' or fp.GT[i].FeatureControlFrameCode != '' :
+            if fp.GT[i].FeatureControlFrameIcon != ''  :
+                auxPoint1 = points[7+displacement] + Horizontal * (-sizeOfLine*2)
+                auxPoint2 = auxPoint1 + Vertical * (sizeOfLine*2)
+
+                self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[points[7+displacement].x,points[7+displacement].y,points[7+displacement].z],[points[6+displacement].x,points[6+displacement].y,points[6+displacement].z],[auxPoint2.x,auxPoint2.y,auxPoint2.z]])               
+                    
+                try:
+                    print("FrameCode {}".format(fp.GT[i].FeatureControlFrameCode))
+                    self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].FeatureControlFrameCode) #Diameter
+                    symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5 
+                    self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
+                    self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
+                except:
+                    # Compatibility Old Version
+                    self.face[indexIcon].numVertices = 4
+                    self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
+                    self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
+                    displacementH = ((Horizontal*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
+                    displacementV = ((Vertical*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
+                    self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
+                    filename = fp.GT[i].FeatureControlFrameIcon
+                    filename = filename.replace(':/dd/icons', iconPath)
+                    self.svg[indexIcon].filename = str(filename)
+                    indexIcon+=1 
+                
+                indexSYMB+=1               
             
             # posDiameter
             if fp.GT[i].Circumference:
+
                 auxPoint1 = points[5+displacement] + Horizontal * (sizeOfLine*2)
                 auxPoint2 = auxPoint1 + Vertical * (sizeOfLine*2)
-                self.points[indexIcon].point.setValues([[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z]])
-                self.face[indexIcon].numVertices = 4
+                
+                self.points[indexSYMB].point.setValues([[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z]])
+
+                """    
+                self.face[indexIcon].numVertices = 4  
                 self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
                 self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
                 displacementH = ((Horizontal*points[5+displacement])%(sizeOfLine*2))/(sizeOfLine*2)
@@ -546,7 +584,15 @@ def plotStrings(self, fp, points):
                 filename = iconPath + '/diameter.svg'
                 self.svg[indexIcon].filename = str(filename)
                 indexIcon+=1
+                """
 
+                # self.textSYMB[indexSYMB].string = u"\u2300" #Diameter
+                self.textSYMB[indexSYMB].string = u"\u00D8" #Diameter
+                symbolPoint = points[5+displacement] + Horizontal + Vertical*0.5 
+                self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
+                self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
+                indexSYMB+=1
+            
             self.textGT[index].string = self.textGT3d[index].string = string_encode(displayExternal(fp.GT[i].ToleranceValue, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
             self.textGTpos[index].translation.setValue([posToleranceValue.x, posToleranceValue.y, posToleranceValue.z])
             self.textGT[index].justification = coin.SoAsciiText.CENTER
@@ -554,7 +600,8 @@ def plotStrings(self, fp, points):
             displacement+=6
             
             if fp.GT[i].DS != None and fp.GT[i].DS.Primary != None:
-                if fp.GT[i].FeatureControlFrameIcon != '':
+                # if fp.GT[i].FeatureControlFrameIcon != '' or fp.GT[i].FeatureControlFrameCode != '' :
+                if fp.GT[i].FeatureControlFrameIcon != '' :
                     distance += (sizeOfLine*2)
                 if fp.GT[i].Circumference:
                     distance -= (sizeOfLine*2)
@@ -581,11 +628,14 @@ def plotStrings(self, fp, points):
         
         if fp.circumferenceBool and True in [l.Circumference for l in fp.GT]:
             # posDiameterTolerance
-            auxPoint1 = FreeCAD.Vector(points[4])
-            auxPoint2 = auxPoint1 + Horizontal * (sizeOfLine*2)
-            auxPoint3 = auxPoint2 + Vertical * (sizeOfLine*2)
-            auxPoint4 = auxPoint1 + Vertical * (sizeOfLine*2)
-            self.points[indexIcon].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[auxPoint3.x,auxPoint3.y,auxPoint3.z],[auxPoint4.x,auxPoint4.y,auxPoint4.z]])
+            auxPoint1 = FreeCAD.Vector(points[4]) # Point Diameter
+            auxPoint2 = auxPoint1 + Horizontal * (sizeOfLine*2)  # Point Nominal
+            auxPoint3 = auxPoint2 + Vertical * (sizeOfLine*2) # Point Upper Tol
+            auxPoint4 = auxPoint1 + Vertical * (sizeOfLine*2) # Point Lower Tol
+            self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[auxPoint3.x,auxPoint3.y,auxPoint3.z],[auxPoint4.x,auxPoint4.y,auxPoint4.z]])
+            
+            
+            """
             self.face[indexIcon].numVertices = 4
             self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
             self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
@@ -595,6 +645,14 @@ def plotStrings(self, fp, points):
             filename = iconPath + '/diameter.svg'
             self.svg[indexIcon].filename = str(filename)
             indexIcon+=1
+            """
+            
+            self.textSYMB[indexSYMB].string = u"\u00D8" #Diameter
+            symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5 
+            self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
+            self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
+            indexSYMB+=1            
+            
             posDiameterTolerance = auxPoint2 + Vertical * (sizeOfLine/2)
             self.textGT[index].justification = coin.SoAsciiText.LEFT
             self.textGTpos[index].translation.setValue([posDiameterTolerance.x, posDiameterTolerance.y, posDiameterTolerance.z])
@@ -616,26 +674,46 @@ def plotStrings(self, fp, points):
                 self.textGTpos[i].rotation.setValue(rotation)
             except:
                 pass
+
+        for i in range(indexSYMB):
+            try:
+                #AP Annotation Plane
+                DirectionAux = FreeCAD.Vector(fp.AP.Direction)
+                DirectionAux.x = abs(DirectionAux.x)
+                DirectionAux.y = abs(DirectionAux.y)
+                DirectionAux.z = abs(DirectionAux.z)
+                rotation=(DraftGeomUtils.getRotation(DirectionAux)).Q
+                self.textSYMBpos[i].rotation.setValue(rotation)
+            except:
+                pass
                 
         for i in range(index,len(self.textGT)):
             if str(self.textGT[i].string) != "":
                 self.textGT[i].string = self.textGT3d[i].string = ""
+                
             else:
                 break
-                
-        for i in range(indexIcon,len(self.svg)):
+
+        print("len textSYMB {}".format(len(self.textSYMB)))        
+        for i in range(indexSYMB,len(self.textSYMB)):
+            self.textSYMB[i].string = ""
             if str(self.face[i].numVertices) != 0:
                 self.face[i].numVertices = 0
-                self.svg[i].filename = ""
+
+        for i in range(indexIcon,len(self.svg)):
+            self.svg[i].filename = ""
+
                 
     else:
         for i in range(len(self.textGT)):
             if str(self.textGT[i].string) != "" or str(self.svg[i].filename) != "":
                 self.textGT[i].string = self.textGT3d[i].string = ""
+                self.textSYMB[i].string = ""
                 self.face[i].numVertices = 0
                 self.svg[i].filename = ""
             else:
                 break
+
                 
     if fp.DF != None:
         self.textDF.string = self.textDF3d.string = str(fp.DF.Label)
@@ -1062,20 +1140,26 @@ class _GeometricTolerance(_GDTObject):
     def __init__(self, obj):
         _GDTObject.__init__(self,obj,"GeometricTolerance")
         obj.addProperty("App::PropertyString","Characteristic","GDT","Characteristic of the geometric tolerance")
+        obj.addProperty("App::PropertyString","CharacteristicCode","GDT","Characteristic Unicode of the geometric tolerance")
         obj.addProperty("App::PropertyString","CharacteristicIcon","GDT","Characteristic icon path of the geometric tolerance")
         obj.addProperty("App::PropertyBool","Circumference","GDT","Indicates whether the tolerance applies to a given diameter")
         obj.addProperty("App::PropertyFloat","ToleranceValue","GDT","Tolerance value of the geometric tolerance")
         obj.addProperty("App::PropertyString","FeatureControlFrame","GDT","Feature control frame of the geometric tolerance")
         obj.addProperty("App::PropertyString","FeatureControlFrameIcon","GDT","Feature control frame icon path of the geometric tolerance")
+        obj.addProperty("App::PropertyString","FeatureControlFrameCode","GDT","Feature control frame Unicode of the geometric tolerance")
         obj.addProperty("App::PropertyLink","DS","GDT","Datum system used")
 
     def onChanged(self,vobj,prop):
         "Do something when a property has changed"
         if hasattr(vobj,"CharacteristicIcon"):
             vobj.setEditorMode('CharacteristicIcon',2)
+        if hasattr(vobj,"CharacteristicCode"):
+            vobj.setEditorMode('CharacteristicCode',2)           
         if hasattr(vobj,"FeatureControlFrameIcon"):
             vobj.setEditorMode('FeatureControlFrameIcon',2)
-
+        if hasattr(vobj,"FeatureControlFrameCode"):
+            vobj.setEditorMode('FeatureControlFrameCode',2)
+            
 class _ViewProviderGeometricTolerance(_ViewProviderGDT):
     "A View Provider for the GDT GeometricTolerance object"
     def __init__(self, obj):
@@ -1085,6 +1169,10 @@ class _ViewProviderGeometricTolerance(_ViewProviderGDT):
         icon = self.Object.CharacteristicIcon
         return icon
 
+    def getCode(self):
+        code = self.Object.CharacteristicCode
+        return code
+        
 def makeGeometricTolerance(Name, ContainerOfData):
     ''' Explanation
     '''
@@ -1095,10 +1183,12 @@ def makeGeometricTolerance(Name, ContainerOfData):
     obj.Label = str(Name)
     obj.Characteristic = ContainerOfData.characteristic.Label
     obj.CharacteristicIcon = ContainerOfData.characteristic.Icon
+    obj.CharacteristicCode = ContainerOfData.characteristic.Code
     obj.Circumference = ContainerOfData.circumference
     obj.ToleranceValue = ContainerOfData.toleranceValue
     obj.FeatureControlFrame = ContainerOfData.featureControlFrame.toolTip
     obj.FeatureControlFrameIcon = ContainerOfData.featureControlFrame.Icon
+    obj.FeatureControlFrameCode = ContainerOfData.featureControlFrame.Code
     obj.DS = ContainerOfData.datumSystem
     
     group = FreeCAD.ActiveDocument.getObject("GDT")
@@ -1191,7 +1281,7 @@ class _Annotation(_GDTObject):
         '''"Print a short message when doing a recomputation, this method is mandatory" '''
         # FreeCAD.Console.PrintMessage('Executed\n')
         auxP1 = fp.p1
-        print("Faces {}".format(fp.faces[0][1][0]))
+        # print("Faces {}".format(fp.faces[0][1][0]))
         if fp.circumferenceBool:
             vertexex = fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).Vertexes
             fp.p1 = vertexex[0].Point if vertexex[0].Point.z > vertexex[1].Point.z else vertexex[1].Point
@@ -1253,9 +1343,11 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         labelDF3d.addChild(self.font3d)
         labelDF3d.addChild(self.textDF3d)
 
+        self.textSYMB = []
         self.textGT = []
-        self.textGT3d = []
         self.textGTpos = []
+        self.textGT3d = []
+        self.textSYMBpos = []
         self.svg = []
         self.svgPos = []
         self.points = []
@@ -1269,29 +1361,46 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
             self.textGT3d[i].string = ""
             self.textGTpos.append(coin.SoTransform())
             self.textGT[i].justification = self.textGT3d[i].justification = coin.SoAsciiText.CENTER
+            
+            self.textSYMB.append(coin.SoAsciiText())
+            self.textSYMB[i].string = ""
+            self.textSYMBpos.append(coin.SoTransform())
+            self.textSYMB[i].justification = coin.SoAsciiText.CENTER           
+            
             labelGT = coin.SoSeparator()
             labelGT.addChild(self.textGTpos[i])
             labelGT.addChild(self.textColor)
             labelGT.addChild(self.font)
             labelGT.addChild(self.textGT[i])
+ 
+            labelSYMB = coin.SoSeparator()
+            labelSYMB.addChild(self.textSYMBpos[i])
+            labelSYMB.addChild(self.textColor)
+            labelSYMB.addChild(self.font)
+            labelSYMB.addChild(self.textSYMB[i])
+            
             labelGT3d = coin.SoSeparator()
             labelGT3d.addChild(self.textGTpos[i])
             labelGT3d.addChild(self.textColor)
             labelGT3d.addChild(self.font3d)
             labelGT3d.addChild(self.textGT3d[i])
+            
             self.svg.append(coin.SoTexture2())
             self.face.append(coin.SoFaceSet())
             self.textureTransform.append(coin.SoTexture2Transform())
             self.svgPos.append(coin.SoTextureCoordinatePlane())
             self.face[i].numVertices = 0
             self.points.append(coin.SoVRMLCoordinate())
+            
             image = coin.SoSeparator()
             image.addChild(self.svg[i])
             image.addChild(self.textureTransform[i])
             image.addChild(self.svgPos[i])
             image.addChild(self.points[i])
             image.addChild(self.face[i])
+            
             self.node.addChild(labelGT)
+            self.node.addChild(labelSYMB)
             self.node3d.addChild(labelGT3d)
             self.node.addChild(image)
             self.node3d.addChild(image)
@@ -1307,7 +1416,12 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         self.node.addChild(selectionNode)
         obj.addDisplayMode(self.node,"2D")
 
-
+        self.node3d.addChild(labelDF3d)
+        self.node3d.addChild(self.lineColor)
+        self.node3d.addChild(self.data)
+        self.node3d.addChild(self.lines)
+        self.node3d.addChild(selectionNode)
+        obj.addDisplayMode(self.node3d,"3D")
         
         self.onChanged(obj,"LineColor")
         self.onChanged(obj,"LineWidth")
@@ -1466,8 +1580,10 @@ def makeAnnotation(faces, AP, DF=None, GT=[], modify=False, Object=None, diamete
             select(obj)
             for l in getAllAnnotationObjects():
                 l.touch()
+            
             FreeCAD.ActiveDocument.recompute()
             return obj
+            
         else:
             if DF:
                 FreeCAD.ActiveDocument.removeObject(obj.DF.Name)
@@ -1475,12 +1591,16 @@ def makeAnnotation(faces, AP, DF=None, GT=[], modify=False, Object=None, diamete
                     FreeCAD.ActiveDocument.removeObject(getAllDatumSystemObjects()[-1].Name)
             else:
                 FreeCAD.ActiveDocument.removeObject(obj.GT[-1].Name)
+            
             FreeCAD.ActiveDocument.removeObject(obj.Name)
             hideGrid()
+            
             for l in getAllAnnotationObjects():
                 l.touch()
+            
             FreeCAD.ActiveDocument.recompute()
             return None
+            
     if not obj.spBool:
         return FreeCADGui.Snapper.getPoint(callback=getPoint)
     else:
@@ -1496,46 +1616,54 @@ def makeAnnotation(faces, AP, DF=None, GT=[], modify=False, Object=None, diamete
     #-----------------------------------------------------------------------
 
 class Characteristics(object):
-    def __init__(self, Label, Icon):
+    def __init__(self, Label, Code, Icon):
         self.Label = Label
+        self.Code = Code
         self.Icon = Icon
         self.Proxy = self
 
 def makeCharacteristics(label=None):
     Label = ['Straightness', 'Flatness', 'Circularity', 'Cylindricity', 'Profile of a line', 'Profile of a surface', 'Perpendicularity', 'Angularity', 'Parallelism', 'Symmetry', 'Position', 'Concentricity','Circular run-out', 'Total run-out']
     Icon = [':/dd/icons/Characteristic/straightness.svg', ':/dd/icons/Characteristic/flatness.svg', ':/dd/icons/Characteristic/circularity.svg', ':/dd/icons/Characteristic/cylindricity.svg', ':/dd/icons/Characteristic/profileOfALine.svg', ':/dd/icons/Characteristic/profileOfASurface.svg', ':/dd/icons/Characteristic/perpendicularity.svg', ':/dd/icons/Characteristic/angularity.svg', ':/dd/icons/Characteristic/parallelism.svg', ':/dd/icons/Characteristic/symmetry.svg', ':/dd/icons/Characteristic/position.svg', ':/dd/icons/Characteristic/concentricity.svg',':/dd/icons/Characteristic/circularRunOut.svg', ':/dd/icons/Characteristic/totalRunOut.svg']
+    Code = ['\u23E4', '\u23E5', '\u25CB', '\u232D', '\u2312', '\u2313', '\u23CA', '\u2220', '\u2AFD', '\u232F', '\u2316', '\u25CE','\u2336', '\u2330']
     
     if label == None:
-        characteristics = Characteristics(Label, Icon)
+        characteristics = Characteristics(Label, Code, Icon)
         return characteristics
     else:
         index = Label.index(label)
         icon = Icon[index]
-        characteristics = Characteristics(label, icon)
+        code = Code[index]
+        characteristics = Characteristics(label, code, icon)
         return characteristics
 
 class FeatureControlFrame(object):
-    def __init__(self, Label, Icon, toolTip):
+    def __init__(self, Label, Code, Icon, toolTip):
         self.Label = Label
         self.Icon = Icon
+        self.Code = Code
         self.toolTip = toolTip
         self.Proxy = self
 
 def makeFeatureControlFrame(toolTip=None):
+    # F L M P S T U
     Label = ['','','','','','','','']
     Icon = ['', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg', ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg']
+    Code = ['', '\u24BB', '\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24C4']
     ToolTip = ['Feature control frame', 'Free state', 'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral']
+    
     if toolTip == None:
-        featureControlFrame = FeatureControlFrame(Label, Icon, ToolTip)
+        featureControlFrame = FeatureControlFrame(Label, Code, Icon, ToolTip)
         return featureControlFrame
     elif toolTip == '':
-        featureControlFrame = FeatureControlFrame(Label[0], Icon[0], '')
+        featureControlFrame = FeatureControlFrame(Label[0], Code[0], Icon[0], '')
         return featureControlFrame
     else:
         index = ToolTip.index(toolTip)
         icon = Icon[index]
+        code = Code[index]
         label = Label[index]
-        featureControlFrame = FeatureControlFrame(label, icon, toolTip)
+        featureControlFrame = FeatureControlFrame(label, code, icon, toolTip)
         return featureControlFrame
 
 class ContainerOfData(object):
@@ -1565,7 +1693,7 @@ class ContainerOfData(object):
         self.tertiary = None
         self.characteristic = None
         self.toleranceValue = 0.0
-        self.featureControlFrame = ''
+        self.featureControlFrame = None
         self.datumSystem = 0
         self.annotationPlane = 0
         self.annotation = None
