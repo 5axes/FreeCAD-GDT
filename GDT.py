@@ -362,7 +362,7 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
         P2 = P0 + Horizontal * (sizeOfLine*2)
         P3 = P1 + Horizontal * (sizeOfLine*2)
         # Length of the framework around the Tolerance Zone
-        lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit))) -1
+        lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit))) -2
         
         # if obj.GT[i].FeatureControlFrameIcon != '' or obj.GT[i].FeatureControlFrameCode != '' :
         # Add the space for the Control Ine and the diameter
