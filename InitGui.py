@@ -28,7 +28,7 @@ global GDTWBpath
 GDTWBpath = os.path.dirname(GDT_locator.__file__)
 
 global main_DWB_Icon
-GDTWB_icons_path =  os.path.join( GDTWBpath, 'GUI', 'Resources', 'icons')
+GDTWB_icons_path =  os.path.join( GDTWBpath, 'Resources', 'icons')
 main_DWB_Icon = os.path.join( GDTWB_icons_path , 'GDT.svg')
 
 """

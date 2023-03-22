@@ -53,8 +53,8 @@ except ImportError:
     FreeCAD.Console.PrintMessage("Error: Python-pyside package must be installed on your system to use the Geometric Dimensioning & Tolerancing module.")
 
 __dir__ = os.path.dirname(__file__)
-iconPath = os.path.join( __dir__, 'Gui','Resources', 'icons' )
-path_dd_resources =  os.path.join( os.path.dirname(__file__), 'Gui', 'Resources', 'dd_resources.rcc')
+iconPath = os.path.join( __dir__, 'Resources', 'icons' )
+path_dd_resources =  os.path.join( os.path.dirname(__file__), 'Resources', 'dd_resources.rcc')
 resourcesLoaded = QtCore.QResource.registerResource(path_dd_resources)
 assert resourcesLoaded
 
@@ -1303,6 +1303,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         obj.addProperty("App::PropertyBool","ShowUnit","GDT","Show the unit suffix").ShowUnit = getParam("showUnit",True)
         _ViewProviderGDT.__init__(self,obj)
 
+    # The real Object creation
     def attach(self, obj):
         "called on object creation"
         from pivy import coin
@@ -2023,7 +2024,7 @@ class groupBoxWidget:
         self.group.setLayout(vbox)
         return self.group
 
-class fieldLabeCombolWidget:
+class fieldLabelComboWidget:
     def __init__(self, Text='Label', Circumference = [''], Diameter = 0.0, toleranceSelect = True, tolerance = 0.0, lowLimit = 0.0, highLimit = 0.0, List=[''], Icons=None, ToolTip = None):
         self.Text = Text
         self.Circumference = Circumference
@@ -2045,21 +2046,26 @@ class fieldLabeCombolWidget:
         self.uiloader = FreeCADGui.UiLoader()
         self.comboCircumference = QtGui.QComboBox()
         self.combo = QtGui.QComboBox()
+        
         for i in range(len(self.Circumference)):
             self.comboCircumference.addItem(QtGui.QIcon(self.Circumference[i]), '' )
         self.comboCircumference.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
         self.comboCircumference.setToolTip("Indicates whether the tolerance applies to a given diameter")
         self.combo.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
+        
         for i in range(len(self.List)):
             if self.Icons != None:
                 self.combo.addItem( QtGui.QIcon(self.Icons[i]), self.List[i] )
             else:
                 self.combo.addItem( self.List[i] )
+                
         if self.ToolTip != None:
            self.updateDate()
+           
         self.combo.activated.connect(self.updateDate)
         self.comboCircumference.activated.connect(self.updateDateCircumference)
         vbox = QtGui.QVBoxLayout()
+        
         hbox1 = QtGui.QHBoxLayout()
         self.inputfield = self.uiloader.createWidget("Gui::InputField")
         self.inputfield.setText(self.FORMAT % 0)
@@ -2071,6 +2077,7 @@ class fieldLabeCombolWidget:
         hbox1.addStretch(1)
         hbox1.addWidget(self.combo)
         vbox.addLayout(hbox1)
+        
         hbox2 = QtGui.QHBoxLayout()
         self.label = QtGui.QLabel('Diameter:')
         self.inputfield2 = self.uiloader.createWidget("Gui::InputField")
@@ -2081,10 +2088,12 @@ class fieldLabeCombolWidget:
         symbol = '±'
         self.comboTolerance.addItem( symbol[-1] )
         self.comboTolerance.addItem( 'Limit' )
+        
         if self.toleranceSelect:
             self.comboTolerance.setCurrentIndex(0)
         else:
             self.comboTolerance.setCurrentIndex(1)
+            
         self.updateDateTolerance
         self.comboTolerance.activated.connect(self.updateDateTolerance)
         self.labelTolerance = QtGui.QLabel(symbol[-1])
@@ -2092,8 +2101,8 @@ class fieldLabeCombolWidget:
         self.labelHigh = QtGui.QLabel('High')
         self.inputfieldTolerance = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.tolerance,self.DECIMALS,'Length',True)
-        print("tolerance auxText {} {}".format(self.DECIMALS,auxText))
         self.inputfieldTolerance.setText(auxText)
+        
         QtCore.QObject.connect(self.inputfieldTolerance,QtCore.SIGNAL("valueChanged(double)"),self.valueChangedTolerance)
         self.inputfieldLow = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.lowLimit,self.DECIMALS,'Length',True)
@@ -2134,6 +2143,7 @@ class fieldLabeCombolWidget:
     def updateDate(self):
         if self.ToolTip != None:
             self.combo.setToolTip( self.ToolTip[self.combo.currentIndex()] )
+        
         if self.Text == 'Tolerance value:':
             if self.combo.currentIndex() != 0:
                 self.ContainerOfData.featureControlFrame = makeFeatureControlFrame(self.ToolTip[self.combo.currentIndex()])
