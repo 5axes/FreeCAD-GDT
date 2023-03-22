@@ -587,7 +587,7 @@ def plotStrings(self, fp, points):
                 displacementH = ((Horizontal*points[5+displacement])%(sizeOfLine*2))/(sizeOfLine*2)
                 displacementV = ((Vertical*points[5+displacement])%(sizeOfLine*2))/(sizeOfLine*2)
                 self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
-                filename = iconPath + '/diameter.svg'
+                filename = os.path.join(iconPath , 'diameter.svg')
                 self.svg[indexIcon].filename = str(filename)
                 indexIcon+=1
                 """
@@ -648,7 +648,7 @@ def plotStrings(self, fp, points):
             displacementH = ((Horizontal*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
             displacementV = ((Vertical*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
             self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
-            filename = iconPath + '/diameter.svg'
+            filename = os.path.join(iconPath , 'diameter.svg')
             self.svg[indexIcon].filename = str(filename)
             indexIcon+=1
             """
@@ -827,8 +827,7 @@ def displayExternal(internValue,decimals=4,dim='Length',showUnit=True):
         conversion = pref[1]
         uom = pref[2]  # can gibe uom  Micron
         # To suppress the Micron conversion
-        # print("uom {}".format(uom))
-        # print("conversion {}".format(conversion))
+        # Msg("uom {}".format(uom))
         if uom == "µm" :
             decimals = 3
             conversion = 1.0
