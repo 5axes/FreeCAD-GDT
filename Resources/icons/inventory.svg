@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -8,48 +10,47 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="inventory.svg"
-   viewBox="0 0 64 64"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   version="1.1"
-   id="svg4700"
+   width="64"
    height="64"
-   width="64">
+   id="svg4700"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   viewBox="0 0 64 64"
+   sodipodi:docname="inventory.svg">
   <defs
      id="defs4702">
     <linearGradient
-       osb:paint="gradient"
-       id="linearGradient5579">
+       id="linearGradient5579"
+       osb:paint="gradient">
       <stop
-         id="stop5581"
+         style="stop-color:#918a6f;stop-opacity:1;"
          offset="0"
-         style="stop-color:#918a6f;stop-opacity:1;" />
+         id="stop5581" />
       <stop
-         id="stop5583"
+         style="stop-color:#918a6f;stop-opacity:0;"
          offset="1"
-         style="stop-color:#918a6f;stop-opacity:0;" />
+         id="stop5583" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     inkscape:document-rotation="0"
-     inkscape:window-maximized="1"
-     inkscape:window-y="-8"
-     inkscape:window-x="-8"
-     inkscape:window-height="837"
-     inkscape:window-width="1600"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     showgrid="true"
-     inkscape:current-layer="layer1"
-     inkscape:cy="29.093929"
-     inkscape:cx="45.304961"
-     inkscape:zoom="5.6568543"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="5.6568543"
+     inkscape:cx="45.304961"
+     inkscape:cy="29.093929"
+     inkscape:current-layer="layer1"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="1440"
+     inkscape:window-height="799"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -63,73 +64,73 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 5"
+     inkscape:groupmode="layer"
      id="layer2"
-     inkscape:groupmode="layer" />
+     inkscape:label="Layer 5" />
   <g
-     inkscape:label="Layer 3"
+     inkscape:groupmode="layer"
      id="layer5"
-     inkscape:groupmode="layer" />
+     inkscape:label="Layer 3" />
   <g
-     style="display:inline"
-     inkscape:label="Layer 2"
+     inkscape:groupmode="layer"
      id="layer4"
-     inkscape:groupmode="layer" />
+     inkscape:label="Layer 2"
+     style="display:inline" />
   <g
-     inkscape:label="Layer 4"
+     inkscape:groupmode="layer"
      id="layer1"
-     inkscape:groupmode="layer">
+     inkscape:label="Layer 4">
     <rect
-       y="4.2142868"
-       x="12.5"
-       height="55.571426"
-       width="39"
+       style="opacity:1;fill:#ff6600;fill-opacity:0.28235295;stroke:#ff6600;stroke-width:1;stroke-linejoin:miter;stroke-opacity:1"
        id="rect4169"
-       style="opacity:1;fill:#ff6600;fill-opacity:0.282353;stroke:#ff6600;stroke-width:1;stroke-linejoin:miter;stroke-opacity:1" />
+       width="39"
+       height="55.571426"
+       x="12.5"
+       y="4.2142868" />
     <path
-       inkscape:connector-curvature="0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 16,23.5 20.32932,0"
        id="path4171"
-       d="M 16,23.5 H 36.32932"
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       inkscape:connector-curvature="0" />
     <path
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 16,8.5 H 36.32932"
+       inkscape:connector-curvature="0"
        id="path4173"
-       inkscape:connector-curvature="0" />
+       d="m 16,8.5 20.32932,0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 16,38.5 H 36.32932"
+       inkscape:connector-curvature="0"
        id="path4175"
-       inkscape:connector-curvature="0" />
+       d="m 16,38.5 20.32932,0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       inkscape:connector-curvature="0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 16,13.5 7,0"
        id="path4177"
-       d="m 16,13.5 h 7"
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       inkscape:connector-curvature="0" />
     <path
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 16,18.5 h 7"
+       inkscape:connector-curvature="0"
        id="path4179"
-       inkscape:connector-curvature="0" />
+       d="m 16,18.5 7,0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       inkscape:connector-curvature="0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 16,28.5 7,0"
        id="path4181"
-       d="m 16,28.5 h 7"
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-    <path
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 16,33.5 h 7"
-       id="path4183"
        inkscape:connector-curvature="0" />
     <path
        inkscape:connector-curvature="0"
-       id="path4185"
-       d="m 16,43.5 h 7"
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+       id="path4183"
+       d="m 16,33.5 7,0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
     <path
-       style="fill:#ff6600;fill-opacity:0.282353;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 16,48.5 h 7"
-       id="path4187"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 16,43.5 7,0"
+       id="path4185"
        inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path4187"
+       d="m 16,48.5 7,0"
+       style="fill:#ff6600;fill-opacity:0.28235294;fill-rule:evenodd;stroke:#ff6600;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
 </svg>

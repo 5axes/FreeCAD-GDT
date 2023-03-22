@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -8,48 +10,47 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="symmetry.svg"
-   viewBox="0 0 64 64"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   version="1.1"
-   id="svg4700"
+   width="64"
    height="64"
-   width="64">
+   id="svg4700"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   viewBox="0 0 64 64"
+   sodipodi:docname="symmetry.svg">
   <defs
      id="defs4702">
     <linearGradient
-       osb:paint="gradient"
-       id="linearGradient4142">
+       id="linearGradient4142"
+       osb:paint="gradient">
       <stop
-         id="stop4144"
+         style="stop-color:#ff7500;stop-opacity:1;"
          offset="0"
-         style="stop-color:#ff7500;stop-opacity:1;" />
+         id="stop4144" />
       <stop
-         id="stop4146"
+         style="stop-color:#ff7500;stop-opacity:0;"
          offset="1"
-         style="stop-color:#ff7500;stop-opacity:0;" />
+         id="stop4146" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     inkscape:document-rotation="0"
-     inkscape:window-maximized="1"
-     inkscape:window-y="-8"
-     inkscape:window-x="-8"
-     inkscape:window-height="837"
-     inkscape:window-width="1600"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     showgrid="true"
-     inkscape:current-layer="layer4"
-     inkscape:cy="28.750943"
-     inkscape:cx="6.6065968"
-     inkscape:zoom="6.19424"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="6.19424"
+     inkscape:cx="-13.939804"
+     inkscape:cy="28.750943"
+     inkscape:current-layer="layer4"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="1440"
+     inkscape:window-height="799"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -63,24 +64,16 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 3"
+     inkscape:groupmode="layer"
      id="layer5"
-     inkscape:groupmode="layer" />
+     inkscape:label="Layer 3" />
   <g
-     inkscape:label="Layer 2"
+     inkscape:groupmode="layer"
      id="layer4"
-     inkscape:groupmode="layer">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-size:40px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none"
-       x="12.235329"
-       y="43.173038"
-       id="text842-9"><tspan
-         sodipodi:role="line"
-         x="12.235329"
-         y="43.173038"
-         id="tspan840-0"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:700;font-size:40px;font-family:Iso-Gps;fill:#ff6600"
-           id="tspan838-7">ƫ</tspan></tspan></text>
+     inkscape:label="Layer 2">
+    <path
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50px;line-height:120.00000477%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 28.056641 25.798828 L 28.056641 28.191406 L 35.917969 28.191406 L 35.917969 25.798828 L 28.056641 25.798828 z M 20.171875 30.804688 L 20.171875 33.195312 L 43.828125 33.195312 L 43.828125 30.804688 L 20.171875 30.804688 z M 28.056641 35.785156 L 28.056641 38.201172 L 35.917969 38.201172 L 35.917969 35.785156 L 28.056641 35.785156 z "
+       id="text3374" />
   </g>
 </svg>

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
 <svg
    xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -8,48 +10,47 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="position.svg"
-   viewBox="0 0 64 64"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   version="1.1"
-   id="svg4700"
+   width="64"
    height="64"
-   width="64">
+   id="svg4700"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   viewBox="0 0 64 64"
+   sodipodi:docname="position.svg">
   <defs
      id="defs4702">
     <linearGradient
-       osb:paint="gradient"
-       id="linearGradient4142">
+       id="linearGradient4142"
+       osb:paint="gradient">
       <stop
-         id="stop4144"
+         style="stop-color:#ff7500;stop-opacity:1;"
          offset="0"
-         style="stop-color:#ff7500;stop-opacity:1;" />
+         id="stop4144" />
       <stop
-         id="stop4146"
+         style="stop-color:#ff7500;stop-opacity:0;"
          offset="1"
-         style="stop-color:#ff7500;stop-opacity:0;" />
+         id="stop4146" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     inkscape:document-rotation="0"
-     inkscape:window-maximized="1"
-     inkscape:window-y="-8"
-     inkscape:window-x="-8"
-     inkscape:window-height="837"
-     inkscape:window-width="1600"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     showgrid="true"
-     inkscape:current-layer="layer4"
-     inkscape:cy="28.750943"
-     inkscape:cx="19.966112"
-     inkscape:zoom="6.19424"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="6.19424"
+     inkscape:cx="-13.939804"
+     inkscape:cy="28.750943"
+     inkscape:current-layer="layer4"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="1440"
+     inkscape:window-height="799"
+     inkscape:window-x="0"
+     inkscape:window-y="1"
+     inkscape:window-maximized="1" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -63,24 +64,16 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 3"
+     inkscape:groupmode="layer"
      id="layer5"
-     inkscape:groupmode="layer" />
+     inkscape:label="Layer 3" />
   <g
-     inkscape:label="Layer 2"
+     inkscape:groupmode="layer"
      id="layer4"
-     inkscape:groupmode="layer">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:700;font-size:40px;line-height:125%;font-family:Iso-Gps;text-align:start;letter-spacing:0px;word-spacing:0px;text-anchor:start;fill:#ff6600;fill-opacity:1;stroke:none"
-       x="13.688282"
-       y="43.011604"
-       id="text842-9"><tspan
-         sodipodi:role="line"
-         x="13.688282"
-         y="43.011604"
-         id="tspan840-0"><tspan
-           style="font-style:normal;font-variant:normal;font-weight:700;font-size:40px;font-family:Iso-Gps;fill:#ff6600"
-           id="tspan838-7">ƪ</tspan></tspan></text>
+     inkscape:label="Layer 2">
+    <path
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:50px;line-height:120.00000477%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="M 31.4375 14.105469 L 31.4375 24.652344 C 29.647135 24.847656 28.126302 25.578125 26.873047 26.847656 C 25.619792 28.100911 24.903646 29.616536 24.724609 31.390625 L 19.574219 31.390625 L 19.574219 32.585938 L 24.773438 32.585938 C 24.919922 34.360026 25.619792 35.882812 26.873047 37.152344 C 28.126302 38.405599 29.647135 39.136068 31.4375 39.347656 L 31.4375 49.894531 L 32.634766 49.894531 L 32.634766 39.347656 C 34.441406 39.152344 35.971354 38.421875 37.224609 37.152344 C 38.477865 35.882812 39.177734 34.360026 39.324219 32.585938 L 44.425781 32.585938 L 44.425781 31.390625 L 39.324219 31.390625 C 39.161458 29.60026 38.452474 28.070312 37.199219 26.800781 C 35.945964 25.53125 34.42513 24.815104 32.634766 24.652344 L 32.634766 14.105469 L 31.4375 14.105469 z M 31.4375 25.945312 L 31.4375 31.390625 L 25.96875 31.390625 C 26.115234 29.958333 26.69401 28.735677 27.703125 27.726562 C 28.728516 26.701172 29.972656 26.108073 31.4375 25.945312 z M 32.634766 25.945312 C 34.067057 26.091797 35.28776 26.677734 36.296875 27.703125 C 37.322266 28.71224 37.915365 29.942057 38.078125 31.390625 L 32.634766 31.390625 L 32.634766 25.945312 z M 25.96875 32.585938 L 31.4375 32.585938 L 31.4375 38.054688 C 30.005208 37.908203 28.777344 37.322266 27.751953 36.296875 C 26.742839 35.271484 26.147786 34.034505 25.96875 32.585938 z M 32.634766 32.585938 L 38.078125 32.585938 C 37.931641 34.018229 37.345703 35.248047 36.320312 36.273438 C 35.311198 37.282552 34.083333 37.875651 32.634766 38.054688 L 32.634766 32.585938 z "
+       id="text3374" />
   </g>
 </svg>
