@@ -361,9 +361,11 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
         P1 = P0 + Vertical * (-sizeOfLine*2)
         P2 = P0 + Horizontal * (sizeOfLine*2)
         P3 = P1 + Horizontal * (sizeOfLine*2)
-        lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit)))
+        # Length of the framework around the Tolerance Zone
+        lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit))) -1
         
         # if obj.GT[i].FeatureControlFrameIcon != '' or obj.GT[i].FeatureControlFrameCode != '' :
+        # Add the space for the Control Ine and the diameter
         if obj.GT[i].FeatureControlFrameIcon != '' :
             lengthToleranceValue += 2
         
@@ -409,6 +411,7 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
                     displacement = newPoints[-3].x - newPoints[-8].x
                     for i in range(len(newPoints)-8, len(newPoints)):
                         newPoints[i].x-=displacement
+                        
     return newPoints, newSegments
 
 # Draw Datum Feature
@@ -437,7 +440,7 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
                 newPoints[i].x-=displacement
     ''' 
     
-    # Draw the Square arount the Datum + The bas triangle  
+    # Draw the Square arount the Datum + The bottom triangle  
     d=len(newPoints)
     # newPoints[-1]should be end of attach line
     h = math.sqrt(sizeOfLine*sizeOfLine+(sizeOfLine/2)*(sizeOfLine/2))
@@ -457,6 +460,11 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
     P7 = P6 + Vertical * (sizeOfLine*2)   
     
     newPoints += [P0, P1, P2, P3, P4, P5, P6, P7]
+    if existGT:
+        displacement = newPoints[-8].x - newPoints[-7].x
+        print("displacement {}".format(displacement))
+        for i in range(len(newPoints)-8, len(newPoints)):
+            newPoints[i].x-=displacement
     newSegments += [-1, 0+d, 1+d, 0+d, 2+d, -1, 1+d, 2+d, 3+d, 4+d, 5+d, 6+d, 7+d, 3+d]
     
     return newPoints, newSegments
@@ -512,13 +520,13 @@ def plotStrings(self, fp, points):
             # print("Label {}".format(fp.GT[i].Characteristic))
 
             try:
-                #AP Annotation Plane
-                self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].CharacteristicCode) #Diameter
+                #Unicode display
+                self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].CharacteristicCode) # Characteristic Code
                 symbolPoint = auxPoint + Horizontal + Vertical * 0.5 
                 self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
                 self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
             except:
-                # Compatibility Old Version
+                # Compatibility Old Version with SVG File
                 self.face[indexIcon].numVertices = 4
                 sZ = 1/(sizeOfLine*2)
                 dS = FreeCAD.Vector(Horizontal) * sZ
