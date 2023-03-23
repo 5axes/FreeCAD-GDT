@@ -169,7 +169,10 @@ class GDTGuiClass:
             obj.Label = data.textName
             obj.Characteristic = data.characteristic.Label
             obj.CharacteristicIcon = data.characteristic.Icon
-            obj.CharacteristicCode = data.characteristic.Code
+            try:
+                obj.CharacteristicCode = data.characteristic.Code
+            except:
+                pass
             obj.ToleranceValue = data.toleranceValue
             obj.Circumference = data.circumference
             obj.FeatureControlFrame = data.featureControlFrame

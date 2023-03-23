@@ -14,8 +14,8 @@
     <workbench>
       <classname>GDTWorkbench</classname>
       <subdirectory>./</subdirectory>
-      <tag>assembly</tag>
-      <freecadmin>0.19</freecadmin>
+      <tag>GDT</tag>
+      <freecadmin>0.20</freecadmin>
     </workbench>
   </content>
 
