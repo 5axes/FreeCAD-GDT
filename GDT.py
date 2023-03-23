@@ -463,7 +463,7 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
     newPoints += [P0, P1, P2, P3, P4, P5, P6, P7]
     if existGT:
         displacement = newPoints[-8].x - newPoints[-7].x
-        print("displacement {}".format(displacement))
+        # print("displacement {}".format(displacement))
         for i in range(len(newPoints)-8, len(newPoints)):
             newPoints[i].x-=displacement
     newSegments += [-1, 0+d, 1+d, 0+d, 2+d, -1, 1+d, 2+d, 3+d, 4+d, 5+d, 6+d, 7+d, 3+d]
@@ -553,7 +553,7 @@ def plotStrings(self, fp, points):
                 self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[points[7+displacement].x,points[7+displacement].y,points[7+displacement].z],[points[6+displacement].x,points[6+displacement].y,points[6+displacement].z],[auxPoint2.x,auxPoint2.y,auxPoint2.z]])               
                     
                 try:
-                    FreeCAD.Console.PrintMessage("FrameCode {}\n".format(fp.GT[i].FeatureControlFrameCode))
+                    # FreeCAD.Console.PrintMessage("FrameCode {}\n".format(fp.GT[i].FeatureControlFrameCode))
                     self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].FeatureControlFrameCode) #Diameter
                     symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5 
                     self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
