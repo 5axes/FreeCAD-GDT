@@ -737,12 +737,23 @@ def plotStrings(self, fp, points):
             distance = (v.y)/2
         else:
             distance = (v.z)/2
-            
-        centerPoint = points[-2] + Horizontal * (distance)
-        # print("Datum Feature Vertical {}".format(Vertical))
+        
+        """     
+        print("Datum Feature Label      {}".format(str(fp.DF.Label)))
+        print("Datum Feature Vertical   {}".format(Vertical))
+        print("Datum Feature Horizontal {}".format(Horizontal))
+        """
         # Modif 5@xes https://github.com/5axes/FreeCAD-GDT/issues/21
         # Must be tested on different Case
+        # Code not valid it's just a patch but if the plan is particular it doesn't work 
+        # To be reviewed
         Epsilon = 1E-10
+        vectCor = FreeCAD.Vector(0,distance/2,distance/2)
+        if Horizontal.y > Epsilon :   
+            centerPoint = points[-2] + vectCor 
+        else :
+            centerPoint = points[-2] + Horizontal * (distance)        
+        
         if Vertical.z < -Epsilon :   
             centerPoint = centerPoint + Vertical * (sizeOfLine*1.5)
         else :
