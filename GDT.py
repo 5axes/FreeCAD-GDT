@@ -312,6 +312,7 @@ def getPointsToPlot(obj):
         point = obj.selectedPoint
         d = point.distanceToPlane(obj.p1, obj.Direction)
         
+        # IF circumference
         if obj.circumferenceBool:
             P3 = point + obj.Direction * (-d)
             d2 = (P3 - obj.p1) * Vertical
@@ -1293,7 +1294,9 @@ class _Annotation(_GDTObject):
         else:
             fp.p1 = (fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).CenterOfMass).projectToPlane(fp.AP.PointWithOffset, fp.AP.Direction)
             fp.Direction = fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).normalAt(0,0)
+        
         diff = fp.p1-auxP1
+        
         if fp.spBool:
             fp.selectedPoint = fp.selectedPoint + diff
 
