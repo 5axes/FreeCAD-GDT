@@ -1699,7 +1699,7 @@ class Characteristics(object):
 def makeCharacteristics(label=None):
     Label = ['Straightness', 'Flatness', 'Circularity', 'Cylindricity', 'Profile of a line', 'Profile of a surface', 'Perpendicularity', 'Angularity', 'Parallelism', 'Symmetry', 'Position', 'Concentricity','Circular run-out', 'Total run-out']
     Icon = [':/dd/icons/Characteristic/straightness.svg', ':/dd/icons/Characteristic/flatness.svg', ':/dd/icons/Characteristic/circularity.svg', ':/dd/icons/Characteristic/cylindricity.svg', ':/dd/icons/Characteristic/profileOfALine.svg', ':/dd/icons/Characteristic/profileOfASurface.svg', ':/dd/icons/Characteristic/perpendicularity.svg', ':/dd/icons/Characteristic/angularity.svg', ':/dd/icons/Characteristic/parallelism.svg', ':/dd/icons/Characteristic/symmetry.svg', ':/dd/icons/Characteristic/position.svg', ':/dd/icons/Characteristic/concentricity.svg',':/dd/icons/Characteristic/circularRunOut.svg', ':/dd/icons/Characteristic/totalRunOut.svg']
-    Code = ['\u23E4', '\u23E5', '\u25CB', '\u232D', '\u2312', '\u2313', '\u23CA', '\u2220', '\u2AFD', '\u232F', '\u2316', '\u25CE','\u2336', '\u2330']
+    Code = ['\u23E4', '\u23E5', '\u25CB', '\u232D', '\u2312', '\u2313', '\u27C2', '\u2220', '\u2225', '\u232F', '\u2316', '\u25CE','\u2197', '\u2330']
     
     if label == None:
         characteristics = Characteristics(Label, Code, Icon)
@@ -1723,7 +1723,7 @@ def makeFeatureControlFrame(toolTip=None):
     # F L M P S T U
     Label = ['','','','','','','','']
     Icon = ['', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg', ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg']
-    Code = ['', '\u24BB', '\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24C4']
+    Code = ['', '\u24BB', '\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24CA']
     ToolTip = ['Feature control frame', 'Free state', 'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral']
     
     if toolTip == None:
