@@ -855,7 +855,6 @@ def displayExternal(internValue,decimals=4,dim='Length',showUnit=True):
         conversion = pref[1]
         uom = pref[2]  # can gibe uom  Micron
         # To suppress the Micron conversion
-        # Msg("uom {}".format(uom))
         if uom == "µm" :
             decimals = 3
             conversion = 1.0
@@ -897,7 +896,8 @@ class _GDTObject:
         '''Add some custom properties to our GDT feature'''
         obj.Proxy = self
         self.Type = tp
-        # print("COIN_MAJOR_VERSION {}".format(coin.COIN_MAJOR_VERSION))
+        obj.addProperty("App::PropertyString","Type","GDT","Type for icon")
+        obj.Type = "unkwon"
 
     def __getstate__(self):
         return self.Type
@@ -918,11 +918,11 @@ class _GDTObject:
 class _ViewProviderGDT:
     "The base class for GDT Viewproviders"
 
-    def __init__(self, vobj,tp="Unknown"):
+    def __init__(self, vobj):
         '''Set this object to the proxy object of the actual view provider'''
         vobj.Proxy = self
         self.Object = vobj.Object
-        self.Type = tp
+        self.Type = vobj.Object.Type
 
     def __getstate__(self):
         return None
@@ -933,11 +933,18 @@ class _ViewProviderGDT:
     def attach(self,vobj):
         '''Setup the scene sub-graph of the view provider, this method is mandatory'''
         self.Object = vobj.Object
+        
+        if not hasattr(vobj.Object, "Type") :
+            FreeCAD.Console.PrintMessage("Update _GDTObject {}\n".format(vobj.Object))
+            vobj.Object.addProperty("App::PropertyString","Type","GDT","Type for icon")
+            vobj.Object.Type = "unkwon"
+        self.Type = vobj.Object.Type
+        
         return
 
     def updateData(self, vobj, prop):
         '''If a property of the handled feature has changed we have the chance to handle this here'''
-        # fp is the handled feature, prop is the name of the property that has changed
+        # vobj is the handled feature, prop is the name of the property that has changed
         return
 
     def getDisplayModes(self, vobj):
@@ -955,6 +962,7 @@ class _ViewProviderGDT:
         return
 
     def execute(self,vobj):
+        FreeCAD.Console.PrintMessage("execute _GDTObject {}\n".format(vobj.Object.Type))
         return
 
     def getIcon(self):
@@ -1024,26 +1032,31 @@ def makeAnnotationPlane(Name, Offset):
         subgroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", "DS")
         _GDTObject(subgroup)
         # Define the icone and So on
-        _ViewProviderGDT(subgroup.ViewObject, tp = "DS")
+        subgroup.Type = "DS"
+        _ViewProviderGDT(subgroup.ViewObject)
  
         group.addObject(subgroup)
          
         planeGroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", groupPlaneName)
         _GDTObject(planeGroup)
         # Define the icone and So on
-        _ViewProviderGDT(planeGroup.ViewObject, tp = "Plane")
+        planeGroup.Type = "Plane"
+        _ViewProviderGDT(planeGroup.ViewObject)
 
         group.addObject(planeGroup)
 
     else:
-        planeGroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", groupPlaneName)
+        group = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", "GDT")
+        
+        planeGroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", groupPlaneName) 
         _GDTObject(planeGroup)
+        planeGroup.Type = "Plane"
         # Define the icone and So on
-        _ViewProviderGDT(planeGroup.ViewObject, tp = "Plane")
+        _ViewProviderGDT(planeGroup.ViewObject)
+        
+        group.addObject(planeGroup)
         
     # group = FreeCAD.ActiveDocument.getObject("GDT")   
-
-    # print("5@xes makeAnnotationPlane Group = {}".format(group.Name))
     
     obj = FreeCAD.ActiveDocument.addObject("App::FeaturePython","AnnotationPlane")
     _AnnotationPlane(obj)
