@@ -1303,10 +1303,12 @@ def makeGeometricTolerance(Name, ContainerOfData):
 class _Annotation(_GDTObject):
     "The GDT Annotation object"
     def __init__(self, obj):
+        # https://wiki.freecad.org/PropertyLink:_InList_and_OutList/fr
         _GDTObject.__init__(self,obj,"Annotation")
-        obj.addProperty("App::PropertyLinkSubList","faces","GDT","Linked faces of the object")
         obj.addProperty("App::PropertyLink","AP","GDT","Annotation plane used")
-        obj.addProperty("App::PropertyLink","DF","GDT","Datum Feature associated with the annotation").DF=None
+        obj.addProperty("App::PropertyLinkSubList","faces","GDT","Linked faces of the object")
+        obj.addProperty("App::PropertyLinkSubList","TED","GDT","Linked TED of the object")
+        obj.addProperty("App::PropertyLink","DF","GDT","A Datum Feature associated with the annotation").DF=None
         obj.addProperty("App::PropertyLinkList","GT","GDT","Geometric Tolerance(s)").GT=[]
         obj.addProperty("App::PropertyVectorDistance","p1","GDT","Start point")
         obj.addProperty("App::PropertyVector","Direction","GDT","The normal direction of your annotation plane")
