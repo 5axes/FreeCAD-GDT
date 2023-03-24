@@ -1022,9 +1022,10 @@ class _ViewProviderAnnotationPlane(_ViewProviderGDT):
 def makeAnnotationPlane(Name, Offset):
     ''' Explanation
     '''
-    groupPlaneName = "Plane " + Name
+    groupPlaneName = "Plane_" + Name
     
-    if len(getAllAnnotationPlaneObjects()) == 0:
+    print("makeAnnotationPlane getAllAnnotationPlaneObjects {}".format(len(getAllAnnotationPlaneObjects())))
+    if len(getAllAnnotationPlaneObjects()) == 0 :
         group = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", "GDT")
         _GDTObject(group)
         _ViewProviderGDT(group.ViewObject)
@@ -1046,7 +1047,8 @@ def makeAnnotationPlane(Name, Offset):
         group.addObject(planeGroup)
 
     else:
-        group = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", "GDT")
+        # The 'GDT' Group already exist
+        group = FreeCAD.ActiveDocument.getObject("GDT")  
         
         planeGroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", groupPlaneName) 
         _GDTObject(planeGroup)
