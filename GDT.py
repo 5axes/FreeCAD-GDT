@@ -371,7 +371,7 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
             lengthToleranceValue += 2
         
         if obj.GT[i].Circumference :
-            lengthToleranceValue += 2
+            lengthToleranceValue += 1
             
         P4 = P2 + Horizontal * (sizeOfLine*lengthToleranceValue)
         P5 = P3 + Horizontal * (sizeOfLine*lengthToleranceValue)
@@ -604,7 +604,7 @@ def plotStrings(self, fp, points):
                 indexSYMB+=1
             
             self.textGT[index].string = self.textGT3d[index].string = string_encode(displayExternal(fp.GT[i].ToleranceValue, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
-            self.textGTpos[index].translation.setValue([posToleranceValue.x, posToleranceValue.y, posToleranceValue.z])
+            self.textGTpos[index].translation.setValue([posToleranceValue.x-(sizeOfLine*0.3), posToleranceValue.y, posToleranceValue.z])
             self.textGT[index].justification = coin.SoAsciiText.CENTER
             index+=1
             displacement+=6
@@ -1699,7 +1699,7 @@ class Characteristics(object):
 def makeCharacteristics(label=None):
     Label = ['Straightness', 'Flatness', 'Circularity', 'Cylindricity', 'Profile of a line', 'Profile of a surface', 'Perpendicularity', 'Angularity', 'Parallelism', 'Symmetry', 'Position', 'Concentricity','Circular run-out', 'Total run-out']
     Icon = [':/dd/icons/Characteristic/straightness.svg', ':/dd/icons/Characteristic/flatness.svg', ':/dd/icons/Characteristic/circularity.svg', ':/dd/icons/Characteristic/cylindricity.svg', ':/dd/icons/Characteristic/profileOfALine.svg', ':/dd/icons/Characteristic/profileOfASurface.svg', ':/dd/icons/Characteristic/perpendicularity.svg', ':/dd/icons/Characteristic/angularity.svg', ':/dd/icons/Characteristic/parallelism.svg', ':/dd/icons/Characteristic/symmetry.svg', ':/dd/icons/Characteristic/position.svg', ':/dd/icons/Characteristic/concentricity.svg',':/dd/icons/Characteristic/circularRunOut.svg', ':/dd/icons/Characteristic/totalRunOut.svg']
-    Code = ['\u23E4', '\u23E5', '\u25CB', '\u232D', '\u2312', '\u2313', '\u27C2', '\u2220', '\u2225', '\u232F', '\u2316', '\u25CE','\u2197', '\u2330']
+    Code = ['\u23E4', '\u23E5', '\u25CB', '\u232D', '\u2312', '\u2313', '\u23CA', '\u2220', '\u2AFD', '\u232F', '\u2316', '\u25CE','\u2197', '\u2330']
     
     if label == None:
         characteristics = Characteristics(Label, Code, Icon)
