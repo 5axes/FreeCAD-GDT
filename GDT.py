@@ -639,9 +639,10 @@ def plotStrings(self, fp, points):
         if fp.circumferenceBool and True in [l.Circumference for l in fp.GT]:
             # posDiameterTolerance
             auxPoint1 = FreeCAD.Vector(points[4]) # Point Diameter
+            dec=len(str(displayExternal(fp.diameter, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit)))
             auxPoint2 = auxPoint1 + Horizontal * (sizeOfLine*2)  # Point Nominal
-            auxPoint3 = auxPoint2 + Vertical * (sizeOfLine*2) # Point Upper Tol
-            auxPoint4 = auxPoint1 + Vertical * (sizeOfLine*2) # Point Lower Tol
+            auxPoint3 = auxPoint2 + Horizontal * (sizeOfLine*dec) + Vertical * (sizeOfLine*3) # Point Upper Tol
+            auxPoint4 = auxPoint2 + Horizontal * (sizeOfLine*dec) + Vertical * sizeOfLine     # Point Lower Tol
             self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[auxPoint3.x,auxPoint3.y,auxPoint3.z],[auxPoint4.x,auxPoint4.y,auxPoint4.z]])
             
             
@@ -666,12 +667,26 @@ def plotStrings(self, fp, points):
             posDiameterTolerance = auxPoint2 + Vertical * (sizeOfLine/2)
             self.textGT[index].justification = coin.SoAsciiText.LEFT
             self.textGTpos[index].translation.setValue([posDiameterTolerance.x, posDiameterTolerance.y, posDiameterTolerance.z])
+            
             if fp.toleranceSelectBool:
                 text = string_encode(displayExternal(fp.diameter, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit) + stringplusminus() + displayExternal(fp.toleranceDiameter, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
+                self.textGT[index].string = self.textGT3d[index].string = text
+                index+=1           
+            
             else:
-                text = string_encode(displayExternal(fp.lowLimit, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit) + ' - ' + displayExternal(fp.highLimit, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
-            self.textGT[index].string = self.textGT3d[index].string = text
-            index+=1
+                text = string_encode(displayExternal(fp.diameter, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
+                self.textGT[index].string = self.textGT3d[index].string = text
+                index+=1
+                
+                text = string_encode(displayExternal(fp.highLimit, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))    
+                self.textGT[index].string = self.textGT3d[index].string = text
+                self.textGTpos[index].translation.setValue([auxPoint3.x, auxPoint3.y, auxPoint3.z])
+                index+=1
+                
+                text = string_encode(displayExternal(fp.lowLimit, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
+                self.textGT[index].string = self.textGT3d[index].string = text
+                self.textGTpos[index].translation.setValue([auxPoint4.x, auxPoint4.y, auxPoint4.z])
+                index+=1  
         
         for i in range(index):
             try:
