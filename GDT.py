@@ -77,7 +77,7 @@ def getParamType(param):
         return "int"
     elif param in ["textFamily"]:
         return "string"
-    elif param in ["textSize","lineScale"]:
+    elif param in ["textSize","tolerancetextSize","lineScale"]:
         return "float"
     elif param in ["alwaysShowGrid","showUnit"]:
         return "bool"
@@ -214,6 +214,9 @@ def getTextFamily():
 def getTextSize():
     return getParam("textSize",1.8)
 
+def getToleranceTextSize():
+    return getParam("tolerancetextSize",1.0)
+    
 def getLineWidth():
     return getParam("lineWidth",2)
 
@@ -1387,6 +1390,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         obj.addProperty("App::PropertyColor","LineColor","GDT","Line color").LineColor = getRGBLine()
         obj.addProperty("App::PropertyFloat","LineScale","GDT","Line scale").LineScale = getParam("lineScale",1.0)
         obj.addProperty("App::PropertyLength","FontSize","GDT","Font size").FontSize = getTextSize()
+        obj.addProperty("App::PropertyLength","ToleranceFontSize","GDT","Font Tolerance size").FontSize = getToleranceTextSize()
         obj.addProperty("App::PropertyString","FontName","GDT","Font name").FontName = getTextFamily()
         obj.addProperty("App::PropertyColor","FontColor","GDT","Font color").FontColor = getRGBText()
         obj.addProperty("App::PropertyInteger","Decimals","GDT","The number of decimals to show").Decimals = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units").GetInt("Decimals",2)
@@ -1414,6 +1418,8 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
 
         self.font = coin.SoFont()
         self.font3d = coin.SoFont()
+        self.tolerancefont = coin.SoFont()
+        self.tolerancefont3d = coin.SoFont()
         self.textDF = coin.SoAsciiText()
         self.textDF3d = coin.SoText2()
         self.textDF.string = "" # some versions of coin crash if string is not set
@@ -1514,6 +1520,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         self.onChanged(obj,"LineColor")
         self.onChanged(obj,"LineWidth")
         self.onChanged(obj,"FontSize")
+        self.onChanged(obj,"ToleranceFontSize")
         self.onChanged(obj,"FontName")
         self.onChanged(obj,"FontColor")
 
@@ -1582,6 +1589,14 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
                 if vobj.FontSize.Value > 0:
                     self.font3d.size = vobj.FontSize.Value*10
             vobj.Object.touch()
+        elif (prop == "ToleranceFontSize") and hasattr(vobj,"ToleranceFontSize"):
+            if hasattr(self,"tolerancefont"):
+                if vobj.ToleranceFontSize.Value > 0:
+                    self.tolerancefont.size = vobj.ToleranceFontSize.Value
+            if hasattr(self,"tolerancefont3d"):
+                if vobj.ToleranceFontSize.Value > 0:
+                    self.tolerancefont3d.size = vobj.ToleranceFontSize.Value*10
+            vobj.Object.touch()            
         elif (prop == "FontName") and hasattr(vobj,"FontName"):
             if hasattr(self,"font") and hasattr(self,"font3d"):
                 self.font.name = self.font3d.name = str(vobj.FontName)
