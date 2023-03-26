@@ -639,7 +639,7 @@ def plotStrings(self, fp, points):
         if fp.circumferenceBool and True in [l.Circumference for l in fp.GT]:
             # posDiameterTolerance
             auxPoint1 = FreeCAD.Vector(points[4]) # Point Diameter
-            dec=len(str(displayExternal(fp.diameter, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit)))
+            dec=len(str(displayExternal(fp.diameter, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit)))-1
             auxPoint2 = auxPoint1 + Horizontal * (sizeOfLine*2)  # Point Nominal
             auxPoint3 = auxPoint2 + Horizontal * (sizeOfLine*dec) + Vertical * (sizeOfLine*3) # Point Upper Tol
             auxPoint4 = auxPoint2 + Horizontal * (sizeOfLine*dec) + Vertical * sizeOfLine     # Point Lower Tol
