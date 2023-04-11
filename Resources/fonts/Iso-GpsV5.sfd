@@ -11,7 +11,7 @@ UnderlineWidth: 300
 Ascent: 1638
 Descent: 410
 InvalidEm: 0
-sfntRevision: 0x00050001
+sfntRevision: 0x00050002
 LayerCount: 2
 Layer: 0 1 "Arri+AOgA-re" 1
 Layer: 1 1 "Avant" 0
@@ -22,7 +22,7 @@ OS2Version: 1
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 0
 CreationTime: 1633702819
-ModificationTime: 1681208113
+ModificationTime: 1681217219
 PfmFamily: 81
 TTFWeight: 400
 TTFWidth: 5
@@ -753,7 +753,7 @@ ShortTable: maxp 16
   3
   1
 EndShort
-LangName: 1033 "" "" "" "Iso-Gps : 04-01-2023"
+LangName: 1033 "" "" "" "Iso-Gps : 04-11-2023"
 LangName: 1036 "5.0 Copyright (c) LALLIARD 2023. All rights reserved" "Iso-Gps" "Regular" "" "Sp+AOkA-cification g+AOkA-om+AOkA-trique des produits (GPS)" "5.0"
 GaspTable: 3 8 2 17 3 65535 3 0
 Encoding: UnicodeBmp
@@ -762,7 +762,7 @@ NameList: AGL For New Fonts
 DisplaySize: -48
 AntiAlias: 1
 FitToEm: 0
-WinInfo: 39 39 14
+WinInfo: 0 39 14
 BeginPrivate: 0
 EndPrivate
 Grid
@@ -871,7 +871,7 @@ Grid
  4096 1980 l 1029
 EndSplineSet
 TeXData: 1 0 0 220160 110080 73386 455680 -1048576 73386 783286 444596 497025 792723 393216 433062 380633 303038 157286 324010 404750 52429 2506097 1059062 262144
-BeginChars: 65539 1037
+BeginChars: 65539 1041
 
 StartChar: .notdef
 Encoding: 65536 -1 0
@@ -1920,32 +1920,12 @@ StartChar: greater
 Encoding: 62 62 33
 Width: 910
 Flags: W
-HStem: 131 634<174 213>
-VStem: 132 646
+HStem: -39 634
+VStem: 134 642
 LayerCount: 2
 Fore
-SplineSet
-198 131 m 0,0,1
- 170 131 170 131 151 150 c 128,-1,2
- 132 169 132 169 132 196 c 128,-1,3
- 132 223 132 223 151 242 c 0,4,5
- 158 249 158 249 168 254 c 2,6,-1
- 565 454 l 1,7,-1
- 173 641 l 2,8,9
- 163 646 163 646 155 654 c 0,10,11
- 136 673 136 673 136 700 c 128,-1,12
- 136 727 136 727 155 746 c 128,-1,13
- 174 765 174 765 202 765 c 0,14,15
- 216 765 216 765 229 758 c 2,16,-1
- 741 514 l 2,17,18
- 751 510 751 510 758 502 c 0,19,20
- 778 483 778 483 778 456 c 128,-1,21
- 778 429 778 429 759 410 c 0,22,23
- 752 402 752 402 742 398 c 2,24,-1
- 226 138 l 2,25,26
- 213 131 213 131 198 131 c 0,0,1
-EndSplineSet
-Validated: 1
+Refer: 31 60 S -1 0 0 1 910 -2 2
+Validated: 25
 EndChar
 
 StartChar: question
@@ -5778,12 +5758,12 @@ StartChar: adieresis
 Encoding: 228 228 150
 Width: 909
 Flags: W
-HStem: 0 132<272.098 650> 390 132<272.142 650> 764 130<196.32 610.809> 1090 195<269.596 360.404 659.596 750.404>
-VStem: 130 130<135.159 386.652> 250 130<1109.6 1265.4> 640 130<1109.6 1265.4> 650 129<132 390 522 724.809>
+HStem: 0 132<272.098 650> 390 132<272.142 650> 764 130<196.32 610.809> 1093 195<221.596 312.404 611.596 702.404>
+VStem: 130 130<135.159 386.652> 202 130<1112.6 1268.4> 592 130<1112.6 1268.4> 650 129<132 390 522 724.809>
 LayerCount: 2
 Fore
 Refer: 68 97 N 1 0 0 1 0 0 2
-Refer: 103 168 N 1 0 0 1 120 -258 2
+Refer: 103 168 S 1 0 0 1 72 -255 2
 Validated: 1
 EndChar
 
@@ -32259,6 +32239,7 @@ SplineSet
  280 894 280 894 280 828 c 6,7,-1
  280 64 l 6,0,1
 EndSplineSet
+Validated: 1
 EndChar
 
 StartChar: igrave
@@ -32271,6 +32252,7 @@ LayerCount: 2
 Fore
 Refer: 1034 128 N 1 0 0 1 243 5 2
 Refer: 67 96 N 1 0 0 1 147 -279 2
+Validated: 1
 EndChar
 
 StartChar: iacute
@@ -32283,6 +32265,68 @@ LayerCount: 2
 Fore
 Refer: 1034 128 S 1 0 0 1 241 3 2
 Refer: 114 180 N 1 0 0 1 141 -327 2
+Validated: 1
+EndChar
+
+StartChar: uni0195
+Encoding: 405 405 1037
+Width: 980
+Flags: W
+LayerCount: 2
+Fore
+SplineSet
+137 409 m 5,0,-1
+ 698 659 l 5,1,-1
+ 137 909 l 5,2,-1
+ 137 1052 l 5,3,-1
+ 851 733 l 5,4,-1
+ 851 585 l 5,5,-1
+ 137 267 l 5,6,-1
+ 137 409 l 5,0,-1
+EndSplineSet
+Validated: 1
+EndChar
+
+StartChar: uni0196
+Encoding: 406 406 1038
+Width: 980
+Flags: W
+HStem: -587 20G<-404 -359.17>
+LayerCount: 2
+Fore
+Refer: 1037 405 S -1 0 0 1 1008 -24 2
+Validated: 25
+EndChar
+
+StartChar: uni0197
+Encoding: 407 407 1039
+Width: 1824
+Flags: W
+LayerCount: 2
+Fore
+Refer: 1037 405 N -1 0 0 -1 1827 1293 2
+Refer: 1037 405 N 1 0 0 1 -6 -28 2
+Validated: 1
+EndChar
+
+StartChar: uni0189
+Encoding: 393 393 1040
+Width: 1166
+Flags: WO
+HStem: 520 114<320.587 967.413>
+VStem: 319 650<521.832 632.464>
+LayerCount: 2
+Fore
+SplineSet
+197 632 m 2
+ 465 632 l 4
+ 530 632 530 632 530 580 c 4
+ 530 518 530 518 467 518 c 6
+ 196 518 l 2
+ 132 518 132 518 132 580 c 0
+ 132 632 132 632 197 632 c 2
+EndSplineSet
+Refer: 39 68 N 1 0 0 1 132 0 2
 EndChar
 EndChars
 EndSplineFont
