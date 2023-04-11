@@ -22,7 +22,7 @@ OS2Version: 1
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 0
 CreationTime: 1633702819
-ModificationTime: 1681207748
+ModificationTime: 1681208113
 PfmFamily: 81
 TTFWeight: 400
 TTFWidth: 5
@@ -871,7 +871,7 @@ Grid
  4096 1980 l 1029
 EndSplineSet
 TeXData: 1 0 0 220160 110080 73386 455680 -1048576 73386 783286 444596 497025 792723 393216 433062 380633 303038 157286 324010 404750 52429 2506097 1059062 262144
-BeginChars: 65539 1034
+BeginChars: 65539 1037
 
 StartChar: .notdef
 Encoding: 65536 -1 0
@@ -32240,6 +32240,49 @@ Fore
 Refer: 50 79 S 1 0 0 1 65 3 2
 Refer: 97 126 N 1 0 0 1 207 -32 2
 Validated: 1
+EndChar
+
+StartChar: uni0080
+Encoding: 128 128 1034
+Width: 424
+Flags: W
+HStem: -1 21G<182.5 247.5> 874 20G<182.5 247.5>
+VStem: 150 130<0.920166 892.05>
+LayerCount: 2
+Fore
+SplineSet
+280 64 m 6,0,1
+ 280 -1 280 -1 215 -1 c 132,-1,2
+ 150 -1 150 -1 150 64 c 6,3,-1
+ 150 828 l 6,4,5
+ 150 894 150 894 215 894 c 132,-1,6
+ 280 894 280 894 280 828 c 6,7,-1
+ 280 64 l 6,0,1
+EndSplineSet
+EndChar
+
+StartChar: igrave
+Encoding: 236 236 1035
+Width: 909
+Flags: W
+HStem: 4 21G<425.5 490.5> 879 20G<425.5 490.5> 1104 253
+VStem: 287 369 393 130<5.92017 897.05>
+LayerCount: 2
+Fore
+Refer: 1034 128 N 1 0 0 1 243 5 2
+Refer: 67 96 N 1 0 0 1 147 -279 2
+EndChar
+
+StartChar: iacute
+Encoding: 237 237 1036
+Width: 909
+Flags: W
+HStem: 2 21G<423.5 488.5> 877 20G<423.5 488.5> 1056 253
+VStem: 284 365 391 130<3.92017 895.05>
+LayerCount: 2
+Fore
+Refer: 1034 128 S 1 0 0 1 241 3 2
+Refer: 114 180 N 1 0 0 1 141 -327 2
 EndChar
 EndChars
 EndSplineFont
