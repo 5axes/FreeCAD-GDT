@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
 <svg
    xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
@@ -10,47 +8,48 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="64"
-   id="svg4700"
-   version="1.1"
-   inkscape:version="0.91 r13725"
+   sodipodi:docname="leastMaterialCondition.svg"
    viewBox="0 0 64 64"
-   sodipodi:docname="leastMaterialCondition.svg">
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   version="1.1"
+   id="svg4700"
+   height="64"
+   width="64">
   <defs
      id="defs4702">
     <linearGradient
-       id="linearGradient4142"
-       osb:paint="gradient">
+       osb:paint="gradient"
+       id="linearGradient4142">
       <stop
-         style="stop-color:#ff7500;stop-opacity:1;"
+         id="stop4144"
          offset="0"
-         id="stop4144" />
+         style="stop-color:#ff7500;stop-opacity:1;" />
       <stop
-         style="stop-color:#ff7500;stop-opacity:0;"
+         id="stop4146"
          offset="1"
-         id="stop4146" />
+         style="stop-color:#ff7500;stop-opacity:0;" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     id="base"
-     pagecolor="#ffffff"
-     bordercolor="#666666"
-     borderopacity="1.0"
-     inkscape:pageopacity="0.0"
-     inkscape:pageshadow="2"
-     inkscape:zoom="6.19424"
-     inkscape:cx="-22.25398"
-     inkscape:cy="29.396704"
-     inkscape:current-layer="layer4"
-     showgrid="true"
-     inkscape:document-units="px"
+     inkscape:document-rotation="0"
+     inkscape:window-maximized="1"
+     inkscape:window-y="-8"
+     inkscape:window-x="1592"
+     inkscape:window-height="1017"
+     inkscape:window-width="1920"
      inkscape:grid-bbox="true"
-     inkscape:window-width="1440"
-     inkscape:window-height="799"
-     inkscape:window-x="0"
-     inkscape:window-y="1"
-     inkscape:window-maximized="1" />
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:current-layer="layer4"
+     inkscape:cy="25.683577"
+     inkscape:cx="26.050447"
+     inkscape:zoom="6.19424"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     borderopacity="1.0"
+     bordercolor="#666666"
+     pagecolor="#ffffff"
+     id="base" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -59,34 +58,33 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:groupmode="layer"
+     inkscape:label="Layer 3"
      id="layer5"
-     inkscape:label="Layer 3" />
+     inkscape:groupmode="layer" />
   <g
-     inkscape:groupmode="layer"
+     inkscape:label="Layer 2"
      id="layer4"
-     inkscape:label="Layer 2">
-    <text
-       xml:space="preserve"
-       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:37.5px;line-height:120.00000477%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Normal';text-align:center;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:middle;fill:#ff6600;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       x="30.251343"
-       y="45.668823"
-       id="text3374"
-       sodipodi:linespacing="120%"><tspan
-         sodipodi:role="line"
-         id="tspan4140"
-         x="30.251343"
-         y="45.668823">L</tspan></text>
+     inkscape:groupmode="layer">
     <circle
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff6600;stroke-width:1;stroke-linejoin:miter;stroke-opacity:1"
-       id="path4141"
-       cx="32"
+       r="19.5"
        cy="32"
-       r="19.5" />
+       cx="32"
+       id="path4141"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff6600;stroke-width:1;stroke-linejoin:miter;stroke-opacity:1" />
+    <text
+       id="text839"
+       y="46.817688"
+       x="21.31012"
+       style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Iso-Gps;-inkscape-font-specification:'Iso-Gps, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff6600"
+       xml:space="preserve"><tspan
+         y="46.817688"
+         x="21.31012"
+         id="tspan837"
+         sodipodi:role="line">L</tspan></text>
   </g>
 </svg>
