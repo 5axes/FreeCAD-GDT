@@ -8,7 +8,7 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="leastMaterialCondition.svg"
+   sodipodi:docname="leastSquares.svg"
    viewBox="0 0 64 64"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
    version="1.1"
@@ -58,7 +58,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -79,12 +79,12 @@
     <text
        id="text839"
        y="46.817688"
-       x="21.31012"
+       x="18.565634"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Iso-Gps;-inkscape-font-specification:'Iso-Gps, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff6600"
        xml:space="preserve"><tspan
          y="46.817688"
-         x="21.31012"
+         x="18.565634"
          id="tspan837"
-         sodipodi:role="line">L</tspan></text>
+         sodipodi:role="line">G</tspan></text>
   </g>
 </svg>

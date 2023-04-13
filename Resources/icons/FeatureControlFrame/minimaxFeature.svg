@@ -14,7 +14,7 @@
    version="1.1"
    inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
    viewBox="0 0 64 64"
-   sodipodi:docname="freeState.svg">
+   sodipodi:docname="minimaxFeature.svg">
   <defs
      id="defs4702">
     <linearGradient
@@ -58,7 +58,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -79,12 +79,12 @@
     <text
        xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Iso-Gps;-inkscape-font-specification:'Iso-Gps, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff6600"
-       x="21.31012"
-       y="46.817688"
+       x="20.341476"
+       y="46.97913"
        id="text839"><tspan
          sodipodi:role="line"
          id="tspan837"
-         x="21.31012"
-         y="46.817688">F</tspan></text>
+         x="20.341476"
+         y="46.97913">C</tspan></text>
   </g>
 </svg>

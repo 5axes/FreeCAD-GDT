@@ -8,48 +8,48 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   sodipodi:docname="leastMaterialCondition.svg"
-   viewBox="0 0 64 64"
-   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
-   version="1.1"
-   id="svg4700"
+   width="64"
    height="64"
-   width="64">
+   id="svg4700"
+   version="1.1"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)"
+   viewBox="0 0 64 64"
+   sodipodi:docname="maximumInscribed.svg">
   <defs
      id="defs4702">
     <linearGradient
-       osb:paint="gradient"
-       id="linearGradient4142">
+       id="linearGradient4142"
+       osb:paint="gradient">
       <stop
-         id="stop4144"
+         style="stop-color:#ff7500;stop-opacity:1;"
          offset="0"
-         style="stop-color:#ff7500;stop-opacity:1;" />
+         id="stop4144" />
       <stop
-         id="stop4146"
+         style="stop-color:#ff7500;stop-opacity:0;"
          offset="1"
-         style="stop-color:#ff7500;stop-opacity:0;" />
+         id="stop4146" />
     </linearGradient>
   </defs>
   <sodipodi:namedview
-     inkscape:document-rotation="0"
-     inkscape:window-maximized="1"
-     inkscape:window-y="-8"
-     inkscape:window-x="1592"
-     inkscape:window-height="1017"
-     inkscape:window-width="1920"
-     inkscape:grid-bbox="true"
-     inkscape:document-units="px"
-     showgrid="true"
-     inkscape:current-layer="layer4"
-     inkscape:cy="25.683577"
-     inkscape:cx="26.050447"
-     inkscape:zoom="6.19424"
-     inkscape:pageshadow="2"
-     inkscape:pageopacity="0.0"
-     borderopacity="1.0"
-     bordercolor="#666666"
+     id="base"
      pagecolor="#ffffff"
-     id="base" />
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="6.19424"
+     inkscape:cx="26.050447"
+     inkscape:cy="25.683577"
+     inkscape:current-layer="layer4"
+     showgrid="true"
+     inkscape:document-units="px"
+     inkscape:grid-bbox="true"
+     inkscape:window-width="1920"
+     inkscape:window-height="1017"
+     inkscape:window-x="1592"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:document-rotation="0" />
   <metadata
      id="metadata4705">
     <rdf:RDF>
@@ -63,28 +63,28 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 3"
+     inkscape:groupmode="layer"
      id="layer5"
-     inkscape:groupmode="layer" />
+     inkscape:label="Layer 3" />
   <g
-     inkscape:label="Layer 2"
+     inkscape:groupmode="layer"
      id="layer4"
-     inkscape:groupmode="layer">
+     inkscape:label="Layer 2">
     <circle
-       r="19.5"
-       cy="32"
-       cx="32"
+       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff6600;stroke-width:1;stroke-linejoin:miter;stroke-opacity:1"
        id="path4141"
-       style="opacity:1;fill:none;fill-opacity:1;stroke:#ff6600;stroke-width:1;stroke-linejoin:miter;stroke-opacity:1" />
+       cx="32"
+       cy="32"
+       r="19.5" />
     <text
-       id="text839"
-       y="46.817688"
-       x="21.31012"
+       xml:space="preserve"
        style="font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-size:48px;line-height:1.25;font-family:Iso-Gps;-inkscape-font-specification:'Iso-Gps, Normal';font-variant-ligatures:normal;font-variant-caps:normal;font-variant-numeric:normal;font-variant-east-asian:normal;fill:#ff6600"
-       xml:space="preserve"><tspan
-         y="46.817688"
-         x="21.31012"
+       x="18.565634"
+       y="46.817688"
+       id="text839"><tspan
+         sodipodi:role="line"
          id="tspan837"
-         sodipodi:role="line">L</tspan></text>
+         x="18.565634"
+         y="46.817688">X</tspan></text>
   </g>
 </svg>

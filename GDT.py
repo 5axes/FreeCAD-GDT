@@ -39,7 +39,7 @@ import Part
 from pivy import coin
 import FreeCADGui, WorkingPlane
 
-
+translate = FreeCAD.Qt.translate
 
 if FreeCAD.GuiUp:
     gui = True
@@ -1545,6 +1545,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
     def updateData(self, fp, prop):
         "If a property of the handled feature has changed we have the chance to handle this here"
         # fp is the handled feature, prop is the name of the property that has changed
+        # print("updateData {} / {}".format(fp.ViewObject, prop))
         if prop in "selectedPoint" and hasattr(fp.ViewObject,"Decimals") and hasattr(fp.ViewObject,"ShowUnit") and fp.spBool:
             points, segments = getPointsToPlot(fp)
             # print str(points)
@@ -1559,7 +1560,8 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
             
             plotStrings(self, fp, points)
         
-        if prop == "faces" and fp.faces != []:         
+        if prop == "faces" and fp.faces != []:   
+            print("updateData {} / {}".format(fp.ViewObject, prop))
             if (True in [l.Closed for l in fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).Edges] and len(fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).Vertexes) == 2) :
                 fp.circumferenceBool = True
             else:
@@ -1760,11 +1762,14 @@ class FeatureControlFrame(object):
         self.Proxy = self
 
 def makeFeatureControlFrame(toolTip=None):
-    # F L M P S T U
-    Label = ['','','','','','','','']
-    Icon = ['', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg', ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg']
-    Code = ['', '\u24BB', '\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24CA']
-    ToolTip = ['Feature control frame', 'Free state', 'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral']
+    # A C F G L M P S T U X
+    Icon = ['', ':/dd/icons/FeatureControlFrame/derivedFeature.svg', ':/dd/icons/FeatureControlFrame/minimaxFeature.svg', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastSquares.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg',
+    ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg', ':/dd/icons/FeatureControlFrame/maximumInscribed.svg']
+    Code = ['', '\u24B6', '\u24B8', '\u24BB', '\u24BC','\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24CA', '\u24CD']
+    ToolTip = ['Feature control frame', 'Derived feature', 'Minimax (Chebyshev) feature', 'Free state', 'Least squares (Gaussian) feature', 
+    'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral', 'Maximum inscribed feature']
+    # Don't forget to dimmension the Label to the same size as Icon / ToolTip
+    Label = ['','','','','','','','','','','','']
     
     if toolTip == None:
         featureControlFrame = FeatureControlFrame(Label, Code, Icon, ToolTip)
@@ -1784,6 +1789,8 @@ class ContainerOfData(object):
     def __init__(self, faces = []):
         self.faces = faces
         self.diameter = 0.0
+        print ("ContainerOfData {}".format(object))
+        
         if self.faces != []:
             _face = self.faces[0][0].Shape.getElement(self.faces[0][1])
             self.Direction = _face.normalAt(0,0)
@@ -1792,7 +1799,7 @@ class ContainerOfData(object):
             try:
                 # get the first Closed
                 edge = [l.Closed for l in _face.Edges].index(True)
-                print ("Edge {}".format(edge))
+                # print ("Edge {}".format(edge))
                 self.diameter = _face.Edges[edge].Length/pi
             except:
                 pass
@@ -1820,7 +1827,6 @@ class ContainerOfData(object):
 #---------------------------------------------------------------------------
 # Customized widgets
 #---------------------------------------------------------------------------
-
 class GDTWidget:
     def __init__(self):
         self.dialogWidgets = []
@@ -1896,7 +1902,7 @@ class GDTGuiClass(QtGui.QWidget):
         # 5@xes modif for test
         # self.textName = self.ContainerOfData.textName.encode('utf-8')
         self.textName = str(self.ContainerOfData.textName)     
-        # print("5@xes createObject textName {}".format(self.textName))
+        print("5@xes createObject textName {} / {}".format(self.textName,self.idGDT))
         
         if self.idGDT == 1:
             obj = makeDatumFeature(self.textName, self.ContainerOfData)
@@ -2167,6 +2173,7 @@ class fieldLabelComboWidget:
         
         for i in range(len(self.Circumference)):
             self.comboCircumference.addItem(QtGui.QIcon(self.Circumference[i]), '' )
+            
         self.comboCircumference.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
         self.comboCircumference.setToolTip("Indicates whether the tolerance applies to a given diameter")
         self.combo.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
