@@ -27,8 +27,8 @@ Installing
 ----------
 
 Download and install your corresponding version of FreeCAD from [wiki Download page](http://www.freecadweb.org/wiki/Download) and either install
-- automatically using the [FreeCAD Add-on Manager](https://github.com/FreeCAD/FreeCAD-addons) 
-- manually by copying the FreeCAD-GDT folder to the Mod sub-directory of the FreeCAD application.
+<!--  - automatically using the [FreeCAD Add-on Manager](https://github.com/FreeCAD/FreeCAD-addons)  -->
+- Install manually by copying the FreeCAD-GDT folder to the Mod sub-directory of the FreeCAD application.
 
 
 Operation of the module
