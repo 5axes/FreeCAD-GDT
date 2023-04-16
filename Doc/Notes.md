@@ -23,7 +23,7 @@ Small piece of code for testing in the Python console.
 
 	FreeCADGui.Selection.getSelectionEx("",0)[0].SubElementNames[0]
 	'Body.Pocket001.Face5'
-	 
+
 	FreeCADGui.Selection.getSelectionEx("",1)[0].SubElementNames[0]
 	'Face5'
 
@@ -41,8 +41,8 @@ Small piece of code for testing in the Python console.
 	c_face.Surface.Axis
 
 	vertexex[0].Point
- 
- 
+
+
 	objt.Shape.getElement(c_name).normalAt(0,0)
 	Vector (0.0, 0.0, 1.0)
 
@@ -99,21 +99,21 @@ Test
 		try:
 			a = FreeCADGui.Selection.getSelectionEx()    # selection sous objet
 			aa = FreeCADGui.Selection.getSelection()     # selection objet
-		
+
 			cols = colors = []
 			cols = FreeCAD.ActiveDocument.getObject(aa[0].Name).ViewObject.DiffuseColor
-			
+
 			if len(cols) == 1:
 				for i in aa[0].Shape.Faces:
 					colors += [(cols[0])]
 			else:
 				colors = cols
-			
+
 			for i in range(len(aa)):
 				fce = int(a[0].SubElementNames[i][4:])-1
-				colors[fce] = (float(r)/255,float(v)/255,float(b)/255,float(t)/255)                         
-				aa[i].ViewObject.DiffuseColor = colors 
-				
+				colors[fce] = (float(r)/255,float(v)/255,float(b)/255,float(t)/255)
+				aa[i].ViewObject.DiffuseColor = colors
+
 			print( colors)
 		except Exception:
 			print ("Select one face")
@@ -140,8 +140,8 @@ Test
 				setColor.append(colorBase)
 		obj.ViewObject.DiffuseColor = setColor
 		print('[*] ... colored %d faces'%(len(setColor),))
-	
-	
+
+
 # File Dialog
 
 	filename = QtGui.QFileDialog.getOpenFileName(QtGui.QApplication.activeWindow(), translate("Arch","Import CSV File"), None, "CSV file (*.csv)");

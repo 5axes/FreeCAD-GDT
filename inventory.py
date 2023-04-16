@@ -49,7 +49,7 @@ class GDTGuiClass:
     def __init__(self):
         self.widgetsGDT = []
         inventory = getAllAnnotationPlaneObjects() + getAllDatumSystemObjects() + getAllDatumFeatureObjects() + getAllGeometricToleranceObjects()
-        
+
         for obj in inventory:
             self.widget = QtGui.QWidget()
             self.widget.setWindowTitle( obj.Label )
@@ -60,7 +60,7 @@ class GDTGuiClass:
             hbox = QtGui.QHBoxLayout()
             self.data = ContainerOfData()
             self.data.textName = obj.Label
-            
+
             if "AnnotationPlane" == getType(obj):
                 self.dialogWidgets.append(textLabelWidget_inv(Text = 'Name:', Mask = 'NNNn', Data = self.data, Obj = obj))
                 self.dialogWidgets.append(fieldLabelButtonWidget_inv(Text = 'Offset:', Data = self.data, Obj = obj))
@@ -78,9 +78,9 @@ class GDTGuiClass:
                 self.dialogWidgets.append(textLabelWidget_inv(Text = 'Name:', Mask='NNNn', Data = self.data, Obj = obj))
                 characteristics = makeCharacteristics()
                 self.dialogWidgets.append( comboLabelWidget_inv(Text='Characteristic:', List=characteristics.Label, Icons=characteristics.Icon, Data = self.data, Obj = obj) )
-                
+
                 featureControlFrame = makeFeatureControlFrame()
-                
+
                 # Annotation = makeAnnotation(self.data.faces,self.data.AP)
                 print("self.data          {}".format(self.data))
                 print("self.data textName {}".format(self.data.textName))
@@ -89,7 +89,7 @@ class GDTGuiClass:
 
 
                 self.dialogWidgets.append( fieldLabelComboWidget_inv(Text='Tolerance value:', List=featureControlFrame.Label, Circumference=['',':/dd/icons/diameter.svg'] , Icons=featureControlFrame.Icon, ToolTip=featureControlFrame.toolTip, Data = self.data, Obj = obj) ) #http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
-                
+
                 self.dialogWidgets.append( comboLabelWidget_inv(Text='Datum system:', List=[None] + [l for l in getAllDatumSystemObjects()], Data = self.data, Obj = obj) )
                 self.dialogWidgets.append( comboLabelWidget_inv(Text='In annotation:', List=[l for l in getAllAnnotationObjects()], Data = self.data, Obj = obj) )
 
@@ -105,7 +105,7 @@ class GDTGuiClass:
             buttonModify.clicked.connect(lambda obj = obj, data = self.data: self.modifyFunc(obj, data))
             buttonDelete = QtGui.QPushButton('Delete')
             buttonDelete.clicked.connect(lambda obj = obj, data = self.data: self.deleteFunc(obj, data))
-            
+
             hbox.addStretch(1)
             hbox.addWidget( buttonModify )
             hbox.addWidget( buttonDelete )
@@ -114,16 +114,16 @@ class GDTGuiClass:
             self.widget.setLayout(vbox)
 
         self.form = self.widgetsGDT
-    
+
     """
-        Modify Function 
+        Modify Function
     """
     def modifyFunc(self, obj, data):
         # A C F G L M P S T U X
         Code = ['', '\u24B6', '\u24B8', '\u24BB', '\u24BC','\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24CA', '\u24CD']
         Icon = ['', ':/dd/icons/FeatureControlFrame/derivedFeature.svg', ':/dd/icons/FeatureControlFrame/minimaxFeature.svg', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastSquares.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg',
         ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg', ':/dd/icons/FeatureControlFrame/maximumInscribed.svg']
-        ToolTip = ['Feature control frame', 'Derived feature', 'Minimax (Chebyshev) feature', 'Free state', 'Least squares (Gaussian) feature', 
+        ToolTip = ['Feature control frame', 'Derived feature', 'Minimax (Chebyshev) feature', 'Free state', 'Least squares (Gaussian) feature',
         'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral', 'Maximum inscribed feature']
 
         if "AnnotationPlane" == getType(obj):
@@ -146,30 +146,30 @@ class GDTGuiClass:
         elif "DatumFeature" == getType(obj):
             annotationObj = getAnnotationWithDF(obj)
             remove = False
-            
+
             if data.annotation.DF != None and annotationObj != data.annotation:
                 QtGui.QMessageBox.critical(
                     QtGui.QApplication.activeWindow(),
                     'ERROR',
                     'You can not change the DF to an annotation where one already exists',
                     QtGui.QMessageBox.StandardButton.Abort )
-            
-            elif annotationObj != data.annotation :               
+
+            elif annotationObj != data.annotation :
                 # First Remove
                 annotationObj.removeObject(obj)
                 annotationObj.DF = None
                 # Then Add to the new annotation
                 data.annotation.addObject(obj)
                 data.annotation.DF = obj
-               
+
                 remove = True
-            
+
             for l in getAllDatumSystemObjects():
                 if l.Primary == obj or l.Secondary == obj or l.Tertiary == obj:
                     l.touch
-            
+
             obj.Label = data.textName
-            
+
             if remove:
                 annotationObj.DF = None
 
@@ -184,7 +184,7 @@ class GDTGuiClass:
                 gt = data.annotation.GT
                 gt.append(obj)
                 data.annotation.GT = gt
-                
+
             obj.Label = data.textName
             obj.Characteristic = data.characteristic.Label
             obj.CharacteristicIcon = data.characteristic.Icon
@@ -200,7 +200,7 @@ class GDTGuiClass:
                 else:
                     obj.FeatureControlFrameCode = ''
                     obj.FeatureControlFrameIcon = ''
-                
+
             obj.DS = data.datumSystem
 
         FreeCADGui.Control.closeDialog()
@@ -439,7 +439,7 @@ class comboLabelWidget_inv:
                 pass
             elif self.List[i].Label == actualValue:
                 return i
-                
+
     # Update of the Data
     def updateData(self, comboIndex):
         if self.ToolTip != None:
