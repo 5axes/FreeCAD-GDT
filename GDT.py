@@ -357,7 +357,7 @@ def getPointsToPlot(obj):
             P2 = obj.p1 + obj.Direction * (d*3/4)
             P3 = point
         
-        # Crate the points for the Attach Line        
+        # Create the points for the Attach Line        
         points = [obj.p1, P2, P3]
         segments = [0,1,2]
         existGT = True
@@ -463,7 +463,7 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
     
     '''
     d = len(points)
-    # Remove the Square initialy created at the base of the Datum Reference
+    # Remove the Square initially created at the base of the Datum Reference
     if not existGT:
         P0 = points[-1] + Vertical * (sizeOfLine)
         P1 = P0 + Horizontal * (sizeOfLine*2)
@@ -477,7 +477,7 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
                 newPoints[i].x-=displacement
     ''' 
     
-    # Draw the Square arount the Datum + The bottom triangle  
+    # Draw the Square around the Datum + The bottom triangle  
     d=len(newPoints)
     # newPoints[-1]should be end of attach line
     h = math.sqrt(sizeOfLine*sizeOfLine+(sizeOfLine/2)*(sizeOfLine/2))
@@ -1022,7 +1022,7 @@ class _AnnotationPlane(_GDTObject):
     "The GDT AnnotationPlane object"
     def __init__(self, obj):
         _GDTObject.__init__(self,obj,"AnnotationPlane")
-        obj.addProperty("App::PropertyFloat","Offset","GDT","The offset value to aply in this annotation plane")
+        obj.addProperty("App::PropertyFloat","Offset","GDT","The offset value to apply in this annotation plane")
         obj.addProperty("App::PropertyLinkSub","faces","GDT","Linked face of the object").faces = (FreeCADGui.Selection.getSelectionEx("",0)[0].Object, FreeCADGui.Selection.getSelectionEx("",1)[0].SubElementNames[0])
         obj.addProperty("App::PropertyVectorDistance","p1","GDT","Center point of Grid").p1 = obj.faces[0].Shape.getElement(obj.faces[1][0]).CenterOfMass
         obj.addProperty("App::PropertyVector","Direction","GDT","The normal direction of this annotation plane").Direction = obj.faces[0].Shape.getElement(obj.faces[1][0]).normalAt(0,0)
@@ -1768,7 +1768,7 @@ def makeFeatureControlFrame(toolTip=None):
     ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg', ':/dd/icons/FeatureControlFrame/maximumInscribed.svg']
     ToolTip = ['Feature control frame', 'Derived feature', 'Minimax (Chebyshev) feature', 'Free state', 'Least squares (Gaussian) feature', 
     'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral', 'Maximum inscribed feature']
-    # Don't forget to dimmension the Label to the same size as Icon / ToolTip
+    # Don't forget to dimension the Label to the same size as Icon / ToolTip
     # Used to define the size of the Combo list in the UI
     Label = ['','','','','','','','','','','','']
     
