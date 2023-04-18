@@ -425,7 +425,9 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
             if obj.GT[i].DS.Secondary != None:
                 P8 = P6 + Horizontal * (sizeOfLine*2)
                 P9 = P7 + Horizontal * (sizeOfLine*2)
-                if obj.GT[i].DS.Tertiary != None:
+                if obj.GT[i].DS.FeatureControl != None:
+                    print(obj.GT[i].DS.FeatureControl)
+                elif obj.GT[i].DS.Tertiary != None:
                     P10 = P8 + Horizontal * (sizeOfLine*2)
                     P11 = P9 + Horizontal * (sizeOfLine*2)
                     newPoints += [P0, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P1]
@@ -1196,6 +1198,7 @@ class _DatumSystem(_GDTObject):
         obj.addProperty("App::PropertyLink","Primary","GDT","Primary datum feature used")
         obj.addProperty("App::PropertyLink","Secondary","GDT","Secondary datum feature used")
         obj.addProperty("App::PropertyLink","Tertiary","GDT","Tertiary datum feature used")
+        obj.addProperty("App::PropertyLink","FeatureControl","GDT","Feature Control datum feature used")
 
 class _ViewProviderDatumSystem(_ViewProviderGDT):
     "A View Provider for the GDT DatumSystem object"
@@ -1217,7 +1220,7 @@ class _ViewProviderDatumSystem(_ViewProviderGDT):
     def getIcon(self):
         return(":/dd/icons/datumSystem.svg")
 
-def makeDatumSystem(Name, Primary, Secondary=None, Tertiary=None):
+def makeDatumSystem(Name, Primary, Secondary=None, Tertiary=None, FeatureControl=None):
     ''' Explanation
     '''
     
@@ -1232,6 +1235,7 @@ def makeDatumSystem(Name, Primary, Secondary=None, Tertiary=None):
     obj.Primary = Primary
     obj.Secondary = Secondary
     obj.Tertiary = Tertiary
+    obj.FeatureControl = FeatureControl
     
     group = FreeCAD.ActiveDocument.getObject("DS")
       
@@ -1812,17 +1816,18 @@ class ContainerOfData(object):
         self.highLimit = 0.0
         self.OffsetValue = 0
         self.textName = ''
-        self.textDS = ['','','']
+        self.textDS = ['','','','']
         self.primary = None
         self.secondary = None
         self.tertiary = None
+        self.featurecontrol = None
         self.characteristic = None
         self.toleranceValue = 0.0
         self.featureControlFrame = None
         self.datumSystem = 0
         self.annotationPlane = 0
         self.annotation = None
-        self.combo = ['','','','','','']
+        self.combo = ['','','','','','','']
         self.Proxy = self
 
 #---------------------------------------------------------------------------
@@ -1909,7 +1914,8 @@ class GDTGuiClass(QtGui.QWidget):
             obj = makeDatumFeature(self.textName, self.ContainerOfData)
             if checkBoxState:
                 datumNAme = auxDictionaryDS[len(getAllDatumSystemObjects())] + ': ' + self.textName
-                makeDatumSystem(datumNAme, obj, None, None)
+                makeDatumSystem(datumNAme, obj, None, None, None)
+        
         elif self.idGDT == 2:
             separator = ' | '
             if self.ContainerOfData.textDS[0] != '':
@@ -1922,11 +1928,15 @@ class GDTGuiClass(QtGui.QWidget):
                     self.textName = self.textName + ': ' + self.ContainerOfData.textDS[0]
             else:
                 self.textName = self.textName
-            makeDatumSystem(self.textName, self.ContainerOfData.primary, self.ContainerOfData.secondary, self.ContainerOfData.tertiary)
+                
+            makeDatumSystem(self.textName, self.ContainerOfData.primary, self.ContainerOfData.secondary, self.ContainerOfData.tertiary, self.ContainerOfData.featurecontrol)
+        
         elif self.idGDT == 3:
             makeGeometricTolerance(self.textName, self.ContainerOfData)
+            
         elif self.idGDT == 4:
             makeAnnotationPlane(self.textName, self.ContainerOfData.OffsetValue)
+            
         else:
             pass
 
@@ -2023,21 +2033,24 @@ class comboLabelWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-
+        print("generateWidget {}".format(self.Text))
+        
         if self.Text == 'Primary:':
             self.k=0
         elif self.Text == 'Secondary:':
             self.k=1
         elif self.Text == 'Tertiary:':
             self.k=2
+        elif self.Text == 'Feature Control:':
+            self.k=3            
         elif self.Text == 'Characteristic:':
-            self.k=3
-        elif self.Text == 'Datum system:':
             self.k=4
-        elif self.Text == 'Active annotation plane:':
+        elif self.Text == 'Datum system:':
             self.k=5
-        else:
+        elif self.Text == 'Active annotation plane:':
             self.k=6
+        else:
+            self.k=7
 
         self.ContainerOfData.combo[self.k] = QtGui.QComboBox()
         for i in range(len(self.List)):
@@ -2048,13 +2061,18 @@ class comboLabelWidget:
                     self.ContainerOfData.combo[self.k].addItem( '' )
                 else:
                     self.ContainerOfData.combo[self.k].addItem( self.List[i].Label )
-        if self.Text == 'Secondary:' or self.Text == 'Tertiary:':
+                    
+        if self.Text == 'Secondary:' or self.Text == 'Tertiary:' :
             self.ContainerOfData.combo[self.k].setEnabled(False)
+        
         if self.ToolTip != None:
             self.ContainerOfData.combo[self.k].setToolTip( self.ToolTip[0] )
+
         self.comboIndex = self.ContainerOfData.combo[self.k].currentIndex()
-        if self.k != 0 and self.k != 1:
+        
+        if self.k != 0 and self.k != 1 and self.k != 2:
             self.updateDate(self.comboIndex)
+        
         self.ContainerOfData.combo[self.k].activated.connect(lambda comboIndex = self.comboIndex: self.updateDate(comboIndex))
         return GDTDialog_hbox(self.Text,self.ContainerOfData.combo[self.k])
 
@@ -2062,6 +2080,8 @@ class comboLabelWidget:
         if self.ToolTip != None:
             self.ContainerOfData.combo[self.k].setToolTip( self.ToolTip[comboIndex] )
         
+        print("updateDate {}".format(self.Text))
+        print("updateDate comboIndex {}".format(comboIndex))
         if self.Text == 'Primary:':
             self.ContainerOfData.textDS[0] = self.ContainerOfData.combo[self.k].currentText()
             self.ContainerOfData.primary = self.List[comboIndex]
@@ -2070,31 +2090,53 @@ class comboLabelWidget:
             else:
                 self.ContainerOfData.combo[1].setEnabled(False)
                 self.ContainerOfData.combo[2].setEnabled(False)
+                self.ContainerOfData.combo[3].setEnabled(False)
                 self.ContainerOfData.combo[1].setCurrentIndex(0)
                 self.ContainerOfData.combo[2].setCurrentIndex(0)
+                self.ContainerOfData.combo[3].setCurrentIndex(0)
                 self.ContainerOfData.textDS[1] = ''
                 self.ContainerOfData.textDS[2] = ''
+                self.ContainerOfData.textDS[3] = ''
                 self.ContainerOfData.secondary = None
                 self.ContainerOfData.tertiary = None
+                self.ContainerOfData.featurecontrol = None
             self.updateItemsEnabled(self.k)
         
         elif self.Text == 'Secondary:':
             self.ContainerOfData.textDS[1] = self.ContainerOfData.combo[self.k].currentText()
             self.ContainerOfData.secondary = self.List[comboIndex]
+            
             if comboIndex != 0:
                 self.ContainerOfData.combo[2].setEnabled(True)
             else:
                 self.ContainerOfData.combo[2].setEnabled(False)
+                self.ContainerOfData.combo[3].setEnabled(False)
                 self.ContainerOfData.combo[2].setCurrentIndex(0)
+                self.ContainerOfData.combo[3].setCurrentIndex(0)
                 self.ContainerOfData.textDS[2] = ''
+                self.ContainerOfData.textDS[3] = ''
                 self.ContainerOfData.tertiary = None
+                self.ContainerOfData.featurecontrol = None
             self.updateItemsEnabled(self.k)
         
         elif self.Text == 'Tertiary:':
             self.ContainerOfData.textDS[2] = self.ContainerOfData.combo[self.k].currentText()
             self.ContainerOfData.tertiary = self.List[comboIndex]
+            
+            if comboIndex != 0:
+                self.ContainerOfData.combo[3].setEnabled(True)
+            else:
+                self.ContainerOfData.combo[3].setEnabled(False)
+                self.ContainerOfData.combo[3].setCurrentIndex(0)
+                self.ContainerOfData.textDS[3] = ''
+                self.ContainerOfData.featurecontrol = None
             self.updateItemsEnabled(self.k)
-        
+
+        elif self.Text == 'Feature Control:':
+            self.ContainerOfData.textDS[3] = self.ContainerOfData.combo[self.k].currentText()
+            self.ContainerOfData.featurecontrol = self.List[comboIndex]
+            self.updateItemsEnabled(self.k)
+            
         elif self.Text == 'Characteristic:':
             self.ContainerOfData.characteristic = makeCharacteristics(self.List[comboIndex])
         

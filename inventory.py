@@ -68,7 +68,7 @@ class GDTGuiClass:
             elif "DatumSystem" == getType(obj):
                 self.dialogWidgets.append(textLabelWidget_inv(Text = 'Name:', Mask='NNNn', Data = self.data, Obj = obj))
                 listDF = [None] + [l for l in getAllDatumFeatureObjects()]
-                self.dialogWidgets.append( groupBoxWidget_inv(Text='Constituents', List=[comboLabelWidget_inv(Text='Primary:',List=listDF, Data = self.data, Obj = obj),comboLabelWidget_inv(Text='Secondary:',List=listDF, Data = self.data, Obj = obj), comboLabelWidget_inv(Text='Tertiary:',List=listDF, Data = self.data, Obj = obj)], Data = self.data, Obj = obj) )
+                self.dialogWidgets.append( groupBoxWidget_inv(Text='Constituents', List=[comboLabelWidget_inv(Text='Primary:',List=listDF, Data = self.data, Obj = obj),comboLabelWidget_inv(Text='Secondary:',List=listDF, Data = self.data, Obj = obj), comboLabelWidget_inv(Text='Tertiary:',List=listDF, Data = self.data, Obj = obj), comboLabelWidget_inv(Text='Feature Control:',List=listDF, Data = self.data, Obj = obj)], Data = self.data, Obj = obj) )
 
             elif "DatumFeature" == getType(obj):
                 self.dialogWidgets.append(textLabelWidget_inv(Text = 'Datum feature:', Mask='>A', Data = self.data, Obj = obj))
@@ -134,6 +134,7 @@ class GDTGuiClass:
             obj.Primary = data.primary
             obj.Secondary = data.secondary
             obj.Tertiary = data.tertiary
+            obj.FeatureControl = data.featurecontrol
             textName = data.textName.split(":")[0]
             if data.primary != None:
                 textName+=': '+obj.Primary.Label
@@ -240,9 +241,11 @@ class GDTGuiClass:
                     l.Primary = l.Secondary
                     l.Secondary = l.Tertiary
                     l.Tertiary = None
+                    l.FeatureControl = None
                 elif l.Secondary == obj:
                     l.Secondary = l.Tertiary
                     l.Tertiary = None
+                    l.FeatureControl = None
             for l in getAllAnnotationObjects():
                 if l.DF == obj:
                     l.DF = None
@@ -356,14 +359,16 @@ class comboLabelWidget_inv:
             self.k=1
         elif self.Text == 'Tertiary:':
             self.k=2
+        elif self.Text == 'Feature Control:':
+            self.k=3            
         elif self.Text == 'Characteristic:':
-            self.k=3
-        elif self.Text == 'Datum system:':
             self.k=4
-        elif self.Text == 'In annotation:':
+        elif self.Text == 'Datum system:':
             self.k=5
-        else:
+        elif self.Text == 'In annotation:':
             self.k=6
+        else:
+            self.k=7
         self.data.combo[self.k] = QtGui.QComboBox()
         for i in range(len(self.List)):
             if self.List[i] == None:
@@ -410,6 +415,13 @@ class comboLabelWidget_inv:
                 self.data.combo[self.k].setCurrentIndex(pos)
             self.data.textDS[2] = self.data.combo[self.k].currentText()
             self.data.tertiary = self.List[self.data.combo[self.k].currentIndex()]
+        elif self.Text == 'Feature Control:':
+            if self.obj.FeatureControl != None:
+                actualValue = self.obj.FeatureControl.Label
+                pos = self.getPos(actualValue)
+                self.data.combo[self.k].setCurrentIndex(pos)
+            self.data.textDS[3] = self.data.combo[self.k].currentText()
+            self.data.featurecontrol = self.List[self.data.combo[self.k].currentIndex()]
         elif self.Text == 'Characteristic:':
             if self.obj.Characteristic != '':
                 actualValue = self.obj.Characteristic
@@ -452,10 +464,13 @@ class comboLabelWidget_inv:
             else:
                 self.data.combo[1].setEnabled(False)
                 self.data.combo[2].setEnabled(False)
+                self.data.combo[3].setEnabled(False)
                 self.data.combo[1].setCurrentIndex(0)
                 self.data.combo[2].setCurrentIndex(0)
+                self.data.combo[3].setCurrentIndex(0)
                 self.data.textDS[1] = ''
                 self.data.textDS[2] = ''
+                self.data.textDS[3] = ''
                 self.data.secondary = None
                 self.data.tertiary = None
             self.updateItemsEnabled(self.k)
@@ -468,12 +483,24 @@ class comboLabelWidget_inv:
                 self.data.combo[2].setEnabled(False)
                 self.data.combo[2].setCurrentIndex(0)
                 self.data.textDS[2] = ''
+                self.data.combo[3].setEnabled(False)
+                self.data.combo[3].setCurrentIndex(0)
+                self.data.textDS[3] = ''                
                 self.data.tertiary = None
+                self.data.featurecontrol = None
             self.updateItemsEnabled(self.k)
         elif self.Text == 'Tertiary:':
+            self.data.combo[3].setEnabled(False)
+            self.data.combo[3].setCurrentIndex(0)
+            self.data.textDS[3] = ''                
+            self.data.featurecontrol = None        
             self.data.textDS[2] = self.data.combo[self.k].currentText()
             self.data.tertiary = self.List[self.data.combo[self.k].currentIndex()]
             self.updateItemsEnabled(self.k)
+        elif self.Text == 'Feature Control:':
+            self.data.textDS[3] = self.data.combo[self.k].currentText()
+            self.data.featurecontrol = self.List[self.data.combo[self.k].currentIndex()]
+            self.updateItemsEnabled(self.k)            
         elif self.Text == 'Characteristic:':
             self.data.characteristic = makeCharacteristics(self.List[self.data.combo[self.k].currentIndex()])
         elif self.Text == 'Datum system:':
