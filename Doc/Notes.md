@@ -65,7 +65,7 @@ Test
 		"The GDT AnnotationPlane object"
 		def __init__(self, obj):
 			_GDTObject.__init__(self,obj,"AnnotationPlane")
-			obj.addProperty("App::PropertyFloat","Offset","GDT","The offset value to aply in this annotation plane")
+			obj.addProperty("App::PropertyFloat","Offset","GDT","The offset value to apply in this annotation plane")
 			obj.addProperty("App::PropertyLinkSub","faces","GDT","Linked face of the object").faces = (FreeCADGui.Selection.getSelectionEx("",0)[0].Object, FreeCADGui.Selection.getSelectionEx("",1)[0].SubElementNames[0])
 
 
