@@ -96,7 +96,7 @@ class GeometricDimensioningAndTolerancingWorkbench ( Workbench ):
 
     def Deactivated(self):
         "This function is executed when the workbench is deactivated"
-        Msg ("Geometric Dimensioning & Tolerancing workbench deactivated\n")
+        Msg ("Geometric Dimensioning & Tolerancing workbench desactivated\n")
 
     """
     +-----------------------------------------------+

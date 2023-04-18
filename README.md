@@ -21,14 +21,14 @@ The project is aimed at the development of a labeling software module for Geomet
 
 The implementation of the software is done as a module of the parametric modeling free software application [FreeCAD](http://freecadweb.org). This is a multiplatform project since the development of the module is done with Python and FreeCAD has compilations for multiple Operating Systems.
 
-The initial source code as been developed by [Juan Vañó Cerdá](https://github.com/juanvanyo) during his final master's work in university. He developed a module to solve the problem of Geometric Dimensioning and Tolerancing (GD&T) the initial source code is based on the [FreeCadDraft Workbench](https://wiki.freecad.org/Draft_Workbench) .
+The initial source code as been developped by [Juan Vañó Cerdá](https://github.com/juanvanyo) during his final master's work in university. He developed a module to solve the problem of Geometric Dimensioning and Tolerancing (GD&T) the initial source code is based on the [FreeCadDraft Workbench](https://wiki.freecad.org/Draft_Workbench) .
 
 Installing
 ----------
 
 Download and install your corresponding version of FreeCAD from [wiki Download page](http://www.freecadweb.org/wiki/Download) and either install
-<!--  - automatically using the [FreeCAD Add-on Manager](https://github.com/FreeCAD/FreeCAD-addons)  -->
-- Install manually by copying the FreeCAD-GDT folder to the Mod sub-directory of the FreeCAD application.
+- automatically using the [FreeCAD Add-on Manager](https://github.com/FreeCAD/FreeCAD-addons) 
+- manually by copying the FreeCAD-GDT folder to the Mod sub-directory of the FreeCAD application.
 
 
 Operation of the module
