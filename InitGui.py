@@ -36,7 +36,7 @@ main_DWB_Icon = os.path.join( GDTWB_icons_path , 'GDT.svg')
     |            Initialize the workbench           |
     +-----------------------------------------------+
 """
-class GeometricDimensioningAndTolerancingWorkbench ( Workbench ):
+class GDandTWorkbench ( Workbench ):
     Icon = main_DWB_Icon
     MenuText = 'GD&T'
     ToolTip = 'Geometric Dimensioning & Tolerancing'
@@ -127,4 +127,4 @@ class GeometricDimensioningAndTolerancingWorkbench ( Workbench ):
 |          actually make the workbench          |
 +-----------------------------------------------+
 """
-FreeCADGui.addWorkbench(GeometricDimensioningAndTolerancingWorkbench)
+FreeCADGui.addWorkbench(GDandTWorkbench)
