@@ -20,106 +20,96 @@
 #*   USA                                                                   *
 #*                                                                         *
 #***************************************************************************
+"""GD&T workbench registration.
+
+This file is executed when FreeCAD starts: it must stay light. Everything
+else (Draft, Coin, Qt resources, commands) is imported in Initialize(), i.e.
+the first time the workbench is activated.
+"""
+
 import os
-import GDT
+
+import FreeCAD
+import FreeCADGui
+
+# InitGui.py is exec'd by FreeCAD without __file__: locate the module folder
+# through a regular module of the workbench.
 import GDT_locator
 
-global GDTWBpath
-GDTWBpath = os.path.dirname(GDT_locator.__file__)
+# exec() runs this file inside a function of FreeCADGuiInit: module-level
+# names are local to that function and invisible from the class body and
+# methods unless they are declared global.
+global GDTWB_PATH, GDTWB_ICON
+GDTWB_PATH = os.path.dirname(GDT_locator.__file__)
+GDTWB_ICON = os.path.join(GDTWB_PATH, "Resources", "icons", "GDT.svg")
 
-global main_DWB_Icon
-GDTWB_icons_path =  os.path.join( GDTWBpath, 'Resources', 'icons')
-main_DWB_Icon = os.path.join( GDTWB_icons_path , 'GDT.svg')
 
-"""
-    +-----------------------------------------------+
-    |            Initialize the workbench           |
-    +-----------------------------------------------+
-"""
-class GDandTWorkbench ( Workbench ):
-    Icon = main_DWB_Icon
-    MenuText = 'GD&T'
-    ToolTip = 'Geometric Dimensioning & Tolerancing'
+class GDandTWorkbench(Workbench):
+    "Geometric Dimensioning & Tolerancing workbench"
+    MenuText = "GD&T"
+    ToolTip = "Geometric Dimensioning & Tolerancing"
+    Icon = GDTWB_ICON
+
+    # Command names are stored in user toolbars: they must not change.
+    CREATION_COMMANDS = ["dd_datumFeature", "dd_datumSystem",
+                         "dd_geometricTolerance", "dd_annotationPlane"]
+    INVENTORY_COMMANDS = ["dd_inventory"]
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"
 
-    def __init__(self):
-        "This function is executed when FreeCAD starts"
-        from PySide import QtGui
-        GDTWB_fonts_path =  os.path.join( GDTWBpath, 'Resources', 'fonts')
-        fontFile = os.path.join(GDTWB_fonts_path, "osifont-lgpl3fe.ttf")
-        fontId = QtGui.QFontDatabase.addApplicationFont(fontFile)
-        Msg ("{} Added as QtGui Font Id : {}\n".format(fontFile,fontId))
-        fontFile = os.path.join(GDTWB_fonts_path, "Iso-Gps.ttf")
-        fontId = QtGui.QFontDatabase.addApplicationFont(fontFile)
-        Msg ("{} Added as QtGui Font Id : {}\n".format(fontFile,fontId))        
-        pass
-
-    """
-    +-----------------------------------------------+
-    |        This is where all is defined           |
-    +-----------------------------------------------+
-    """
     def Initialize(self):
-        # load the module
-        # import GD&T tools
-        try:
-            import datumFeature
-            import datumSystem
-            import geometricTolerance
-            import annotationPlane
-            import inventory
-        except ImportError:
-            FreeCAD.Console.PrintWarning("Error: Initializing one or more of the GD&T modules failed, GD&T will not work as expected.\n")
+        "Executed the first time the workbench is activated"
+        import GDT  # registers the Qt resources (:/dd/...) used by the commands
+        import datumFeature
+        import datumSystem
+        import geometricTolerance
+        import annotationPlane
+        import inventory
 
+        self.registerFonts()
 
+        commands = self.CREATION_COMMANDS + self.INVENTORY_COMMANDS
+        self.appendToolbar("GD&T Tools", commands)
+        self.appendMenu("GD&T Tools", commands)
+
+        FreeCADGui.addIconPath(":/dd/icons")
+        FreeCADGui.addPreferencePage(":/dd/ui/preferences-gdt.ui", "GDT")
+        FreeCAD.Console.PrintLog("Loading Geometric Dimensioning & Tolerancing... done\n")
+
+    @staticmethod
+    def registerFonts():
+        """Make the GD&T fonts available to the Qt widgets.
+
+        Note: the 3D annotations are drawn by Coin3D, which only sees the fonts
+        installed in the operating system.
         """
-        +-----------------------------------------------+
-        |            Assembly Menu & Toolbar            |
-        +-----------------------------------------------+
-        """
-        self.cmdList = ['dd_datumFeature','dd_datumSystem','dd_geometricTolerance','dd_annotationPlane']
-        self.inventory = ['dd_inventory']
-        # https://freecad.github.io/SourceDoc/d7/dc3/group__workbench.html
-        self.appendToolbar("GD&T Tools",self.cmdList+self.inventory)  # Create ToolBar
-        self.appendMenu("GD&T Tools",self.cmdList+self.inventory) # Create Menu
-
-        FreeCADGui.addIconPath(':/dd/icons')
-        FreeCADGui.addPreferencePage( ':/dd/ui/preferences-gdt.ui','GDT' )
-
-        Log ("Loading Geometric Dimensioning & Tolerancing... done\n")
+        from PySide import QtGui
+        fonts_path = os.path.join(GDTWB_PATH, "Resources", "fonts")
+        for name in ("osifont-lgpl3fe.ttf", "Iso-Gps.ttf"):
+            font_id = QtGui.QFontDatabase.addApplicationFont(os.path.join(fonts_path, name))
+            if font_id < 0:
+                FreeCAD.Console.PrintWarning("GD&T: cannot load font {}\n".format(name))
 
     def Activated(self):
-        "This function is executed when the workbench is activated"
-        Msg ("Geometric Dimensioning & Tolerancing workbench activated\n")
+        "Executed when the workbench is activated"
+        FreeCAD.Console.PrintLog("Geometric Dimensioning & Tolerancing workbench activated\n")
 
     def Deactivated(self):
-        "This function is executed when the workbench is deactivated"
-        Msg ("Geometric Dimensioning & Tolerancing workbench desactivated\n")
+        "Executed when the workbench is deactivated"
+        FreeCAD.Console.PrintLog("Geometric Dimensioning & Tolerancing workbench deactivated\n")
 
-    """
-    +-----------------------------------------------+
-    |                Contextual Menus               |
-    +-----------------------------------------------+
-    """
     def ContextMenu(self, recipient):
-        # "This is executed whenever the user right-clicks on screen"
-        # "recipient" will be either "view" or "tree"
+        "Right click in the 3D view or the tree ('view' or 'tree')"
         # The creation commands are offered only when faces are selected
         selection = FreeCADGui.Selection.getSelectionEx()
         showCmdList = bool(selection) and bool(selection[0].SubObjects) and all(
             sub.ShapeType == 'Face' for sub in selection[0].SubObjects)
         if showCmdList:
-            self.appendContextMenu("", "Separator") # Add Separator 5@xes
-            self.appendContextMenu("",self.cmdList) # add commands to the context menu
-            
-        self.appendContextMenu("",self.inventory)   # add inventory commands to the context menu
-        self.appendContextMenu("", "Separator")     # Add Separator 5@xes
+            self.appendContextMenu("", "Separator")
+            self.appendContextMenu("", self.CREATION_COMMANDS)
+        self.appendContextMenu("", self.INVENTORY_COMMANDS)
+        self.appendContextMenu("", "Separator")
 
-"""
-+-----------------------------------------------+
-|          actually make the workbench          |
-+-----------------------------------------------+
-"""
+
 FreeCADGui.addWorkbench(GDandTWorkbench)

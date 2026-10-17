@@ -197,6 +197,12 @@ def gdt_inventory(doc):
 ctx = {}
 
 
+def t_lazy_loading():
+    """FreeCAD start-up must not import the workbench modules (W-01)."""
+    loaded = [m for m in ("GDT", "datumFeature", "inventory") if m in sys.modules]
+    return ("PASS" if not loaded else "FAIL"), "modules charges au demarrage : {}".format(loaded)
+
+
 def t_wb_registered():
     wbs = Gui.listWorkbenches()
     if WB not in wbs:
@@ -696,18 +702,36 @@ def t_samples():
         try:
             d = App.openDocument(dst)
             pump(10)
+            # anchor points as stored in the file (computed by the old code)
+            stored = {o.Name: App.Vector(o.p1) for o in d.Objects
+                      if gdt_type(o) in ("AnnotationPlane", "Annotation")}
             d.recompute()
             pump(10)
+            drift = max([(d.getObject(n).p1 - v).Length for n, v in stored.items()] or [0.0])
             inv = gdt_inventory(d)
             bad = invalid_objects(d)
             noproxy = [o.Name for o in d.Objects if o.TypeId.endswith("Python") and
                        getattr(o, "Proxy", None) is None]
             probs = console_problems(console_since_last())
-            st = "OK" if not bad and not noproxy and not probs else "PB"
+            # save with the current code, reopen: link scope warnings must be gone
+            resaved = os.path.join(WORKDIR, "resaved_" + os.path.basename(src))
+            d.saveAs(resaved)
+            App.closeDocument(d.Name)
+            pump()
+            console_since_last()
+            d = App.openDocument(resaved)
+            pump(10)
+            scope = [l for l in console_since_last().splitlines() if "allowed scope" in l]
+            # drift is informative: it also exists with the original code (face
+            # renumbering between FreeCAD versions), see the test report
+            ok = not bad and not noproxy and not probs and not scope
+            st = "OK" if ok else "PB"
             if st != "OK":
                 status = "WARN" if status == "PASS" else status
-            lines.append("{} [{}] {} invalides={} sansProxy={} console={}".format(
-                os.path.basename(src), st, inv, bad, noproxy, probs[:3]))
+            lines.append("{} [{}] {} derive_p1={:.3g} invalides={} sansProxy={} "
+                         "avert_portee_apres_reenregistrement={} console={}".format(
+                             os.path.basename(src), st, inv, drift, bad, noproxy,
+                             len(scope), probs[:3]))
             App.closeDocument(d.Name)
         except Exception as e:
             status = "FAIL"
@@ -744,6 +768,7 @@ def main():
     try:
         ctx["startup_console"] = console_since_last()
         steps = [
+            ("T24", "Chargement differe (rien d'importe au demarrage)", t_lazy_loading),
             ("T01", "Workbench enregistre", t_wb_registered),
             ("T02", "Activation du workbench", t_activate),
             ("T03", "Barre d'outils et menu", t_toolbar_menu),

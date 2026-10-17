@@ -80,3 +80,30 @@ Les mesures sous FreeCAD 1.1.3 montrent que :
 ### Tests (`Modernisation/tests/lot2_results.json`)
 
 23 tests : 22 PASS, plus T16 en WARN (Assembly4, inchangé). Deux nouveaux tests : **T22** (modifier la valeur d'une GT depuis l'inventaire) et **T23** (supprimer un DS depuis l'inventaire).
+
+---
+
+## Lot 3 : intégration du workbench FreeCAD 1.x
+
+### Raisonnement technique
+
+- **Chargement (W-01).** `InitGui.py` importait `GDT` au démarrage de FreeCAD. Cela chargeait Draft, Coin et les ressources Qt même si l'atelier n'était jamais utilisé. Par ailleurs, une exception dans `GDT` empêchait l'atelier d'apparaître. Désormais, tout est importé dans `Initialize()`. Le test T24 vérifie qu'aucun module du MOD n'est importé au démarrage.
+- **Piège rencontré :** FreeCAD exécute `InitGui.py` par `exec()` *à l'intérieur d'une fonction* de `FreeCADGuiInit`. Les noms de niveau module y sont donc des variables locales, invisibles depuis le corps de la classe : le premier essai a échoué en T01 (atelier absent). Les déclarations `global` du code d'origine avaient précisément ce rôle. Elles sont rétablies et commentées.
+- **Portée des liens (I-03).** Dans les fichiers historiques, les liens pointent sur une fonction *interne* à un Body (`(Pad, "Face12")`). Sous 1.1, `freecadcmd` affiche à l'ouverture de `cube.FCStd` 15 avertissements du type « Link(s) to object(s) 'Pad' go out of the allowed scope ». La migration `onDocumentRestored` → `migrateFaceLinks` réécrit ces liens par le chemin du conteneur, `(Body, "Pad.Face12")`. Le **même** élément est désigné, et la géométrie est inchangée : la dérive du point d'ancrage est nulle sur les 11 fichiers d'exemple. Elle est mesurée par `drift.py` sur le code d'origine et sur le nouveau code.
+- **Constat hors MOD.** `Plaque.FCStd` présente une dérive de 40,4 mm sur `Annotation6` et de 2,3 mm sur `AP7` après recalcul. Le résultat est **identique avec le code d'origine** : la face `Chamfer001.Face2/Face3` n'a plus le même numéro sous FreeCAD 1.1 que sous la version qui a écrit le fichier. C'est le problème de nommage topologique (TNP). Il faut réaffecter ces deux éléments manuellement.
+- **Ouverture sans interface (F-13).** Vérifiée sous `freecadcmd` : les objets sont restaurés et recalculés sans erreur. Le flag `gui` vaut maintenant `FreeCAD.GuiUp`, au lieu de `True` forcé, pour que les fonctions `make*` ne tentent pas de créer des ViewProviders sans interface.
+
+### Modifications
+
+| ID | Fichier | Modification |
+|---|---|---|
+| W-01 | InitGui.py | Réécriture. Imports différés dans `Initialize()`. Polices enregistrées à l'activation, avec un avertissement en cas d'échec, et non plus dans `__init__` au démarrage. Listes de commandes en attributs de classe (`CREATION_COMMANDS`, `INVENTORY_COMMANDS`), avec des noms `dd_*` inchangés. Menu contextuel sans `IndexError`. Docstrings. |
+| W-03 | InitGui.py | `Msg()` / `Log()` remplacés par `FreeCAD.Console.PrintLog()`. Les messages d'activation passent en niveau Log, car ils polluaient la vue Rapport. |
+| I-03 | GDT.py | `_GDTObject.onDocumentRestored` appelle `migrateFaceLinks()` (via `toRootLink()`). Après un réenregistrement, plus aucun avertissement de portée (T16). **Conséquence :** un fichier réenregistré par cette version n'est plus correctement interprété par l'ancien MOD (compatibilité ascendante uniquement). |
+| I-06 | GDT.py | `dumps()` / `loads()` sur les proxys App et Vue, avec `__getstate__` / `__setstate__` conservés comme alias. Format de l'état inchangé. |
+| F-13 | GDT.py | `gui = FreeCAD.GuiUp`. |
+| I-07 | package.xml | Version 1.0.0, `freecadmin` 1.0.0, `pythonmin` 3.8, licence au format SPDX, dépendances `Draft` et `Part`, icône et nom au niveau du workbench, mots-clés. |
+
+### Tests (`Modernisation/tests/lot3_results.json`)
+
+25 tests : 24 PASS, plus T16 en WARN (Assembly4 seulement). Nouveau test **T24** (chargement différé). T16 mesure désormais aussi la dérive du point d'ancrage et l'absence d'avertissements de portée après réenregistrement.

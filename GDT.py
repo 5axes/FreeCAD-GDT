@@ -41,11 +41,9 @@ import FreeCADGui, WorkingPlane
 
 translate = FreeCAD.Qt.translate
 
-if FreeCAD.GuiUp:
-    gui = True
-else:
-    FreeCAD.Console.PrintMessage("FreeCAD Gui not present. GDT module will have some features disabled.")
-    gui = True
+# Without GUI (FreeCADCmd) the objects are still restored and recomputed,
+# but no view provider is created.
+gui = FreeCAD.GuiUp
 
 # FreeCAD's PySide shim maps to PySide2 (Qt5) or PySide6 (Qt6).
 # Widgets live in QtWidgets in both; QtGui only keeps icons, colours, fonts.
@@ -364,6 +362,40 @@ def updateAnnotationAnchor(obj):
     else:
         obj.p1 = face.CenterOfMass.projectToPlane(obj.AP.PointWithOffset, obj.AP.Direction)
         obj.Direction = face.normalAt(0,0)
+
+def toRootLink(obj, sub):
+    """Express (obj, sub) from the top-level container: (Pad, "Face5") inside
+    Body inside Part becomes (Part, "Body.Pad.Face5")."""
+    parent = obj.getParentGeoFeatureGroup()
+    while parent is not None:
+        sub = obj.Name + "." + sub
+        obj = parent
+        parent = obj.getParentGeoFeatureGroup()
+    return obj, sub
+
+def migrateFaceLinks(obj):
+    """Re-target face links made by versions <= 0.20 to the top-level container.
+
+    Old documents link the faces of a feature inside a Body directly
+    ((Pad, "Face5")). FreeCAD >= 0.19 reports such links as going "out of the
+    allowed scope" and ignores the placement of the containers. The same face
+    is linked again through its container path; geometry is unchanged for a
+    container at the origin.
+    """
+    value = obj.faces
+    if not value:
+        return
+    if isinstance(value[0], tuple):  # PropertyLinkSubList
+        pairs = [(o, s) for o, subs in value if o is not None for s in subs]
+        migrated = [toRootLink(o, s) for o, s in pairs]
+        if migrated != pairs:
+            obj.faces = migrated
+    else:  # PropertyLinkSub: (object, [sub])
+        o, subs = value
+        if o is not None and subs:
+            migrated = toRootLink(o, subs[0])
+            if migrated != (o, subs[0]):
+                obj.faces = migrated
 
 def flattenLinkSubList(value):
     """Normalize a (object, sub-element(s)) list into sorted (name, sub) pairs.
@@ -1026,12 +1058,17 @@ class _GDTObject:
         obj.addProperty("App::PropertyString","Type","GDT","Type for icon")
         obj.Type = "Unknown"
 
-    def __getstate__(self):
+    # Serialization: the state is the type string (format unchanged since 2016).
+    # FreeCAD >= 0.21 calls dumps/loads, older versions __getstate__/__setstate__.
+    def dumps(self):
         return self.Type
 
-    def __setstate__(self,state):
+    def loads(self, state):
         if state:
             self.Type = state
+
+    __getstate__ = dumps
+    __setstate__ = loads
 
     def execute(self,obj):
         '''Do something when doing a recomputation, this method is mandatory'''
@@ -1040,6 +1077,11 @@ class _GDTObject:
     def onChanged(self, obj, prop):
         '''Do something when a property has changed'''
         pass
+
+    def onDocumentRestored(self, obj):
+        "Migrate documents written by older versions of the workbench"
+        if hasattr(obj, "faces"):
+            migrateFaceLinks(obj)
 
 # Define the class for the main Folder
 class _ViewProviderGDT:
@@ -1051,11 +1093,15 @@ class _ViewProviderGDT:
         self.Object = vobj.Object
         self.Type = vobj.Object.Type
 
-    def __getstate__(self):
+    # Nothing to serialize: Object and Type are restored in attach()
+    def dumps(self):
         return None
 
-    def __setstate__(self, state):
+    def loads(self, state):
         return None
+
+    __getstate__ = dumps
+    __setstate__ = loads
 
     def attach(self,vobj):
         '''Setup the scene sub-graph of the view provider, this method is mandatory'''
