@@ -21,12 +21,10 @@
 #***************************************************************************
 
 from GDT import *
-import  DraftTools
 
 gdt = GDTWidget()
-Label = ['Straightness', 'Flatness', 'Circularity', 'Cylindricity', 'Profile of a line', 'Profile of a surface', 'Perpendicularity', 'Angularity', 'Parallelism', 'Symmetry', 'Position', 'Concentricity','Circular run-out', 'Total run-out']
-Icon = [':/dd/icons/Characteristic/straightness.svg', ':/dd/icons/Characteristic/flatness.svg', ':/dd/icons/Characteristic/circularity.svg', ':/dd/icons/Characteristic/cylindricity.svg', ':/dd/icons/Characteristic/profileOfALine.svg', ':/dd/icons/Characteristic/profileOfASurface.svg', ':/dd/icons/Characteristic/perpendicularity.svg', ':/dd/icons/Characteristic/angularity.svg', ':/dd/icons/Characteristic/parallelism.svg', ':/dd/icons/Characteristic/symmetry.svg', ':/dd/icons/Characteristic/position.svg', ':/dd/icons/Characteristic/concentricity.svg',':/dd/icons/Characteristic/circularRunOut.svg', ':/dd/icons/Characteristic/totalRunOut.svg']
-gdt.dialogWidgets.append( comboLabelWidget(Text='Characteristic:', List=Label, Icons=Icon) )
+_characteristics = makeCharacteristics()  # single source of the 14 characteristics
+gdt.dialogWidgets.append( comboLabelWidget(Text='Characteristic:', List=_characteristics.Label, Icons=_characteristics.Icon) )
 gdt.dialogWidgets.append( fieldLabelComboWidget(Text='Tolerance value:', Circumference = [], List=[], Icons=[], ToolTip=[]) )
 gdt.dialogWidgets.append( comboLabelWidget(Text='Datum system:', List=[]) )
 gdt.dialogWidgets.append( comboLabelWidget(Text='Active annotation plane:', List=[]) )

@@ -107,3 +107,27 @@ Les mesures sous FreeCAD 1.1.3 montrent que :
 ### Tests (`Modernisation/tests/lot3_results.json`)
 
 25 tests : 24 PASS, plus T16 en WARN (Assembly4 seulement). Nouveau test **T24** (chargement différé). T16 mesure désormais aussi la dérive du point d'ancrage et l'absence d'avertissements de portée après réenregistrement.
+
+---
+
+## Lot 4 : nettoyage et lisibilité
+
+Aucun changement fonctionnel visé, sauf les points F-11, F-12 et F-14 ci-dessous. La logique de tracé (`getPointsToPlot*`, `plotStrings`) est conservée à l'identique.
+
+| Thème | Fichier | Modification |
+|---|---|---|
+| Imports | GDT.py | Suppression de `numpy`, `sys`, `traceback`, `Draft`, `DraftVecUtils`, `WorkingPlane`, `Vector`, de l'alias `App`, de `QtSvg` et de l'`import DraftGeomUtils` local. `Draft_rc` / `DraftTools` (création du Snapper et de la barre Draft nécessaires à la saisie du point) sont importés une seule fois dans `GDT.py`, sous `if gui:`, au lieu de l'être dans trois modules de commandes. L'ouverture sans interface a été revérifiée sous `freecadcmd`. |
+| Code mort | GDT.py | Suppression de `stringencodecoin` (commentée), de 6 blocs de code désactivés par des chaînes `'''…'''` / `"""…"""` (ancien carré du DF, icônes SVG du diamètre), des listes `auxDictionaryDS` / `dictionaryAnnotation` et des attributs circulaires `self.Proxy = self` des classes de données. |
+| Traces | GDT.py, inventory.py | Suppression de 9 `print()` de débogage, dont `"displacement"` à chaque redessin, `"5@xes createObject"`, `"self.data …"` et `"makeAnnotationPlane …"`, ainsi que du `PrintMessage("FrameCode …")` émis à chaque redessin d'une GT avec modificateur. |
+| P-04 | GDT.py | Les 12 `except:` nus ont disparu. Il n'en reste plus aucun. Les 6 `try: group.addObject(obj) except: pass` sont remplacés par `addToGroup()`, qui ignore seulement un groupe absent. Les repli « anciens documents » (icônes SVG) attrapent `AttributeError`. Le double-clic d'une annotation n'a plus besoin de repli, car `attach()` initialise `self.Object`. |
+| F-14 | GDT.py | `getTextRotation()` remplace 4 blocs dupliqués `try / getRotation(...).Q / except: pass`. Quand le plan est parallèle à XY, la rotation identité est appliquée explicitement : le texte n'hérite plus d'une rotation périmée si l'AP change d'orientation. |
+| Groupes | GDT.py | `makeGDTGroup()` remplace 3 blocs dupliqués de création de dossiers. Le dossier principal est cherché par son nom `GDT`, et non plus déduit de « aucun AP n'existe ». Avant, supprimer tous les AP puis en recréer un produisait un second dossier `GDT001`. |
+| F-11 | GDT.py | Annulation (Échap) de la saisie du point d'un DF : suppression des DS qui référencent ce DF, au lieu du « dernier DS du document ». Ajout du test **T25**. |
+| F-12 | GDT.py | Les noms `AnnotationN` et `DSN: X` sont générés dynamiquement. Il n'y a plus d'`IndexError` au-delà de 99 éléments. |
+| P-03 | GDT.py, inventory.py | Plus d'arguments par défaut mutables : `GT=None`, `List=None`, ou des tuples pour les valeurs lues seulement. |
+| Doublons | inventory.py, geometricTolerance.py | Les tables des 14 caractéristiques et des 12 modificateurs ne sont plus recopiées : `makeCharacteristics()` / `makeFeatureControlFrame()` sont utilisés partout. |
+| Docstrings | GDT.py, InitGui.py | `makeAnnotation`, `makeAnnotationPlane`, les helpers et les view providers sont documentés. |
+
+### Tests (`Modernisation/tests/lot4_results.json`)
+
+26 tests : 25 PASS, plus T16 en WARN (Assembly4 seulement).

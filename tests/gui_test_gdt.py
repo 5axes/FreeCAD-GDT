@@ -480,6 +480,31 @@ def t_face_color():
     return ("PASS" if blue and opaque else "FAIL"), detail
 
 
+def t_cancel_pick():
+    """Escape during the anchor point picking removes everything just created (F-11)."""
+    doc = ctx["doc"]
+    before = gdt_inventory(doc)
+    select_face(ctx["box"], "Face4")
+    if not is_active("dd_datumFeature"):
+        return "FAIL", "commande inactive"
+    Gui.runCommand("dd_datumFeature")
+    pump(10)
+    b = task_button("Add Datum Feature")
+    if b is None:
+        return "FAIL", "bouton du panneau introuvable"
+    b.click()
+    pump(10)
+    tb = Gui.draftToolBar
+    if getattr(tb, "pointcallback", None) is None:
+        close_task_dialog()
+        return "FAIL", "aucune saisie de point demandee"
+    tb.escape()
+    pump(10)
+    close_task_dialog()
+    after = gdt_inventory(doc)
+    return ("PASS" if after == before else "FAIL"), "avant={} apres={}".format(before, after)
+
+
 def t_working_plane():
     """While picking the anchor point, the Draft working plane must be the AP (I-01)."""
     checks = ctx.get("wp", [])
@@ -783,6 +808,7 @@ def main():
             ("T18", "Selection multi-objets", t_multi_object_selection),
             ("T19", "Plan de travail Draft aligne sur l'AP", t_working_plane),
             ("T21", "Couleur de la face referencee (opaque)", t_face_color),
+            ("T25", "Annulation de la saisie du point (Echap)", t_cancel_pick),
             ("T11", "Rendu Coin des annotations", t_render),
             ("T12", "Rangement dans le groupe du plan", t_groups),
             ("T13", "Inventaire", t_inventory),
@@ -796,7 +822,7 @@ def main():
         prereq = {"T06": "T05", "T07": "T06", "T08": "T07", "T09": "T06",
                   "T10": "T06", "T11": "T07", "T12": "T07", "T14": "T05",
                   "T17": "T07", "T18": "T06", "T19": "T07", "T21": "T07",
-                  "T22": "T09", "T23": "T08"}
+                  "T22": "T09", "T23": "T08", "T25": "T07"}
         status = {}
         for tid, name, func in steps:
             if tid in ("T02", "T03", "T04", "T05") and status.get("T01") == "FAIL":

@@ -21,7 +21,6 @@
 #***************************************************************************
 
 from GDT import *
-import  DraftTools
 
 gdt = GDTWidget()
 dictionaryDF = []

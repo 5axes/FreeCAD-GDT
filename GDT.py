@@ -26,24 +26,25 @@ __title__="FreeCAD GDT Workbench"
 __author__ = "Juan Vanyo Cerda <juavacer@inf.upv.es>"
 __url__ = "http://www.freecadweb.org"
 
-# Description of tool
-
-import numpy
-import FreeCAD as App
-import FreeCAD, math, sys, os, DraftVecUtils, Draft_rc
+import math
+import os
 from math import pi
-from FreeCAD import Vector
-import traceback
-import Draft
+
+import FreeCAD
+import FreeCADGui
 import Part
 from pivy import coin
-import FreeCADGui, WorkingPlane
 
 translate = FreeCAD.Qt.translate
 
 # Without GUI (FreeCADCmd) the objects are still restored and recomputed,
 # but no view provider is created.
 gui = FreeCAD.GuiUp
+if gui:
+    # Creates FreeCADGui.Snapper and FreeCADGui.draftToolBar (point picking,
+    # grid) and registers the Draft icons used by the Draft task panels.
+    import Draft_rc
+    import DraftTools
 
 # FreeCAD's PySide shim maps to PySide2 (Qt5) or PySide6 (Qt6).
 # Widgets live in QtWidgets in both; QtGui only keeps icons, colours, fonts.
@@ -55,15 +56,8 @@ path_dd_resources =  os.path.join( os.path.dirname(__file__), 'Resources', 'dd_r
 resourcesLoaded = QtCore.QResource.registerResource(path_dd_resources)
 assert resourcesLoaded
 
+# State of the "Create corresponding Datum System" check box (datum feature panel)
 checkBoxState = True
-auxDictionaryDS=[]
-
-for i in range(1,100):
-    auxDictionaryDS.append('DS'+str(i))
-
-dictionaryAnnotation=[]
-for i in range(1,100):
-    dictionaryAnnotation.append('Annotation'+str(i))
 
 #---------------------------------------------------------------------------
 # Param functions
@@ -123,29 +117,11 @@ def setParam(param,value):
 #---------------------------------------------------------------------------
 # General functions
 #---------------------------------------------------------------------------
-# Modif 5@xes for test
-"""
-def stringencodecoin(ustr):
-    # stringencodecoin(str): Encodes a unicode object to be used as a string in coin
-    try:
-        from pivy import coin
-        coin4 = coin.COIN_MAJOR_VERSION >= 4
-    except (ImportError, AttributeError):
-        coin4 = False
-    if coin4:
-        return ustr.encode('utf-8')
-    else:
-        return ustr.encode('latin1')
-"""
-
 def string_encode(ustr):
-    """string_encode(str): Encodes a unicode object to be used as a string in coin"""
-        # return ustr.encode('utf-8')
-        # return ustr.encode('latin1')
+    """string_encode(str): text for a Coin text node (Python 3 / Coin 4: unchanged)"""
     return ustr
 
 def stringplusminus():
-    # else ' +- '
     return ' ± '
 
 def getType(objt):
@@ -579,31 +555,11 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
     else:
         sizeOfLine = 1.0
 
-    '''
-    d = len(points)
-    # Remove the Square initialy created at the base of the Datum Reference
-    if not existGT:
-        P0 = points[-1] + Vertical * (sizeOfLine)
-        P1 = P0 + Horizontal * (sizeOfLine*2)
-        P2 = P1 + Vertical * (-sizeOfLine*2)
-        P3 = P2 + Horizontal * (-sizeOfLine*2)
-        newPoints += [P0, P1, P2, P3]
-        newSegments += [-1, 0+d, 1+d, 2+d, 3+d, 0+d]
-        if points[2].x < points[0].x:
-            displacement = newPoints[-2].x - newPoints[-1].x
-            for i in range(len(newPoints)-4, len(newPoints)):
-                newPoints[i].x-=displacement
-    '''
-
     # Draw the Square arount the Datum + The bottom triangle
     d=len(newPoints)
     # newPoints[-1]should be end of attach line
     h = math.sqrt(sizeOfLine*sizeOfLine+(sizeOfLine/2)*(sizeOfLine/2))
 
-    '''
-    PAux = newPoints[-1] + Horizontal * (sizeOfLine)
-    P0 = newPoints[-1] + Horizontal * (sizeOfLine/2)
-    '''
     PAux = newPoints[-1] + Horizontal * (sizeOfLine) - Horizontal
     P0 = newPoints[-1] + Horizontal * (sizeOfLine/2) - Horizontal
     P1 = P0 + Horizontal * (sizeOfLine)
@@ -617,7 +573,6 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
     newPoints += [P0, P1, P2, P3, P4, P5, P6, P7]
     if existGT:
         displacement = newPoints[-8].x - newPoints[-7].x
-        print("displacement {}".format(displacement))
         for i in range(len(newPoints)-8, len(newPoints)):
             newPoints[i].x-=displacement
     newSegments += [-1, 0+d, 1+d, 0+d, 2+d, -1, 1+d, 2+d, 3+d, 4+d, 5+d, 6+d, 7+d, 3+d]
@@ -626,8 +581,6 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
 
 # Draw the Text for the Tolerance
 def plotStrings(self, fp, points):
-    import DraftGeomUtils
-
     if fp.ViewObject.LineScale > 0:
         sizeOfLine = fp.ViewObject.LineScale
     else:
@@ -644,6 +597,11 @@ def plotStrings(self, fp, points):
     indexSYMB = 0
     indexIcon = 0
     displacement = 0
+    rotation = getTextRotation(fp.AP.Direction)
+    # Texture mapping of the SVG symbols (documents older than the Unicode codes)
+    sZ = 1/(sizeOfLine*2)
+    dS = FreeCAD.Vector(Horizontal) * sZ
+    dT = FreeCAD.Vector(Vertical) * sZ
 
     """ Define a Geometrix Tolerance """
     if fp.GT != []:
@@ -674,21 +632,15 @@ def plotStrings(self, fp, points):
             auxPoint = points[3+displacement] + Vertical * (-sizeOfLine*2)
             self.points[indexSYMB].point.setValues([[auxPoint.x,auxPoint.y,auxPoint.z],[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z],[points[3+displacement].x,points[3+displacement].y,points[3+displacement].z]])
 
-            # print("Label {}".format(fp.GT[i].Characteristic))
-            # print("AP.Direction {}".format(fp.AP.Direction))
-
             try:
                 #Unicode display
                 self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].CharacteristicCode) # Characteristic Code
                 symbolPoint = auxPoint + Horizontal + Vertical * 0.5
                 self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
                 self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
-            except:
-                # Compatibility Old Version with SVG File
+            except AttributeError:
+                # Documents without CharacteristicCode: draw the SVG icon
                 self.face[indexIcon].numVertices = 4
-                sZ = 1/(sizeOfLine*2)
-                dS = FreeCAD.Vector(Horizontal) * sZ
-                dT = FreeCAD.Vector(Vertical) * sZ
                 self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
                 self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
                 displacementH = ((Horizontal*auxPoint)%(sizeOfLine*2))/(sizeOfLine*2)
@@ -710,13 +662,12 @@ def plotStrings(self, fp, points):
                 self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[points[7+displacement].x,points[7+displacement].y,points[7+displacement].z],[points[6+displacement].x,points[6+displacement].y,points[6+displacement].z],[auxPoint2.x,auxPoint2.y,auxPoint2.z]])
 
                 try:
-                    FreeCAD.Console.PrintMessage("FrameCode {}\n".format(fp.GT[i].FeatureControlFrameCode))
                     self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].FeatureControlFrameCode) #Diameter
                     symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5
                     self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
                     self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
-                except:
-                    # Compatibility Old Version
+                except AttributeError:
+                    # Documents without FeatureControlFrameCode: draw the SVG icon
                     self.face[indexIcon].numVertices = 4
                     self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
                     self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
@@ -738,19 +689,6 @@ def plotStrings(self, fp, points):
 
                 self.points[indexSYMB].point.setValues([[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z]])
 
-                """
-                self.face[indexIcon].numVertices = 4
-                self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
-                self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
-                displacementH = ((Horizontal*points[5+displacement])%(sizeOfLine*2))/(sizeOfLine*2)
-                displacementV = ((Vertical*points[5+displacement])%(sizeOfLine*2))/(sizeOfLine*2)
-                self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
-                filename = os.path.join(iconPath , 'diameter.svg')
-                self.svg[indexIcon].filename = str(filename)
-                indexIcon+=1
-                """
-
-                # self.textSYMB[indexSYMB].string = u"\u2300" #Diameter
                 self.textSYMB[indexSYMB].string = u"\u00D8" #Diameter
                 symbolPoint = points[5+displacement] + Horizontal + Vertical*0.5
                 self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
@@ -800,18 +738,6 @@ def plotStrings(self, fp, points):
             self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[auxPoint3.x,auxPoint3.y,auxPoint3.z],[auxPoint4.x,auxPoint4.y,auxPoint4.z]])
 
 
-            """
-            self.face[indexIcon].numVertices = 4
-            self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
-            self.svgPos[indexIcon].directionT.setValue(dT.x, dT.y, dT.z)
-            displacementH = ((Horizontal*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
-            displacementV = ((Vertical*auxPoint1)%(sizeOfLine*2))/(sizeOfLine*2)
-            self.textureTransform[indexIcon].translation.setValue(-displacementH,-displacementV)
-            filename = os.path.join(iconPath , 'diameter.svg')
-            self.svg[indexIcon].filename = str(filename)
-            indexIcon+=1
-            """
-
             self.textSYMB[indexSYMB].string = u"\u00D8" #Diameter
             symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5
             self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
@@ -846,28 +772,10 @@ def plotStrings(self, fp, points):
                 index+=1
 
         for i in range(index):
-            try:
-                #AP Annotation Plane
-                DirectionAux = FreeCAD.Vector(fp.AP.Direction)
-                DirectionAux.x = abs(DirectionAux.x)
-                DirectionAux.y = abs(DirectionAux.y)
-                DirectionAux.z = abs(DirectionAux.z)
-                rotation=(DraftGeomUtils.getRotation(DirectionAux)).Q
-                self.textGTpos[i].rotation.setValue(rotation)
-            except:
-                pass
+            self.textGTpos[i].rotation.setValue(rotation)
 
         for i in range(indexSYMB):
-            try:
-                #AP Annotation Plane
-                DirectionAux = FreeCAD.Vector(fp.AP.Direction)
-                DirectionAux.x = abs(DirectionAux.x)
-                DirectionAux.y = abs(DirectionAux.y)
-                DirectionAux.z = abs(DirectionAux.z)
-                rotation=(DraftGeomUtils.getRotation(DirectionAux)).Q
-                self.textSYMBpos[i].rotation.setValue(rotation)
-            except:
-                pass
+            self.textSYMBpos[i].rotation.setValue(rotation)
 
         for i in range(index,len(self.textGT)):
             if str(self.textGT[i].string) != "":
@@ -878,8 +786,7 @@ def plotStrings(self, fp, points):
 
         for i in range(indexSYMB,len(self.textSYMB)):
             self.textSYMB[i].string = ""
-            if str(self.face[i].numVertices) != 0:
-                self.face[i].numVertices = 0
+            self.face[i].numVertices = 0
 
         for i in range(indexIcon,len(self.svg)):
             self.svg[i].filename = ""
@@ -899,7 +806,6 @@ def plotStrings(self, fp, points):
         Define a Datum Feature
     """
     if fp.DF != None:
-        # print("Datum Feature Label {}".format(str(fp.DF.Label)))
         self.textDF.string = str(fp.DF.Label)
         distance = 0
         v = (points[-3] - points[-2])
@@ -910,11 +816,6 @@ def plotStrings(self, fp, points):
         else:
             distance = (v.z)/2
 
-        """
-        print("Datum Feature Label      {}".format(str(fp.DF.Label)))
-        print("Datum Feature Vertical   {}".format(Vertical))
-        print("Datum Feature Horizontal {}".format(Horizontal))
-        """
         # Modif 5@xes https://github.com/5axes/FreeCAD-GDT/issues/21
         # Must be tested on different Case
         # Code not valid it's just a patch but if the plan is particular it doesn't work
@@ -933,17 +834,7 @@ def plotStrings(self, fp, points):
 
         self.textDFpos.translation.setValue([centerPoint.x, centerPoint.y, centerPoint.z])
 
-        try:
-            #AP Annotation Plane
-            DirectionAux = FreeCAD.Vector(fp.AP.Direction)
-            DirectionAux.x = abs(DirectionAux.x)
-            DirectionAux.y = abs(DirectionAux.y)
-            DirectionAux.z = abs(DirectionAux.z)
-            rotation=(DraftGeomUtils.getRotation(DirectionAux)).Q
-
-            self.textDFpos.rotation.setValue(rotation)
-        except:
-            pass
+        self.textDFpos.rotation.setValue(rotation)
 
     else:
         self.textDF.string = ""
@@ -961,17 +852,19 @@ def plotStrings(self, fp, points):
             self.textGT[index].string = (str(numFaces)+'x')
             self.textGTpos[index].translation.setValue([posNumFaces.x, posNumFaces.y, posNumFaces.z])
             self.textGT[index].justification = coin.SoAsciiText.CENTER
-            try:
-                #AP Annotation Plane
-                DirectionAux = FreeCAD.Vector(fp.AP.Direction)
-                DirectionAux.x = abs(DirectionAux.x)
-                DirectionAux.y = abs(DirectionAux.y)
-                DirectionAux.z = abs(DirectionAux.z)
-                rotation=(DraftGeomUtils.getRotation(DirectionAux)).Q
-                self.textGTpos[index].rotation.setValue(rotation)
-            except:
-                pass
+            self.textGTpos[index].rotation.setValue(rotation)
             index+=1
+
+def getTextRotation(direction):
+    """Quaternion orienting the annotation texts in the plane of normal ``direction``.
+
+    DraftGeomUtils.getRotation() returns None when the plane is parallel to
+    XY (texts are drawn in XY by default): the identity is used then.
+    """
+    import DraftGeomUtils
+    aux = FreeCAD.Vector(abs(direction.x), abs(direction.y), abs(direction.z))
+    rotation = DraftGeomUtils.getRotation(aux)
+    return rotation.Q if rotation is not None else (0.0, 0.0, 0.0, 1.0)
 
 #---------------------------------------------------------------------------
 # UNITS handling
@@ -1193,47 +1086,33 @@ class _ViewProviderAnnotationPlane(_ViewProviderGDT):
     def getIcon(self):
         return(":/dd/icons/annotationPlane.svg")
 
-def makeAnnotationPlane(Name, Offset):
-    ''' Explanation
-    '''
-    # setColor("PF")
-    groupPlaneName = "Plane_" + Name
+def addToGroup(group, obj):
+    "addToGroup(group, obj): adds obj to group when the group exists"
+    if group is not None:
+        group.addObject(obj)
 
-    print("makeAnnotationPlane getAllAnnotationPlaneObjects {}".format(len(getAllAnnotationPlaneObjects())))
-    if len(getAllAnnotationPlaneObjects()) == 0 :
-        group = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", "GDT")
-        _GDTObject(group)
+def makeGDTGroup(name, groupType="Unknown", parent=None):
+    """Create a GD&T folder of the tree.
+
+    groupType selects the tree icon: "Unknown" (main GDT folder), "DS"
+    (datum systems) or "Plane" (one folder per annotation plane).
+    """
+    group = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", name)
+    _GDTObject(group)
+    group.Type = groupType  # read by the view provider to choose the icon
+    if gui:
         _ViewProviderGDT(group.ViewObject)
+    addToGroup(parent, group)
+    return group
 
-        subgroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", "DS")
-        _GDTObject(subgroup)
-        # Define the icone and So on
-        subgroup.Type = "DS"
-        _ViewProviderGDT(subgroup.ViewObject)
-
-        group.addObject(subgroup)
-
-        planeGroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", groupPlaneName)
-        _GDTObject(planeGroup)
-        # Define the icone and So on
-        planeGroup.Type = "Plane"
-        _ViewProviderGDT(planeGroup.ViewObject)
-
-        group.addObject(planeGroup)
-
-    else:
-        # The 'GDT' Group already exist
-        group = FreeCAD.ActiveDocument.getObject("GDT")
-
-        planeGroup = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", groupPlaneName)
-        _GDTObject(planeGroup)
-        planeGroup.Type = "Plane"
-        # Define the icone and So on
-        _ViewProviderGDT(planeGroup.ViewObject)
-
-        group.addObject(planeGroup)
-
-    # group = FreeCAD.ActiveDocument.getObject("GDT")
+def makeAnnotationPlane(Name, Offset):
+    """makeAnnotationPlane(Name, Offset): creates an annotation plane on the
+    selected face, in its own folder of the main 'GDT' folder."""
+    group = FreeCAD.ActiveDocument.getObject("GDT")
+    if group is None:
+        group = makeGDTGroup("GDT")
+        makeGDTGroup("DS", "DS", group)
+    planeGroup = makeGDTGroup("Plane_" + Name, "Plane", group)
 
     obj = FreeCAD.ActiveDocument.addObject("App::FeaturePython","AnnotationPlane")
     _AnnotationPlane(obj)
@@ -1242,11 +1121,7 @@ def makeAnnotationPlane(Name, Offset):
 
     obj.Label = str(Name)
     obj.Offset = Offset
-
-    try:
-        planeGroup.addObject(obj)
-    except:
-        pass
+    planeGroup.addObject(obj)
 
     hideGrid()
     for l in getAllAnnotationObjects():
@@ -1287,14 +1162,10 @@ def makeDatumFeature(Name, ContainerOfData):
     obj.Label = str(Name)
     group = FreeCAD.ActiveDocument.getObject("GDT")
 
-    try:
-        group.addObject(obj)
-    except:
-        pass
+    addToGroup(group, obj)
 
     AnnotationObj = getAnnotationObj(ContainerOfData)
     if AnnotationObj == None:
-        # print("5@xes makeDatumFeature group AnnotationObj == None = {}".format(obj))
         makeAnnotation(ContainerOfData.faces, ContainerOfData.annotationPlane, DF=obj, GT=[])
     else:
         faces = AnnotationObj.faces
@@ -1308,10 +1179,7 @@ def makeDatumFeature(Name, ContainerOfData):
         highLimit = AnnotationObj.highLimit
         group = makeAnnotation(faces, AP, DF=obj, GT=GT, modify = True, Object = AnnotationObj, diameter=diameter, toleranceSelect=toleranceSelect, toleranceDiameter=toleranceDiameter, lowLimit=lowLimit, highLimit=highLimit)
 
-        try:
-            group.addObject(obj)
-        except:
-            pass
+        addToGroup(group, obj)
 
     # Update
     for l in getAllAnnotationObjects():
@@ -1369,10 +1237,7 @@ def makeDatumSystem(Name, Primary, Secondary=None, Tertiary=None):
 
     group = FreeCAD.ActiveDocument.getObject("DS")
 
-    try:
-        group.addObject(obj)
-    except:
-        pass
+    addToGroup(group, obj)
 
     for l in getAllAnnotationObjects():
         l.touch()
@@ -1465,10 +1330,7 @@ def makeGeometricTolerance(Name, ContainerOfData):
 
         group = makeAnnotation(faces, AP, DF=DF, GT=gt, modify = True, Object = AnnotationObj, diameter=diameter, toleranceSelect=toleranceSelect, toleranceDiameter=toleranceDiameter, lowLimit=lowLimit, highLimit=highLimit)
 
-        try:
-            group.addObject(obj)
-        except:
-            pass
+        addToGroup(group, obj)
 
 
     for l in getAllAnnotationObjects():
@@ -1551,8 +1413,9 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
 
     # The real Object creation
     def attach(self, obj):
-        "called on object creation"
-        from pivy import coin
+        "Build the Coin scene of the annotation (also called when a document is opened)"
+        self.Object = obj.Object
+        self.Type = getattr(obj.Object, "Type", "Unknown")
         self.node = coin.SoGroup()
         self.lineColor = coin.SoBaseColor()
         self.textColor = coin.SoBaseColor()
@@ -1654,7 +1517,6 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
     def updateData(self, fp, prop):
         "If a property of the handled feature has changed we have the chance to handle this here"
         # fp is the handled feature, prop is the name of the property that has changed
-        # print("updateData {} / {}".format(fp.ViewObject, prop))
         if prop == "selectedPoint" and hasattr(fp.ViewObject,"Decimals") and hasattr(fp.ViewObject,"ShowUnit") and fp.spBool:
             points, segments = getPointsToPlot(fp)
             # print str(points)
@@ -1674,11 +1536,10 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
             if fp.circumferenceBool != circumference:
                 fp.circumferenceBool = circumference
 
-    def doubleClicked(self,obj):
-        try:
-            select(self.Object)
-        except:
-            select(obj.Object)
+    def doubleClicked(self,vobj):
+        "Select again the annotated faces"
+        select(vobj.Object)
+        return True
 
     def getDisplayModes(self,obj):
         "Return a list of display modes."
@@ -1727,12 +1588,19 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
     def getIcon(self):
         return(":/dd/icons/annotation.svg")
 
-def makeAnnotation(faces, AP, DF=None, GT=[], modify=False, Object=None, diameter = 0.0, toleranceSelect = True, toleranceDiameter = 0.0, lowLimit = 0.0, highLimit = 0.0):
-    ''' Explanation
-    '''
+def makeAnnotation(faces, AP, DF=None, GT=None, modify=False, Object=None, diameter = 0.0, toleranceSelect = True, toleranceDiameter = 0.0, lowLimit = 0.0, highLimit = 0.0):
+    """Create (or update when modify is True) the Annotation carrying the
+    datum feature DF and the geometric tolerance(s) GT of the given faces.
+
+    A new annotation asks the user for the anchor point of its frame in the
+    3D view (Draft point picker); the elements are deleted if it is cancelled.
+    """
+    if GT is None:
+        GT = []
 
     if not modify:
-        obj = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython",dictionaryAnnotation[len(getAllAnnotationObjects())])
+        name = "Annotation{}".format(len(getAllAnnotationObjects()) + 1)
+        obj = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython", name)
         _Annotation(obj)
 
         if gui:
@@ -1785,9 +1653,12 @@ def makeAnnotation(faces, AP, DF=None, GT=[], modify=False, Object=None, diamete
 
         else:
             if DF:
+                # Also remove the datum system created with the datum feature
+                # (the only datum systems that can reference a new datum)
+                for ds in getAllDatumSystemObjects():
+                    if DF in (ds.Primary, ds.Secondary, ds.Tertiary):
+                        FreeCAD.ActiveDocument.removeObject(ds.Name)
                 FreeCAD.ActiveDocument.removeObject(obj.DF.Name)
-                if checkBoxState:
-                    FreeCAD.ActiveDocument.removeObject(getAllDatumSystemObjects()[-1].Name)
             else:
                 FreeCAD.ActiveDocument.removeObject(obj.GT[-1].Name)
 
@@ -1819,7 +1690,6 @@ class Characteristics(object):
         self.Label = Label
         self.Code = Code
         self.Icon = Icon
-        self.Proxy = self
 
 def makeCharacteristics(label=None):
     Label = ['Straightness', 'Flatness', 'Circularity', 'Cylindricity', 'Profile of a line', 'Profile of a surface', 'Perpendicularity', 'Angularity', 'Parallelism', 'Symmetry', 'Position', 'Concentricity','Circular run-out', 'Total run-out']
@@ -1842,7 +1712,6 @@ class FeatureControlFrame(object):
         self.Icon = Icon
         self.Code = Code
         self.toolTip = toolTip
-        self.Proxy = self
 
 def makeFeatureControlFrame(toolTip=None):
     # A C F G L M P S T U X
@@ -1904,7 +1773,6 @@ class ContainerOfData(object):
         self.annotationPlane = 0
         self.annotation = None
         self.combo = ['','','','','','']
-        self.Proxy = self
 
 #---------------------------------------------------------------------------
 # Customized widgets
@@ -1980,17 +1848,13 @@ class GDTGuiClass(QtWidgets.QWidget):
         self.setLayout(vbox)
 
     def createObject(self):
-        global auxDictionaryDS
-        # 5@xes modif for test
-        # self.textName = self.ContainerOfData.textName.encode('utf-8')
         self.textName = str(self.ContainerOfData.textName)
-        print("5@xes createObject textName {} / {}".format(self.textName,self.idGDT))
 
         if self.idGDT == 1:
             obj = makeDatumFeature(self.textName, self.ContainerOfData)
             if checkBoxState:
-                datumNAme = auxDictionaryDS[len(getAllDatumSystemObjects())] + ': ' + self.textName
-                makeDatumSystem(datumNAme, obj, None, None)
+                datumName = "DS{}: {}".format(len(getAllDatumSystemObjects()) + 1, self.textName)
+                makeDatumSystem(datumName, obj, None, None)
         elif self.idGDT == 2:
             separator = ' | '
             if self.ContainerOfData.textDS[0] != '':
@@ -2217,9 +2081,9 @@ class comboLabelWidget:
             self.ContainerOfData.combo[comboIndex2].model().item(self.ContainerOfData.combo[comboIndex1].currentIndex()).setEnabled(False)
 
 class groupBoxWidget:
-    def __init__(self, Text='Label', List=[]):
+    def __init__(self, Text='Label', List=None):
         self.Text = Text
-        self.List = List
+        self.List = List if List is not None else []
 
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
@@ -2232,7 +2096,7 @@ class groupBoxWidget:
         return self.group
 
 class fieldLabelComboWidget:
-    def __init__(self, Text='Label', Circumference = [''], Diameter = 0.0, toleranceSelect = True, tolerance = 0.0, lowLimit = 0.0, highLimit = 0.0, List=[''], Icons=None, ToolTip = None):
+    def __init__(self, Text='Label', Circumference = ('',), Diameter = 0.0, toleranceSelect = True, tolerance = 0.0, lowLimit = 0.0, highLimit = 0.0, List=('',), Icons=None, ToolTip = None):
         self.Text = Text
         self.Circumference = Circumference
         self.Diameter = Diameter

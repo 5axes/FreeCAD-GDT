@@ -80,14 +80,6 @@ class GDTGuiClass:
                 self.dialogWidgets.append( comboLabelWidget_inv(Text='Characteristic:', List=characteristics.Label, Icons=characteristics.Icon, Data = self.data, Obj = obj) )
 
                 featureControlFrame = makeFeatureControlFrame()
-
-                # Annotation = makeAnnotation(self.data.faces,self.data.AP)
-                print("self.data          {}".format(self.data))
-                print("self.data textName {}".format(self.data.textName))
-                # print("self.data characteristic {}".format(self.data.characteristic))
-                print("self.data circumference {}".format(self.data.circumference))
-
-
                 self.dialogWidgets.append( fieldLabelComboWidget_inv(Text='Tolerance value:', List=featureControlFrame.Label, Circumference=['',':/dd/icons/diameter.svg'] , Icons=featureControlFrame.Icon, ToolTip=featureControlFrame.toolTip, Data = self.data, Obj = obj) ) #http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
 
                 self.dialogWidgets.append( comboLabelWidget_inv(Text='Datum system:', List=[None] + [l for l in getAllDatumSystemObjects()], Data = self.data, Obj = obj) )
@@ -120,13 +112,7 @@ class GDTGuiClass:
         Modify Function
     """
     def modifyFunc(self, obj, data):
-        # A C F G L M P S T U X
-        Code = ['', '\u24B6', '\u24B8', '\u24BB', '\u24BC','\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24CA', '\u24CD']
-        Icon = ['', ':/dd/icons/FeatureControlFrame/derivedFeature.svg', ':/dd/icons/FeatureControlFrame/minimaxFeature.svg', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastSquares.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg',
-        ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg', ':/dd/icons/FeatureControlFrame/maximumInscribed.svg']
-        ToolTip = ['Feature control frame', 'Derived feature', 'Minimax (Chebyshev) feature', 'Free state', 'Least squares (Gaussian) feature',
-        'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral', 'Maximum inscribed feature']
-
+        "Apply the values of the form of obj"
         if "AnnotationPlane" == getType(obj):
             obj.Label = data.textName
             obj.Offset = data.OffsetValue
@@ -194,13 +180,9 @@ class GDTGuiClass:
             obj.Circumference = data.circumference
             obj.FeatureControlFrame = data.featureControlFrame
             if hasattr(obj,"FeatureControlFrameCode"):
-                if data.featureControlFrame != "":
-                    index = ToolTip.index(data.featureControlFrame)
-                    obj.FeatureControlFrameCode = Code[index]
-                    obj.FeatureControlFrameIcon = Icon[index]
-                else:
-                    obj.FeatureControlFrameCode = ''
-                    obj.FeatureControlFrameIcon = ''
+                frame = makeFeatureControlFrame(data.featureControlFrame)
+                obj.FeatureControlFrameCode = frame.Code
+                obj.FeatureControlFrameIcon = frame.Icon
 
             obj.DS = data.datumSystem
 
@@ -215,8 +197,6 @@ class GDTGuiClass:
         Delete Function
     """
     def deleteFunc(self, obj, data):
-        # print("5@xes deleteFunc = {}".format(obj))
-        # print("5@xes deleteFunc getType = {}".format(getType(obj)))
         if "AnnotationPlane" == getType(obj):
             ok = True
             for l in getAllAnnotationObjects():
@@ -336,7 +316,7 @@ class fieldLabelButtonWidget_inv:
         self.inputfield.setText(self.auxText)
 
 class comboLabelWidget_inv:
-    def __init__(self, Text='Label', List=[None], Icons=None, ToolTip = None, Data = None, Obj = None):
+    def __init__(self, Text='Label', List=(None,), Icons=None, ToolTip = None, Data = None, Obj = None):
         self.Text = Text
         self.List = List
         self.Icons = Icons
@@ -501,7 +481,7 @@ class comboLabelWidget_inv:
             self.data.combo[comboIndex2].model().item(self.data.combo[comboIndex1].currentIndex()).setEnabled(False)
 
 class groupBoxWidget_inv:
-    def __init__(self, Text='Label', List=[], Data = None, Obj = None):
+    def __init__(self, Text='Label', List=(), Data = None, Obj = None):
         self.Text = Text
         self.List = List
         self.data = Data
@@ -516,7 +496,7 @@ class groupBoxWidget_inv:
         return self.group
 
 class fieldLabelComboWidget_inv:
-    def __init__(self, Text='Label', List=[''], Circumference = [''], Icons=None, ToolTip = None, Data = None, Obj = None):
+    def __init__(self, Text='Label', List=('',), Circumference = ('',), Icons=None, ToolTip = None, Data = None, Obj = None):
         self.Text = Text
         self.List = List
         self.Circumference = Circumference
