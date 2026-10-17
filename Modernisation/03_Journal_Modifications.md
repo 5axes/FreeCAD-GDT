@@ -159,3 +159,19 @@ Aucun changement fonctionnel visé, sauf les points F-11, F-12 et F-14 ci-dessou
 ### Tests (`Modernisation/tests/lot5_results.json`)
 
 28 tests : 27 PASS, plus T16 en WARN (Assembly4). Nouveaux tests : **T26** (le `.qm` est valide et le menu de FreeCAD affiche « Ajouter un élément de référence ») et **T27** (la page de préférences GDT s'ouvre, traduite : groupes « Texte », « Lignes », « Grille »).
+
+---
+
+## Lot 6 : livrables et vérification visuelle
+
+| Fichier | Contenu |
+|---|---|
+| `tests/gui_test_gdt.py` | **T28** : captures PNG du rendu, vues de dessus et isométrique (`Modernisation/tests/gdt_render_*.png`). |
+| `Modernisation/tests/gdt_render_top_code_origine.png` | Même document rendu avec le code d'origine sous FreeCAD 1.1. Cette capture établit que l'absence des symboles GD&T dans la vue 3D est **préexistante**. Le changement de police (chemin ou nom d'Iso-Gps, osifont) n'y change rien (mesuré). |
+| `Modernisation/02_Incompatibilites.md` | Statut final de chaque incompatibilité, avec sa preuve. |
+| `Modernisation/04_Rapport_Tests.md` | Environnement, méthode, catalogue, matrice des résultats des lots 0 à 6, limites. |
+| `Modernisation/05_Fonctionnalites.md` | Fonctionnalités valides, corrigées, partielles et à développer. |
+| `README.md` | Prérequis FreeCAD ≥ 1.0, installation (manuelle ou `tools/install_mod.py`), migration des fichiers, traductions, tests, limitation connue. |
+| `Resources/ReadMe.txt` | Préfixe `:/dd` à conserver et procédure de régénération du `.rcc`. |
+
+Résultat final : **27 tests sur 28 réussis**. T16 est en WARN pour deux raisons extérieures au MOD : la dépendance à Assembly4 et la renumérotation des faces dans deux fichiers d'exemple.

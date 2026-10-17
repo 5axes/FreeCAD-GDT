@@ -38,7 +38,8 @@ def main():
     env = dict(os.environ,
                GDT_TEST_OUT=out,
                GDT_TEST_WORKDIR=workdir,
-               GDT_TEST_SAMPLES=os.path.join(REPO, "Doc"))
+               GDT_TEST_SAMPLES=os.path.join(REPO, "Doc"),
+               GDT_TEST_SHOTS=os.path.dirname(os.path.abspath(out)))
     script = os.path.join(REPO, "tests", "gui_test_gdt.py")
     try:
         subprocess.run([args.freecad, script], env=env, timeout=args.timeout)

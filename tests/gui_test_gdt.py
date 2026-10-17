@@ -594,6 +594,22 @@ def t_render():
     return status, " | ".join(msgs)
 
 
+def t_screenshot():
+    """Save a picture of the annotations (visual check of the Coin rendering)."""
+    shots = os.environ.get("GDT_TEST_SHOTS") or WORKDIR
+    view = Gui.activeDocument().activeView()
+    paths = []
+    for name, orient in (("top", view.viewTop), ("iso", view.viewIsometric)):
+        orient()
+        Gui.SendMsgToActiveView("ViewFit")
+        pump(10)
+        path = os.path.join(shots, "gdt_render_{}.png".format(name))
+        view.saveImage(path, 1400, 1000, "White")
+        paths.append(path)
+    ok = all(os.path.getsize(p) > 5000 for p in paths)
+    return ("PASS" if ok else "FAIL"), " ".join(paths)
+
+
 def t_groups():
     doc = ctx["doc"]
     msgs, status = [], "PASS"
@@ -871,6 +887,7 @@ def main():
             ("T21", "Couleur de la face referencee (opaque)", t_face_color),
             ("T25", "Annulation de la saisie du point (Echap)", t_cancel_pick),
             ("T11", "Rendu Coin des annotations", t_render),
+            ("T28", "Capture du rendu 3D", t_screenshot),
             ("T12", "Rangement dans le groupe du plan", t_groups),
             ("T13", "Inventaire", t_inventory),
             ("T26", "Traductions (fr)", t_translations),
@@ -885,7 +902,7 @@ def main():
         prereq = {"T06": "T05", "T07": "T06", "T08": "T07", "T09": "T06",
                   "T10": "T06", "T11": "T07", "T12": "T07", "T14": "T05",
                   "T17": "T07", "T18": "T06", "T19": "T07", "T21": "T07",
-                  "T22": "T09", "T23": "T08", "T25": "T07"}
+                  "T22": "T09", "T23": "T08", "T25": "T07", "T28": "T07"}
         status = {}
         for tid, name, func in steps:
             if tid in ("T02", "T03", "T04", "T05") and status.get("T01") == "FAIL":

@@ -26,9 +26,25 @@ The initial source code as been developped by [Juan Vañó Cerdá](https://githu
 Installing
 ----------
 
+Requires **FreeCAD 1.0 or later** (tested with FreeCAD 1.1.3, Python 3.11, Qt 6.8 / PySide6).
+Version 0.20.x of the workbench remains available for FreeCAD 0.19 – 0.21.
+
 Download and install your corresponding version of FreeCAD from [wiki Download page](http://www.freecadweb.org/wiki/Download) and either install
 - automatically using the [FreeCAD Add-on Manager](https://github.com/FreeCAD/FreeCAD-addons) 
-- manually by copying the FreeCAD-GDT folder to the Mod sub-directory of the FreeCAD application.
+- manually by copying the FreeCAD-GDT folder to the Mod sub-directory of the FreeCAD user data folder
+  (`%APPDATA%\FreeCAD\v1-1\Mod` on Windows, `~/.local/share/FreeCAD/v1-1/Mod` on Linux), or with
+  `python tools/install_mod.py`, which copies only the files needed at run time.
+
+Documents created with older versions open directly; their face links are migrated on opening
+(see `Modernisation/` for details). Once saved, they are no longer readable by versions 0.20.x.
+
+Translations: French is included (`translations/GDT_fr.qm`). See `translations/fill_fr.py` to update or add a language.
+
+Tests: `python tools/run_gui_tests.py --freecad <path to FreeCAD.exe>` installs the workbench and runs an
+end-to-end GUI test inside FreeCAD (see `Modernisation/04_Rapport_Tests.md`).
+
+Known limitation: the GD&T characteristic symbols (⏤, ⌖, ...) are not rendered in the 3D view (Coin3D text);
+they appear in the tree icons and in the task panels.
 
 
 Operation of the module
