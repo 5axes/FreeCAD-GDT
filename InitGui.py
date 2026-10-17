@@ -43,6 +43,11 @@ global GDTWB_PATH, GDTWB_ICON
 GDTWB_PATH = os.path.dirname(GDT_locator.__file__)
 GDTWB_ICON = os.path.join(GDTWB_PATH, "Resources", "icons", "GDT.svg")
 
+# Translations (translations/GDT_<language>.qm) are needed at start-up for the
+# menu texts of the commands: only the language path is registered here.
+FreeCADGui.addLanguagePath(os.path.join(GDTWB_PATH, "translations"))
+FreeCADGui.updateLocale()
+
 
 class GDandTWorkbench(Workbench):
     "Geometric Dimensioning & Tolerancing workbench"
@@ -74,7 +79,10 @@ class GDandTWorkbench(Workbench):
         self.appendMenu("GD&T Tools", commands)
 
         FreeCADGui.addIconPath(":/dd/icons")
-        FreeCADGui.addPreferencePage(":/dd/ui/preferences-gdt.ui", "GDT")
+        # Loaded from the file (not from dd_resources.rcc) so that it can be
+        # edited and translated without recompiling the Qt resources.
+        FreeCADGui.addPreferencePage(
+            os.path.join(GDTWB_PATH, "Resources", "ui", "preferences-gdt.ui"), "GDT")
         FreeCAD.Console.PrintLog("Loading Geometric Dimensioning & Tolerancing... done\n")
 
     @staticmethod

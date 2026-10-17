@@ -1,0 +1,197 @@
+{
+  "freecad": "1.1.3",
+  "python": "3.11.14",
+  "qt": "6.8.3",
+  "startup_problems": [],
+  "results": [
+    {
+      "id": "T24",
+      "name": "Chargement differe (rien d'importe au demarrage)",
+      "status": "PASS",
+      "detail": "modules charges au demarrage : []",
+      "console": []
+    },
+    {
+      "id": "T01",
+      "name": "Workbench enregistre",
+      "status": "PASS",
+      "detail": "MenuText=GD&T",
+      "console": []
+    },
+    {
+      "id": "T02",
+      "name": "Activation du workbench",
+      "status": "PASS",
+      "detail": "activated",
+      "console": []
+    },
+    {
+      "id": "T03",
+      "name": "Barre d'outils et menu",
+      "status": "PASS",
+      "detail": "toolbar=True menu=True",
+      "console": []
+    },
+    {
+      "id": "T04",
+      "name": "Commandes et icones",
+      "status": "PASS",
+      "detail": "5 commandes, 12 icones verifiees",
+      "console": []
+    },
+    {
+      "id": "T05",
+      "name": "Document de test",
+      "status": "PASS",
+      "detail": "Box + Cylindre",
+      "console": []
+    },
+    {
+      "id": "T06",
+      "name": "Creation Annotation Plane",
+      "status": "PASS",
+      "detail": "AP=AP1 p1=Vector (20.0, 14.999999999999996, 10.0) dir=Vector (0.0, 0.0, 1.0)",
+      "console": []
+    },
+    {
+      "id": "T07",
+      "name": "Creation Datum Feature (+DS auto)",
+      "status": "PASS",
+      "detail": "DF=A Annotation=Annotation1 DS auto=1",
+      "console": []
+    },
+    {
+      "id": "T08",
+      "name": "Creation Datum System",
+      "status": "PASS",
+      "detail": "DS=DS2: A Primary=A",
+      "console": []
+    },
+    {
+      "id": "T09",
+      "name": "Creation Geometric Tolerance",
+      "status": "PASS",
+      "detail": "GT=GT1 Straightness tol=0.05 DS=DS2: A",
+      "console": []
+    },
+    {
+      "id": "T10",
+      "name": "Tolerance sur cylindre (diametre)",
+      "status": "PASS",
+      "detail": "GT=GT2 Circumference=True annotation.circumferenceBool=True diameter=10.0",
+      "console": []
+    },
+    {
+      "id": "T17",
+      "name": "GT ajoutee a l'annotation existante",
+      "status": "PASS",
+      "detail": "annotations 3 -> 3 ; GT dans l'annotation du DF : True",
+      "console": []
+    },
+    {
+      "id": "T18",
+      "name": "Selection multi-objets",
+      "status": "PASS",
+      "detail": "GT 3 -> 4",
+      "console": []
+    },
+    {
+      "id": "T19",
+      "name": "Plan de travail Draft aligne sur l'AP",
+      "status": "PASS",
+      "detail": "saisies demandees : [('dd_datumFeature', 'Face1', True), ('dd_geometricTolerance', 'Face2', True), ('dd_geometricTolerance', 'Face1', True), ('dd_geometricTolerance', 'Face1', False)]\ndd_datumFeature: axe=Vector (0.0, 0.0, 1.0) pos=Vector (20.0, 14.999999999999996, 10.0) -> parallele=True dans_plan=True\ndd_geometricTolerance: axe=Vector (0.0, 0.0, 1.0) pos=Vector (20.0, 14.999999999999996, 10.0) -> parallele=True dans_plan=True\ndd_geometricTolerance: axe=Vector (0.0, 0.0, 1.0) pos=Vector (20.0, 14.999999999999996, 10.0) -> parallele=True dans_plan=True",
+      "console": []
+    },
+    {
+      "id": "T21",
+      "name": "Couleur de la face referencee (opaque)",
+      "status": "PASS",
+      "detail": "Face1=(0.0, 0.0, 1.0, 1.0) transparence par face=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0]",
+      "console": []
+    },
+    {
+      "id": "T25",
+      "name": "Annulation de la saisie du point (Echap)",
+      "status": "PASS",
+      "detail": "avant={'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 2, 'GeometricTolerance': 4, 'Annotation': 4} apres={'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 2, 'GeometricTolerance': 4, 'Annotation': 4}",
+      "console": []
+    },
+    {
+      "id": "T11",
+      "name": "Rendu Coin des annotations",
+      "status": "PASS",
+      "detail": "Annotation1: points=17 textes=['0.00 mm'] DF='A' | Annotation2: points=11 textes=['0.050 mm', 'A'] DF='' | Annotation3: points=9 textes=['0.020 mm', '10.00 mm ± 0.00 mm'] DF='' | Annotation4: points=9 textes=['0.00 mm', '2x'] DF=''",
+      "console": []
+    },
+    {
+      "id": "T12",
+      "name": "Rangement dans le groupe du plan",
+      "status": "PASS",
+      "detail": "Annotation1 -> Plane_AP1; Annotation2 -> Plane_AP1; Annotation3 -> Plane_AP1; Annotation4 -> Plane_AP1",
+      "console": []
+    },
+    {
+      "id": "T13",
+      "name": "Inventaire",
+      "status": "PASS",
+      "detail": "8 formulaires",
+      "console": []
+    },
+    {
+      "id": "T26",
+      "name": "Traductions (fr)",
+      "status": "PASS",
+      "detail": "qm=GDT_fr.qm GDT/Flatness->'Planéité' ; langue FreeCAD=French ; menu dd_datumFeature='Ajouter un élément de référence'",
+      "console": []
+    },
+    {
+      "id": "T27",
+      "name": "Page de preferences GDT",
+      "status": "PASS",
+      "detail": "groupes=['Texte', 'Lignes', 'Grille'] libelles=['Couleur', \"Facteur d'échelle des lignes :\", 'Police', 'Taille', 'Taille des tolérances', 'Épaisseur']",
+      "console": []
+    },
+    {
+      "id": "T22",
+      "name": "Inventaire : modification d'une GT",
+      "status": "PASS",
+      "detail": "ToleranceValue=0.1",
+      "console": []
+    },
+    {
+      "id": "T23",
+      "name": "Inventaire : suppression d'un DS",
+      "status": "PASS",
+      "detail": "DatumSystem 2 -> 1",
+      "console": []
+    },
+    {
+      "id": "T14",
+      "name": "Sauvegarde / reouverture",
+      "status": "PASS",
+      "detail": "avant={'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 4, 'Annotation': 4} apres={'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 4, 'Annotation': 4} invalides=[] VP manquants=[]",
+      "console": []
+    },
+    {
+      "id": "T15",
+      "name": "Face d'une fonction dans un Body",
+      "status": "PASS",
+      "detail": "AP=1 p1=Vector (110.0, 10.0, 5.0) (attendu x~110, z=5)",
+      "console": []
+    },
+    {
+      "id": "T20",
+      "name": "Face non-Tip d'un Body dans un App::Part deplace",
+      "status": "PASS",
+      "detail": "p1=Vector (10.0, 210.0, 5.0) attendu=Vector (10.0, 210.0, 5.0)",
+      "console": []
+    },
+    {
+      "id": "T16",
+      "name": "Fichiers historiques Doc/*.FCStd",
+      "status": "WARN",
+      "detail": "8x.FCStd [OK] {'AnnotationPlane': 4, 'DatumFeature': 2, 'DatumSystem': 2, 'GeometricTolerance': 1, 'Annotation': 3} derive_p1=1.97e-31 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nAll around and all over.FCStd [OK] {'AnnotationPlane': 2, 'DatumFeature': 2, 'DatumSystem': 2, 'GeometricTolerance': 1, 'Annotation': 3} derive_p1=3.12e-14 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nAssembly.FCStd [PB] {'AnnotationPlane': 2, 'DatumFeature': 3, 'DatumSystem': 4, 'GeometricTolerance': 3, 'Annotation': 4} derive_p1=0 invalides=[\"Pocket001 ['Touched', 'Invalid', 'Expanded']\"] sansProxy=['Variables'] avert_portee_apres_reenregistrement=0 console=[\"15:18:05  pyException: C:\\\\Users/lalliard/Documents/30_Devel/FreeCAD-GDT/tests\\\\gui_test_gdt.py(789)<class 'ImportError'>: module not permitted: Asm4_libs\"]\nBase.FCStd [OK] {'AnnotationPlane': 4, 'DatumFeature': 3, 'DatumSystem': 5, 'GeometricTolerance': 4, 'Annotation': 5} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nBase2.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nCyl.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 1, 'Annotation': 1} derive_p1=4.47e-17 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nCylindre.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nPave.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\nPlaque.FCStd [OK] {'AnnotationPlane': 7, 'DatumFeature': 5, 'DatumSystem': 6, 'GeometricTolerance': 0, 'Annotation': 5} derive_p1=40.6 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\ncube.FCStd [OK] {'AnnotationPlane': 2, 'DatumFeature': 4, 'DatumSystem': 6, 'GeometricTolerance': 9, 'Annotation': 13} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\ncube_2.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 3, 'Annotation': 4} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\ngroup.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 1, 'Annotation': 2} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]\norientation planes.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} derive_p1=0 invalides=[] sansProxy=[] avert_portee_apres_reenregistrement=0 console=[]",
+      "console": []
+    }
+  ]
+}

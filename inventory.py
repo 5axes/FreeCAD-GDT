@@ -27,7 +27,6 @@ from GDT import *
 class InventoryCommand:
     def __init__(self):
         self.iconPath = ':/dd/icons/inventory.svg'
-        self.toolTip = 'Inventory of the elements of GD&T'
 
     def Activated(self):
         Gui.Control.showDialog( GDTGuiClass() )
@@ -35,8 +34,8 @@ class InventoryCommand:
     def GetResources(self):
         return {
             'Pixmap' : self.iconPath,
-            'MenuText': self.toolTip,
-            'ToolTip':  self.toolTip
+            'MenuText': QT_TRANSLATE_NOOP("dd_inventory", 'Inventory of the elements of GD&T'),
+            'ToolTip':  QT_TRANSLATE_NOOP("dd_inventory", 'List, modify and delete the GD&T elements of the document')
             }
 
     def IsActive(self):
@@ -62,28 +61,28 @@ class GDTGuiClass:
             self.data.textName = obj.Label
 
             if "AnnotationPlane" == getType(obj):
-                self.dialogWidgets.append(textLabelWidget_inv(Text = 'Name:', Mask = 'NNNn', Data = self.data, Obj = obj))
-                self.dialogWidgets.append(fieldLabelButtonWidget_inv(Text = 'Offset:', Data = self.data, Obj = obj))
+                self.dialogWidgets.append(textLabelWidget_inv(Text = QT_TRANSLATE_NOOP("GDT", 'Name:'), Mask = 'NNNn', Data = self.data, Obj = obj))
+                self.dialogWidgets.append(fieldLabelButtonWidget_inv(Text = QT_TRANSLATE_NOOP("GDT", 'Offset:'), Data = self.data, Obj = obj))
 
             elif "DatumSystem" == getType(obj):
-                self.dialogWidgets.append(textLabelWidget_inv(Text = 'Name:', Mask='NNNn', Data = self.data, Obj = obj))
+                self.dialogWidgets.append(textLabelWidget_inv(Text = QT_TRANSLATE_NOOP("GDT", 'Name:'), Mask='NNNn', Data = self.data, Obj = obj))
                 listDF = [None] + [l for l in getAllDatumFeatureObjects()]
-                self.dialogWidgets.append( groupBoxWidget_inv(Text='Constituents', List=[comboLabelWidget_inv(Text='Primary:',List=listDF, Data = self.data, Obj = obj),comboLabelWidget_inv(Text='Secondary:',List=listDF, Data = self.data, Obj = obj), comboLabelWidget_inv(Text='Tertiary:',List=listDF, Data = self.data, Obj = obj)], Data = self.data, Obj = obj) )
+                self.dialogWidgets.append( groupBoxWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Constituents'), List=[comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Primary:'),List=listDF, Data = self.data, Obj = obj),comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Secondary:'),List=listDF, Data = self.data, Obj = obj), comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Tertiary:'),List=listDF, Data = self.data, Obj = obj)], Data = self.data, Obj = obj) )
 
             elif "DatumFeature" == getType(obj):
-                self.dialogWidgets.append(textLabelWidget_inv(Text = 'Datum feature:', Mask='>A', Data = self.data, Obj = obj))
-                self.dialogWidgets.append( comboLabelWidget_inv(Text='In annotation:', List = [l for l in getAllAnnotationObjects()], Data = self.data, Obj = obj) )
+                self.dialogWidgets.append(textLabelWidget_inv(Text = QT_TRANSLATE_NOOP("GDT", 'Datum feature:'), Mask='>A', Data = self.data, Obj = obj))
+                self.dialogWidgets.append( comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'In annotation:'), List = [l for l in getAllAnnotationObjects()], Data = self.data, Obj = obj) )
 
             elif "GeometricTolerance" == getType(obj):
-                self.dialogWidgets.append(textLabelWidget_inv(Text = 'Name:', Mask='NNNn', Data = self.data, Obj = obj))
+                self.dialogWidgets.append(textLabelWidget_inv(Text = QT_TRANSLATE_NOOP("GDT", 'Name:'), Mask='NNNn', Data = self.data, Obj = obj))
                 characteristics = makeCharacteristics()
-                self.dialogWidgets.append( comboLabelWidget_inv(Text='Characteristic:', List=characteristics.Label, Icons=characteristics.Icon, Data = self.data, Obj = obj) )
+                self.dialogWidgets.append( comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Characteristic:'), List=characteristics.Label, Icons=characteristics.Icon, Data = self.data, Obj = obj) )
 
                 featureControlFrame = makeFeatureControlFrame()
-                self.dialogWidgets.append( fieldLabelComboWidget_inv(Text='Tolerance value:', List=featureControlFrame.Label, Circumference=['',':/dd/icons/diameter.svg'] , Icons=featureControlFrame.Icon, ToolTip=featureControlFrame.toolTip, Data = self.data, Obj = obj) ) #http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
+                self.dialogWidgets.append( fieldLabelComboWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Tolerance value:'), List=featureControlFrame.Label, Circumference=['',':/dd/icons/diameter.svg'] , Icons=featureControlFrame.Icon, ToolTip=featureControlFrame.toolTip, Data = self.data, Obj = obj) ) #http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
 
-                self.dialogWidgets.append( comboLabelWidget_inv(Text='Datum system:', List=[None] + [l for l in getAllDatumSystemObjects()], Data = self.data, Obj = obj) )
-                self.dialogWidgets.append( comboLabelWidget_inv(Text='In annotation:', List=[l for l in getAllAnnotationObjects()], Data = self.data, Obj = obj) )
+                self.dialogWidgets.append( comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'Datum system:'), List=[None] + [l for l in getAllDatumSystemObjects()], Data = self.data, Obj = obj) )
+                self.dialogWidgets.append( comboLabelWidget_inv(Text=QT_TRANSLATE_NOOP("GDT", 'In annotation:'), List=[l for l in getAllAnnotationObjects()], Data = self.data, Obj = obj) )
 
 
             for widg in self.dialogWidgets:
@@ -93,10 +92,12 @@ class GDTGuiClass:
                 else:
                     vbox.addWidget( w )
 
-            buttonModify = QtWidgets.QPushButton('Modify')
+            buttonModify = QtWidgets.QPushButton(translate("GDT", 'Modify'))
+            buttonModify.setObjectName("gdt_modify_button")
             # clicked(bool) passes "checked" first: keep it out of the bound arguments
             buttonModify.clicked.connect(lambda checked=False, obj=obj, data=self.data: self.modifyFunc(obj, data))
-            buttonDelete = QtWidgets.QPushButton('Delete')
+            buttonDelete = QtWidgets.QPushButton(translate("GDT", 'Delete'))
+            buttonDelete.setObjectName("gdt_delete_button")
             buttonDelete.clicked.connect(lambda checked=False, obj=obj, data=self.data: self.deleteFunc(obj, data))
 
             hbox.addStretch(1)
@@ -137,8 +138,8 @@ class GDTGuiClass:
             if data.annotation.DF != None and annotationObj != data.annotation:
                 QtWidgets.QMessageBox.critical(
                     QtWidgets.QApplication.activeWindow(),
-                    'ERROR',
-                    'You can not change the DF to an annotation where one already exists',
+                    translate("GDT", 'Error'),
+                    translate("GDT", 'You can not change the DF to an annotation where one already exists'),
                     QtWidgets.QMessageBox.StandardButton.Abort )
 
             elif annotationObj != data.annotation :
@@ -208,8 +209,8 @@ class GDTGuiClass:
             else:
                 QtWidgets.QMessageBox.critical(
                     QtWidgets.QApplication.activeWindow(),
-                    'ERROR',
-                    'You can not delete AP in use',
+                    translate("GDT", 'Error'),
+                    translate("GDT", 'You can not delete AP in use'),
                     QtWidgets.QMessageBox.StandardButton.Abort )
 
         elif "DatumSystem" == getType(obj):
@@ -296,7 +297,7 @@ class fieldLabelButtonWidget_inv:
         self.firstAttempt = True
         connectValueChanged(self.inputfield, self.valueChanged)
 
-        self.button = QtWidgets.QPushButton('Visualize')
+        self.button = QtWidgets.QPushButton(translate("GDT", 'Visualize'))
         self.button.clicked.connect(self.visualizeFunc)
         hbox.addLayout( GDTDialog_hbox(self.Text,self.inputfield) )
         hbox.addStretch(1)
@@ -344,12 +345,12 @@ class comboLabelWidget_inv:
             if self.List[i] == None:
                 self.data.combo[self.k].addItem( '' )
             elif self.Icons != None:
-                self.data.combo[self.k].addItem( QtGui.QIcon(self.Icons[i]), self.List[i] )
+                self.data.combo[self.k].addItem( QtGui.QIcon(self.Icons[i]), tr(self.List[i]) )
             else:
                 self.data.combo[self.k].addItem( self.List[i].Label )
 
         if self.ToolTip != None:
-            self.data.combo[self.k].setToolTip( self.ToolTip[0] )
+            self.data.combo[self.k].setToolTip( tr(self.ToolTip[0]) )
         self.updateCurrentItem()
         if self.Text == 'Secondary:' and self.data.combo[self.k].currentIndex() == 0 or self.Text == 'Tertiary:' and self.data.combo[self.k].currentIndex() == 0:
             self.data.combo[self.k].setEnabled(False)
@@ -418,7 +419,7 @@ class comboLabelWidget_inv:
     # Update of the Data
     def updateData(self, comboIndex):
         if self.ToolTip != None:
-            self.data.combo[self.k].setToolTip( self.ToolTip[self.data.combo[self.k].currentIndex()] )
+            self.data.combo[self.k].setToolTip( tr(self.ToolTip[self.data.combo[self.k].currentIndex()]) )
         if self.Text == 'Primary:':
             self.data.textDS[0] = self.data.combo[self.k].currentText()
             self.data.primary = self.List[self.data.combo[self.k].currentIndex()]
@@ -488,7 +489,7 @@ class groupBoxWidget_inv:
         self.obj = Obj
 
     def generateWidget( self ):
-        self.group = QtWidgets.QGroupBox(self.Text)
+        self.group = QtWidgets.QGroupBox(tr(self.Text))
         vbox = QtWidgets.QVBoxLayout()
         for l in self.List:
             vbox.addLayout(l.generateWidget())
@@ -520,12 +521,12 @@ class fieldLabelComboWidget_inv:
         for i in range(len(self.Circumference)):
             self.comboCircumference.addItem(QtGui.QIcon(self.Circumference[i]), '' )
         self.comboCircumference.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
-        self.comboCircumference.setToolTip("Indicates whether the tolerance applies to a given diameter")
+        self.comboCircumference.setToolTip(translate("GDT", "Indicates whether the tolerance applies to a given diameter"))
         self.combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         actualValue = self.obj.FeatureControlFrame
         pos = self.getPos(actualValue)
         self.combo.setCurrentIndex(pos)
-        self.combo.setToolTip( self.ToolTip[self.combo.currentIndex()] )
+        self.combo.setToolTip( tr(self.ToolTip[self.combo.currentIndex()]) )
         self.updateData()
         self.combo.activated.connect(self.updateData)
         if self.obj.Circumference:
@@ -541,7 +542,7 @@ class fieldLabelComboWidget_inv:
         self.inputfield.setText(auxText)
         self.data.toleranceValue = self.obj.ToleranceValue
         connectValueChanged(self.inputfield, self.valueChanged)
-        hbox.addWidget( QtWidgets.QLabel(self.Text) )
+        hbox.addWidget( QtWidgets.QLabel(tr(self.Text)) )
         hbox.addWidget(self.comboCircumference)
         hbox.addStretch(1)
         hbox.addWidget(self.inputfield)
@@ -559,7 +560,7 @@ class fieldLabelComboWidget_inv:
 
     def updateData(self):
         if self.ToolTip != None:
-            self.combo.setToolTip( self.ToolTip[self.combo.currentIndex()] )
+            self.combo.setToolTip( tr(self.ToolTip[self.combo.currentIndex()]) )
         if self.Text == 'Tolerance value:':
             self.data.featureControlFrame = '' if self.combo.currentIndex() == 0 else self.ToolTip[self.combo.currentIndex()]
 
@@ -573,8 +574,9 @@ class fieldLabelComboWidget_inv:
         self.data.toleranceValue = d
 
 def GDTDialog_hbox_inv( label, inputWidget):
+    "Label (translated) + input widget on one row"
     hbox = QtWidgets.QHBoxLayout()
-    hbox.addWidget( QtWidgets.QLabel(label) )
+    hbox.addWidget( QtWidgets.QLabel(tr(label)) )
     if inputWidget != None:
         hbox.addStretch(1)
         hbox.addWidget(inputWidget)

@@ -24,15 +24,14 @@ from GDT import *
 
 gdt = GDTWidget()
 _characteristics = makeCharacteristics()  # single source of the 14 characteristics
-gdt.dialogWidgets.append( comboLabelWidget(Text='Characteristic:', List=_characteristics.Label, Icons=_characteristics.Icon) )
-gdt.dialogWidgets.append( fieldLabelComboWidget(Text='Tolerance value:', Circumference = [], List=[], Icons=[], ToolTip=[]) )
-gdt.dialogWidgets.append( comboLabelWidget(Text='Datum system:', List=[]) )
-gdt.dialogWidgets.append( comboLabelWidget(Text='Active annotation plane:', List=[]) )
+gdt.dialogWidgets.append( comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Characteristic:'), List=_characteristics.Label, Icons=_characteristics.Icon) )
+gdt.dialogWidgets.append( fieldLabelComboWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tolerance value:'), Circumference = [], List=[], Icons=[], ToolTip=[]) )
+gdt.dialogWidgets.append( comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Datum system:'), List=[]) )
+gdt.dialogWidgets.append( comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Active annotation plane:'), List=[]) )
 
 class GeometricToleranceCommand:
     def __init__(self):
         self.iconPath = ':/dd/icons/geometricTolerance.svg'
-        self.toolTip = 'Add Geometric Tolerance'
         self.Dictionary = []
         for i in range(1,100):
             self.Dictionary.append('GT'+str(i))
@@ -43,28 +42,28 @@ class GeometricToleranceCommand:
         ContainerOfData = makeContainerOfData()
         if getAnnotationObj(ContainerOfData):
             annotation = getAnnotationObj(ContainerOfData)
-            self.toolTip = 'Add Geometric Tolerance to ' + annotation.Label
+            title = translate("GDT", 'Add Geometric Tolerance to {}').format(annotation.Label)
             gdt.dialogWidgets[3] = None
             if annotation.GT == []:
-                gdt.dialogWidgets[1] = fieldLabelComboWidget(Text='Tolerance value:', Circumference = ['',':/dd/icons/diameter.svg'], Diameter = ContainerOfData.diameter, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
+                gdt.dialogWidgets[1] = fieldLabelComboWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tolerance value:'), Circumference = ['',':/dd/icons/diameter.svg'], Diameter = ContainerOfData.diameter, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
             else:
                 if annotation.toleranceSelectBool:
-                    gdt.dialogWidgets[1] = fieldLabelComboWidget(Text='Tolerance value:', Circumference = ['',':/dd/icons/diameter.svg'], Diameter = annotation.diameter, tolerance = annotation.toleranceDiameter, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
+                    gdt.dialogWidgets[1] = fieldLabelComboWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tolerance value:'), Circumference = ['',':/dd/icons/diameter.svg'], Diameter = annotation.diameter, tolerance = annotation.toleranceDiameter, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
                 else:
-                    gdt.dialogWidgets[1] = fieldLabelComboWidget(Text='Tolerance value:', Circumference = ['',':/dd/icons/diameter.svg'], Diameter = annotation.diameter, toleranceSelect=False, lowLimit = annotation.lowLimit, highLimit = annotation.highLimit, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
+                    gdt.dialogWidgets[1] = fieldLabelComboWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tolerance value:'), Circumference = ['',':/dd/icons/diameter.svg'], Diameter = annotation.diameter, toleranceSelect=False, lowLimit = annotation.lowLimit, highLimit = annotation.highLimit, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
         else:
-            self.toolTip = 'Add Geometric Tolerance'
+            title = translate("GDT", 'Add Geometric Tolerance')
             showGrid()
-            gdt.dialogWidgets[3] = comboLabelWidget(Text='Active annotation plane:', List=getAllAnnotationPlaneObjects())
-            gdt.dialogWidgets[1] = fieldLabelComboWidget(Text='Tolerance value:', Circumference = ['',':/dd/icons/diameter.svg'], Diameter = ContainerOfData.diameter, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
-        gdt.dialogWidgets[2] = comboLabelWidget(Text='Datum system:', List=[None]+getAllDatumSystemObjects())
-        gdt.activate(idGDT = self.idGDT, dialogTitle=self.toolTip, dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
+            gdt.dialogWidgets[3] = comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Active annotation plane:'), List=getAllAnnotationPlaneObjects())
+            gdt.dialogWidgets[1] = fieldLabelComboWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tolerance value:'), Circumference = ['',':/dd/icons/diameter.svg'], Diameter = ContainerOfData.diameter, List=self.FeatureControlFrame.Label, Icons=self.FeatureControlFrame.Icon, ToolTip=self.FeatureControlFrame.toolTip)
+        gdt.dialogWidgets[2] = comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Datum system:'), List=[None]+getAllDatumSystemObjects())
+        gdt.activate(idGDT = self.idGDT, dialogTitle=title, dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
 
     def GetResources(self):
         return {
             'Pixmap' : self.iconPath,
-            'MenuText': self.toolTip,
-            'ToolTip':  self.toolTip
+            'MenuText': QT_TRANSLATE_NOOP("dd_geometricTolerance", 'Add Geometric Tolerance'),
+            'ToolTip':  QT_TRANSLATE_NOOP("dd_geometricTolerance", 'Add a geometric tolerance on the selected faces')
             }
 
     def IsActive(self):

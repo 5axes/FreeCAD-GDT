@@ -23,13 +23,11 @@
 from GDT import *
 
 gdt = GDTWidget()
-gdt.dialogWidgets.append( fieldLabelWidget(Text='Offset:') )
+gdt.dialogWidgets.append( fieldLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Offset:')) )
 
 class AnnotationPlaneCommand:
     def __init__(self):
         self.iconPath = ':/dd/icons/annotationPlane.svg'
-        self.toolTitle = 'Add Annotation Plane'
-        self.toolTip = 'Add Annotation Plane'
         self.Dictionary = []
         for i in range(1,100):
             self.Dictionary.append('AP'+str(i))
@@ -37,13 +35,13 @@ class AnnotationPlaneCommand:
 
     def Activated(self):
         showGrid()
-        gdt.activate(idGDT = self.idGDT, dialogTitle=self.toolTitle, dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
+        gdt.activate(idGDT = self.idGDT, dialogTitle=translate("GDT", 'Add Annotation Plane'), dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
 
     def GetResources(self):
         return {
             'Pixmap' : self.iconPath,
-            'MenuText': self.toolTitle,
-            'ToolTip':  self.toolTip
+            'MenuText': QT_TRANSLATE_NOOP("dd_annotationPlane", 'Add Annotation Plane'),
+            'ToolTip':  QT_TRANSLATE_NOOP("dd_annotationPlane", 'Add an annotation plane on the selected face')
             }
 
     def IsActive(self):

@@ -37,6 +37,14 @@ from pivy import coin
 
 translate = FreeCAD.Qt.translate
 
+def QT_TRANSLATE_NOOP(context, text):
+    "Marks a string for lupdate; it is translated where it is displayed"
+    return text
+
+def tr(text):
+    "tr(text): translation of a user interface text of the workbench"
+    return translate("GDT", text)
+
 # Without GUI (FreeCADCmd) the objects are still restored and recomputed,
 # but no view provider is created.
 gui = FreeCAD.GuiUp
@@ -1692,7 +1700,15 @@ class Characteristics(object):
         self.Icon = Icon
 
 def makeCharacteristics(label=None):
-    Label = ['Straightness', 'Flatness', 'Circularity', 'Cylindricity', 'Profile of a line', 'Profile of a surface', 'Perpendicularity', 'Angularity', 'Parallelism', 'Symmetry', 'Position', 'Concentricity','Circular run-out', 'Total run-out']
+    # English labels are stored in the documents (Characteristic property):
+    # they are translated only for display.
+    Label = [QT_TRANSLATE_NOOP("GDT", 'Straightness'), QT_TRANSLATE_NOOP("GDT", 'Flatness'),
+             QT_TRANSLATE_NOOP("GDT", 'Circularity'), QT_TRANSLATE_NOOP("GDT", 'Cylindricity'),
+             QT_TRANSLATE_NOOP("GDT", 'Profile of a line'), QT_TRANSLATE_NOOP("GDT", 'Profile of a surface'),
+             QT_TRANSLATE_NOOP("GDT", 'Perpendicularity'), QT_TRANSLATE_NOOP("GDT", 'Angularity'),
+             QT_TRANSLATE_NOOP("GDT", 'Parallelism'), QT_TRANSLATE_NOOP("GDT", 'Symmetry'),
+             QT_TRANSLATE_NOOP("GDT", 'Position'), QT_TRANSLATE_NOOP("GDT", 'Concentricity'),
+             QT_TRANSLATE_NOOP("GDT", 'Circular run-out'), QT_TRANSLATE_NOOP("GDT", 'Total run-out')]
     Icon = [':/dd/icons/Characteristic/straightness.svg', ':/dd/icons/Characteristic/flatness.svg', ':/dd/icons/Characteristic/circularity.svg', ':/dd/icons/Characteristic/cylindricity.svg', ':/dd/icons/Characteristic/profileOfALine.svg', ':/dd/icons/Characteristic/profileOfASurface.svg', ':/dd/icons/Characteristic/perpendicularity.svg', ':/dd/icons/Characteristic/angularity.svg', ':/dd/icons/Characteristic/parallelism.svg', ':/dd/icons/Characteristic/symmetry.svg', ':/dd/icons/Characteristic/position.svg', ':/dd/icons/Characteristic/concentricity.svg',':/dd/icons/Characteristic/circularRunOut.svg', ':/dd/icons/Characteristic/totalRunOut.svg']
     Code = ['\u23E4', '\u23E5', '\u25CB', '\u232D', '\u2312', '\u2313', '\u23CA', '\u2220', '\u2AFD', '\u232F', '\u2316', '\u25CE','\u2197', '\u2330']
 
@@ -1718,8 +1734,13 @@ def makeFeatureControlFrame(toolTip=None):
     Code = ['', '\u24B6', '\u24B8', '\u24BB', '\u24BC','\u24C1', '\u24C2', '\u24C5', '\u24C8', '\u24C9', '\u24CA', '\u24CD']
     Icon = ['', ':/dd/icons/FeatureControlFrame/derivedFeature.svg', ':/dd/icons/FeatureControlFrame/minimaxFeature.svg', ':/dd/icons/FeatureControlFrame/freeState.svg', ':/dd/icons/FeatureControlFrame/leastSquares.svg', ':/dd/icons/FeatureControlFrame/leastMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/maximumMaterialCondition.svg', ':/dd/icons/FeatureControlFrame/projectedToleranceZone.svg', ':/dd/icons/FeatureControlFrame/regardlessOfFeatureSize.svg',
     ':/dd/icons/FeatureControlFrame/tangentPlane.svg', ':/dd/icons/FeatureControlFrame/unequalBilateral.svg', ':/dd/icons/FeatureControlFrame/maximumInscribed.svg']
-    ToolTip = ['Feature control frame', 'Derived feature', 'Minimax (Chebyshev) feature', 'Free state', 'Least squares (Gaussian) feature',
-    'Least material condition', 'Maximum material condition', 'Projected tolerance zone', 'Regardless of feature size', 'Tangent plane', 'Unequal Bilateral', 'Maximum inscribed feature']
+    # English names are stored in the documents (FeatureControlFrame property)
+    ToolTip = [QT_TRANSLATE_NOOP("GDT", 'Feature control frame'), QT_TRANSLATE_NOOP("GDT", 'Derived feature'),
+               QT_TRANSLATE_NOOP("GDT", 'Minimax (Chebyshev) feature'), QT_TRANSLATE_NOOP("GDT", 'Free state'),
+               QT_TRANSLATE_NOOP("GDT", 'Least squares (Gaussian) feature'), QT_TRANSLATE_NOOP("GDT", 'Least material condition'),
+               QT_TRANSLATE_NOOP("GDT", 'Maximum material condition'), QT_TRANSLATE_NOOP("GDT", 'Projected tolerance zone'),
+               QT_TRANSLATE_NOOP("GDT", 'Regardless of feature size'), QT_TRANSLATE_NOOP("GDT", 'Tangent plane'),
+               QT_TRANSLATE_NOOP("GDT", 'Unequal Bilateral'), QT_TRANSLATE_NOOP("GDT", 'Maximum inscribed feature')]
     # Don't forget to dimmension the Label to the same size as Icon / ToolTip
     # Used to define the size of the Combo list in the UI
     Label = ['','','','','','','','','','','','']
@@ -1791,9 +1812,9 @@ class GDTWidget:
         self.ContainerOfData = makeContainerOfData()
         extraWidgets = []
         if Dictionary != None:
-            extraWidgets.append(textLabelWidget(Text='Name:',Mask='NNNn', Dictionary=self.Dictionary)) # http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
+            extraWidgets.append(textLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Name:'),Mask='NNNn', Dictionary=self.Dictionary))
         else:
-            extraWidgets.append(textLabelWidget(Text='Name:',Mask='NNNn'))
+            extraWidgets.append(textLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Name:'),Mask='NNNn'))
         self.taskDialog = GDTDialog( self.dialogTitle, self.dialogIconPath, self.idGDT, extraWidgets + self.dialogWidgets, self.ContainerOfData)
         FreeCADGui.Control.showDialog( self.taskDialog )
 
@@ -1839,6 +1860,7 @@ class GDTGuiClass(QtWidgets.QWidget):
                     vbox.addWidget( w )
         hbox = QtWidgets.QHBoxLayout()
         buttonCreate = QtWidgets.QPushButton(title)
+        buttonCreate.setObjectName("gdt_create_button")
         buttonCreate.setDefault(True)
         buttonCreate.clicked.connect(self.createObject)
         hbox.addStretch(1)
@@ -1891,8 +1913,9 @@ def connectValueChanged(inputField, slot):
     inputField.valueChanged.connect(forward)
 
 def GDTDialog_hbox( label, inputWidget):
+    "Label (translated) + input widget on one row"
     hbox = QtWidgets.QHBoxLayout()
-    hbox.addWidget( QtWidgets.QLabel(label) )
+    hbox.addWidget( QtWidgets.QLabel(tr(label)) )
     if inputWidget != None:
         hbox.addStretch(1)
         hbox.addWidget(inputWidget)
@@ -1910,22 +1933,19 @@ class textLabelWidget:
         self.lineEdit = QtWidgets.QLineEdit()
         if self.Mask != None:
             self.lineEdit.setInputMask(self.Mask)
+        # Default value: next free name of the dictionary (the label stays self.Text)
         if self.Dictionary == None:
-            self.lineEdit.setText('text')
-            self.Text = 'text'
+            value = 'text'
         else:
-            NumberOfObjects = self.getNumberOfObjects()
-            if NumberOfObjects > len(self.Dictionary)-1:
-                NumberOfObjects = len(self.Dictionary)-1
-            self.lineEdit.setText(self.Dictionary[NumberOfObjects])
-            self.Text = self.Dictionary[NumberOfObjects]
+            NumberOfObjects = min(self.getNumberOfObjects(), len(self.Dictionary)-1)
+            value = self.Dictionary[NumberOfObjects]
+        self.lineEdit.setText(value)
         self.lineEdit.textChanged.connect(self.valueChanged)
-        self.ContainerOfData.textName = self.Text.strip()
+        self.ContainerOfData.textName = value.strip()
         return GDTDialog_hbox(self.Text,self.lineEdit)
 
     def valueChanged(self, argGDT):
-        self.Text = argGDT.strip()
-        self.ContainerOfData.textName = self.Text
+        self.ContainerOfData.textName = argGDT.strip()
 
     def getNumberOfObjects(self):
         "getNumberOfObjects(): returns the number of objects of the same type as the active widget"
@@ -1991,7 +2011,7 @@ class comboLabelWidget:
         self.ContainerOfData.combo[self.k] = QtWidgets.QComboBox()
         for i in range(len(self.List)):
             if self.Icons != None:
-                self.ContainerOfData.combo[self.k].addItem( QtGui.QIcon(self.Icons[i]), self.List[i] )
+                self.ContainerOfData.combo[self.k].addItem( QtGui.QIcon(self.Icons[i]), tr(self.List[i]) )
             else:
                 if self.List[i] == None:
                     self.ContainerOfData.combo[self.k].addItem( '' )
@@ -2000,7 +2020,7 @@ class comboLabelWidget:
         if self.Text == 'Secondary:' or self.Text == 'Tertiary:':
             self.ContainerOfData.combo[self.k].setEnabled(False)
         if self.ToolTip != None:
-            self.ContainerOfData.combo[self.k].setToolTip( self.ToolTip[0] )
+            self.ContainerOfData.combo[self.k].setToolTip( tr(self.ToolTip[0]) )
         self.comboIndex = self.ContainerOfData.combo[self.k].currentIndex()
         if self.k != 0 and self.k != 1:
             self.updateDate(self.comboIndex)
@@ -2009,7 +2029,7 @@ class comboLabelWidget:
 
     def updateDate(self, comboIndex):
         if self.ToolTip != None:
-            self.ContainerOfData.combo[self.k].setToolTip( self.ToolTip[comboIndex] )
+            self.ContainerOfData.combo[self.k].setToolTip( tr(self.ToolTip[comboIndex]) )
 
         if self.Text == 'Primary:':
             self.ContainerOfData.textDS[0] = self.ContainerOfData.combo[self.k].currentText()
@@ -2088,7 +2108,7 @@ class groupBoxWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        self.group = QtWidgets.QGroupBox(self.Text)
+        self.group = QtWidgets.QGroupBox(tr(self.Text))
         vbox = QtWidgets.QVBoxLayout()
         for l in self.List:
             vbox.addLayout(l.generateWidget(self.idGDT, self.ContainerOfData))
@@ -2122,7 +2142,7 @@ class fieldLabelComboWidget:
             self.comboCircumference.addItem(QtGui.QIcon(self.Circumference[i]), '' )
 
         self.comboCircumference.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
-        self.comboCircumference.setToolTip("Indicates whether the tolerance applies to a given diameter")
+        self.comboCircumference.setToolTip(translate("GDT", "Indicates whether the tolerance applies to a given diameter"))
         self.combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
 
         for i in range(len(self.List)):
@@ -2142,7 +2162,7 @@ class fieldLabelComboWidget:
         self.inputfield = self.uiloader.createWidget("Gui::InputField")
         self.inputfield.setText(self.FORMAT % 0)
         connectValueChanged(self.inputfield, self.valueChanged)
-        hbox1.addWidget( QtWidgets.QLabel(self.Text) )
+        hbox1.addWidget( QtWidgets.QLabel(tr(self.Text)) )
         hbox1.addWidget(self.comboCircumference)
         hbox1.addStretch(1)
         hbox1.addWidget(self.inputfield)
@@ -2151,7 +2171,7 @@ class fieldLabelComboWidget:
         vbox.addLayout(hbox1)
 
         hbox2 = QtWidgets.QHBoxLayout()
-        self.label = QtWidgets.QLabel('Diameter:')
+        self.label = QtWidgets.QLabel(translate("GDT", 'Diameter:'))
         self.inputfield2 = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.Diameter,self.DECIMALS,'Length',True)
         self.inputfield2.setText(auxText)
@@ -2159,7 +2179,7 @@ class fieldLabelComboWidget:
         self.comboTolerance = QtWidgets.QComboBox()
         symbol = '±'
         self.comboTolerance.addItem( symbol[-1] )
-        self.comboTolerance.addItem( 'Limit' )
+        self.comboTolerance.addItem( translate("GDT", 'Limit') )
 
         if self.toleranceSelect:
             self.comboTolerance.setCurrentIndex(0)
@@ -2169,8 +2189,8 @@ class fieldLabelComboWidget:
         self.updateDateTolerance
         self.comboTolerance.activated.connect(self.updateDateTolerance)
         self.labelTolerance = QtWidgets.QLabel(symbol[-1])
-        self.labelLow = QtWidgets.QLabel('Low')
-        self.labelHigh = QtWidgets.QLabel('High')
+        self.labelLow = QtWidgets.QLabel(translate("GDT", 'Low'))
+        self.labelHigh = QtWidgets.QLabel(translate("GDT", 'High'))
         self.inputfieldTolerance = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.tolerance,self.DECIMALS,'Length',True)
         self.inputfieldTolerance.setText(auxText)
@@ -2214,7 +2234,7 @@ class fieldLabelComboWidget:
 
     def updateDate(self):
         if self.ToolTip != None:
-            self.combo.setToolTip( self.ToolTip[self.combo.currentIndex()] )
+            self.combo.setToolTip( tr(self.ToolTip[self.combo.currentIndex()]) )
 
         if self.Text == 'Tolerance value:':
             if self.combo.currentIndex() != 0:
@@ -2294,7 +2314,7 @@ class CheckBoxWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        self.checkBox = QtWidgets.QCheckBox(self.Text)
+        self.checkBox = QtWidgets.QCheckBox(tr(self.Text))
         self.checkBox.setChecked(True)
         global checkBoxState
         checkBoxState = True

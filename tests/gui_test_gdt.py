@@ -137,10 +137,24 @@ def select_in_body(body, sub_path):
 
 
 def task_button(title_startswith):
-    for b in mw().findChildren(QtWidgets.QPushButton):
-        if b.isVisible() and b.text().startswith(title_startswith):
+    """Create button of the open GD&T task panel.
+
+    Found by object name (independent of the UI language); the title is
+    used as a fallback for the original code, which had no object names.
+    """
+    buttons = [b for b in mw().findChildren(QtWidgets.QPushButton) if b.isVisible()]
+    for b in buttons:
+        if b.objectName() == "gdt_create_button":
+            return b
+    for b in buttons:
+        if b.text().startswith(title_startswith):
             return b
     return None
+
+
+def is_inventory_button(b, kind):
+    "kind: 'modify' or 'delete' (object name, or English text for the original code)"
+    return b.objectName() == "gdt_{}_button".format(kind) or b.text() == kind.capitalize()
 
 
 def close_task_dialog():
@@ -598,7 +612,7 @@ def t_inventory():
     Gui.runCommand("dd_inventory")
     pump(10)
     n = len([b for b in mw().findChildren(QtWidgets.QPushButton)
-             if b.isVisible() and b.text() == "Modify"])
+             if b.isVisible() and is_inventory_button(b, "modify")])
     close_task_dialog()
     if n == 0:
         return "FAIL", "aucun formulaire Modify visible"
@@ -611,10 +625,10 @@ def _inventory_form(label):
     pump(10)
     form = modify = delete = None
     for b in mw().findChildren(QtWidgets.QPushButton):
-        if b.text() in ("Modify", "Delete") and b.parent() is not None \
-                and b.parent().windowTitle() == label:
+        if (is_inventory_button(b, "modify") or is_inventory_button(b, "delete")) \
+                and b.parent() is not None and b.parent().windowTitle() == label:
             form = b.parent()
-            if b.text() == "Modify":
+            if is_inventory_button(b, "modify"):
                 modify = b
             else:
                 delete = b
@@ -653,6 +667,53 @@ def t_inventory_delete():
     n2 = len(objects_of(doc, "DatumSystem"))
     gone = doc.getObject(name) is None
     return ("PASS" if gone and n2 == n - 1 else "FAIL"), "DatumSystem {} -> {}".format(n, n2)
+
+
+def t_translations():
+    """French translation file is valid and used by FreeCAD when the UI is French."""
+    qm = glob.glob(os.path.join(App.getUserAppDataDir(), "Mod", "FreeCAD-GDT",
+                                "translations", "*.qm"))
+    if not qm:
+        return "FAIL", "aucun fichier .qm installe"
+    translator = QtCore.QTranslator()
+    if not translator.load(qm[0]):
+        return "FAIL", "chargement impossible : {}".format(qm[0])
+    sample = translator.translate("GDT", "Flatness")
+    # text actually displayed by the menu / toolbar action of the command
+    QAction = getattr(QtGui, "QAction", None) or QtWidgets.QAction
+    texts = [a.text() for a in mw().findChildren(QAction) if a.objectName() == "dd_datumFeature"]
+    menu = texts[0] if texts else ""
+    locale = Gui.getLocale() if hasattr(Gui, "getLocale") else "?"
+    detail = "qm={} GDT/Flatness->{!r} ; langue FreeCAD={} ; menu dd_datumFeature={!r}".format(
+        os.path.basename(qm[0]), sample, locale, menu)
+    if sample != "Planéité":
+        return "FAIL", detail
+    if str(locale).lower().startswith(("fr", "french")) and "élément" not in menu:
+        return "FAIL", detail
+    return detail
+
+
+def t_preferences():
+    """The GDT preference page opens (it is a modal dialog, closed by a timer)."""
+    seen = {}
+
+    def inspect_and_close():
+        dlg = QtWidgets.QApplication.activeModalWidget()
+        if dlg is None:
+            return
+        page = dlg.findChild(QtWidgets.QWidget, "GDTPreferences")
+        seen["page"] = page is not None
+        if page is not None:
+            seen["labels"] = sorted({l.text() for l in page.findChildren(QtWidgets.QLabel) if l.text()})[:6]
+            seen["groups"] = [g.title() for g in page.findChildren(QtWidgets.QGroupBox)]
+        dlg.reject()
+
+    QtCore.QTimer.singleShot(2000, inspect_and_close)
+    Gui.showPreferences("GDT", 0)
+    pump(5)
+    if not seen.get("page"):
+        return "FAIL", "page GDTPreferences introuvable : {}".format(seen)
+    return "groupes={} libelles={}".format(seen.get("groups"), seen.get("labels"))
 
 
 def t_save_reopen():
@@ -812,6 +873,8 @@ def main():
             ("T11", "Rendu Coin des annotations", t_render),
             ("T12", "Rangement dans le groupe du plan", t_groups),
             ("T13", "Inventaire", t_inventory),
+            ("T26", "Traductions (fr)", t_translations),
+            ("T27", "Page de preferences GDT", t_preferences),
             ("T22", "Inventaire : modification d'une GT", t_inventory_modify),
             ("T23", "Inventaire : suppression d'un DS", t_inventory_delete),
             ("T14", "Sauvegarde / reouverture", t_save_reopen),

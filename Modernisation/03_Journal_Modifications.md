@@ -131,3 +131,31 @@ Aucun changement fonctionnel visé, sauf les points F-11, F-12 et F-14 ci-dessou
 ### Tests (`Modernisation/tests/lot4_results.json`)
 
 26 tests : 25 PASS, plus T16 en WARN (Assembly4 seulement).
+
+---
+
+## Lot 5 : traductions
+
+### Raisonnement technique
+
+- Les widgets du panneau **identifient leur rôle par leur libellé anglais** (`if self.Text == 'Primary:'`), et les documents **stockent les noms anglais** des caractéristiques et des modificateurs (propriétés `Characteristic` et `FeatureControlFrame`, relues par `makeCharacteristics(label)`). Les chaînes sont donc marquées par `QT_TRANSLATE_NOOP` (aucun effet à l'exécution) et traduites **uniquement à l'affichage** (`QLabel`, titres, éléments de liste, infobulles, messages). Les fichiers existants et la logique interne restent indépendants de la langue.
+- Les outils `lupdate` et `lrelease` sont livrés avec FreeCAD 1.1 dans `<FreeCAD>/lib/qt6/bin`. Ils ont été utilisés tels quels.
+- La langue de l'interface de FreeCAD est le français (`Gui.getLocale()` = `French`). Le banc de test a été rendu indépendant de la langue (boutons identifiés par `objectName`).
+
+### Modifications
+
+| Fichier | Modification |
+|---|---|
+| GDT.py | Helpers `QT_TRANSLATE_NOOP()` et `tr()`. Traduction à l'affichage dans `GDTDialog_hbox`, `groupBoxWidget`, `CheckBoxWidget`, `comboLabelWidget` (éléments et infobulles) et `fieldLabelComboWidget` (« Diameter: », « Limit », « Low », « High », infobulles). Les 14 caractéristiques et les 12 modificateurs sont marqués pour `lupdate`. Le bouton de création reçoit `objectName = "gdt_create_button"`. |
+| GDT.py | **Défaut corrigé (`textLabelWidget`) :** le libellé du champ affichait la *valeur* par défaut (« AP1 » au lieu de « Name: »). Pour le DF, le libellé « Datum feature: » de l'instance globale était même écrasé définitivement par la lettre. Le libellé et la valeur sont maintenant séparés. |
+| annotationPlane.py, datumFeature.py, datumSystem.py, geometricTolerance.py, inventory.py | `MenuText` / `ToolTip` passent par `QT_TRANSLATE_NOOP("<nom de commande>", …)` (convention de Draft), avec des infobulles plus explicites. Les titres de panneau sont traduits, y compris « … to {} ». `GetResources()` renvoie des constantes : avant, `self.toolTip` était modifié par `Activated()`. |
+| inventory.py | Boutons Modifier, Supprimer et Visualiser traduits et nommés (`gdt_modify_button`, `gdt_delete_button`). Messages d'erreur traduits. |
+| InitGui.py | `FreeCADGui.addLanguagePath(<MOD>/translations)` et `updateLocale()` au démarrage (léger), nécessaires pour les menus. Page de préférences chargée depuis `Resources/ui/preferences-gdt.ui`, et non plus depuis le `.rcc`, pour pouvoir la modifier et la traduire sans outil `rcc` (absent de FreeCAD 1.1). |
+| Resources/ui/preferences-gdt.ui | Contexte de traduction `GDTPreferences` au lieu de `Gui::Dialog::DlgSettingsDraft`, copié de Draft, qui partageait le contexte de Draft. Retrait de `notr="true"` sur 5 libellés et infobulles. |
+| translations/GDT_fr.ts, GDT_fr.qm | 88 chaînes, 7 contextes, 100 % traduites. Vocabulaire ISO 1101 : Rectitude, Planéité, Localisation, Battement… |
+| translations/fill_fr.py | Table des traductions françaises et procédure `lupdate` → `fill_fr.py` → `lrelease`. |
+| tools/install_mod.py | `fill_fr.py` et `*.ts` ne sont pas installés. |
+
+### Tests (`Modernisation/tests/lot5_results.json`)
+
+28 tests : 27 PASS, plus T16 en WARN (Assembly4). Nouveaux tests : **T26** (le `.qm` est valide et le menu de FreeCAD affiche « Ajouter un élément de référence ») et **T27** (la page de préférences GDT s'ouvre, traduite : groupes « Texte », « Lignes », « Grille »).

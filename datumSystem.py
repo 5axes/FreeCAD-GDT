@@ -23,12 +23,11 @@
 from GDT import *
 
 gdt = GDTWidget()
-gdt.dialogWidgets.append( groupBoxWidget(Text='Constituents', List=[comboLabelWidget(Text='Primary:',List=[]),comboLabelWidget(Text='Secondary:',List=[]), comboLabelWidget(Text='Tertiary:',List=[])]) )
+gdt.dialogWidgets.append( groupBoxWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Constituents'), List=[comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Primary:'),List=[]),comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Secondary:'),List=[]), comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tertiary:'),List=[])]) )
 
 class DatumSystemCommand:
     def __init__(self):
         self.iconPath = ':/dd/icons/datumSystem.svg'
-        self.toolTip = 'Add Datum System'
         self.Dictionary = []
         for i in range(1,100):
             self.Dictionary.append('DS'+str(i))
@@ -36,14 +35,14 @@ class DatumSystemCommand:
 
     def Activated(self):
         listDF = [None] + getAllDatumFeatureObjects()
-        gdt.dialogWidgets[0] = ( groupBoxWidget(Text='Constituents', List=[comboLabelWidget(Text='Primary:',List=listDF),comboLabelWidget(Text='Secondary:',List=listDF), comboLabelWidget(Text='Tertiary:',List=listDF)]) )
-        gdt.activate(idGDT = self.idGDT, dialogTitle=self.toolTip, dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
+        gdt.dialogWidgets[0] = ( groupBoxWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Constituents'), List=[comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Primary:'),List=listDF),comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Secondary:'),List=listDF), comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Tertiary:'),List=listDF)]) )
+        gdt.activate(idGDT = self.idGDT, dialogTitle=translate("GDT", 'Add Datum System'), dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
 
     def GetResources(self):
         return {
             'Pixmap' : self.iconPath,
-            'MenuText': self.toolTip,
-            'ToolTip':  self.toolTip
+            'MenuText': QT_TRANSLATE_NOOP("dd_datumSystem", 'Add Datum System'),
+            'ToolTip':  QT_TRANSLATE_NOOP("dd_datumSystem", 'Add a datum system made of existing datum features')
             }
 
     def IsActive(self):

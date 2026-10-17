@@ -26,14 +26,13 @@ gdt = GDTWidget()
 dictionaryDF = []
 # Modification 5@xes
 dictionaryDF = list(map(chr, range(65, 91))) # 65 = A, 91 = Z
-gdt.dialogWidgets.append( textLabelWidget(Text='Datum feature:',Mask='>A', Dictionary=dictionaryDF) ) #http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
-gdt.dialogWidgets.append( comboLabelWidget(Text='Active annotation plane:', List=[]) )
-gdt.dialogWidgets.append( CheckBoxWidget(Text = 'Create corresponding Datum System') )
+gdt.dialogWidgets.append( textLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Datum feature:'),Mask='>A', Dictionary=dictionaryDF) ) #http://doc.qt.io/qt-5/qlineedit.html#inputMask-prop
+gdt.dialogWidgets.append( comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Active annotation plane:'), List=[]) )
+gdt.dialogWidgets.append( CheckBoxWidget(Text = QT_TRANSLATE_NOOP("GDT", 'Create corresponding Datum System')) )
 
 class DatumFeatureCommand:
     def __init__(self):
         self.iconPath = ':/dd/icons/datumFeature.svg'
-        self.toolTip = 'Add Datum Feature'
         self.Dictionary = []
         for i in range(1,100):
             self.Dictionary.append('DF'+str(i))
@@ -42,19 +41,19 @@ class DatumFeatureCommand:
     def Activated(self):
         ContainerOfData = makeContainerOfData()
         if getAnnotationObj(ContainerOfData):
-            self.toolTip = 'Add Datum Feature to ' + getAnnotationObj(ContainerOfData).Label
+            title = translate("GDT", 'Add Datum Feature to {}').format(getAnnotationObj(ContainerOfData).Label)
             gdt.dialogWidgets[1] = None
         else:
-            self.toolTip = 'Add Datum Feature'
+            title = translate("GDT", 'Add Datum Feature')
             showGrid()
-            gdt.dialogWidgets[1] = comboLabelWidget(Text='Active annotation plane:', List=getAllAnnotationPlaneObjects())
-        gdt.activate(idGDT = self.idGDT, dialogTitle=self.toolTip, dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
+            gdt.dialogWidgets[1] = comboLabelWidget(Text=QT_TRANSLATE_NOOP("GDT", 'Active annotation plane:'), List=getAllAnnotationPlaneObjects())
+        gdt.activate(idGDT = self.idGDT, dialogTitle=title, dialogIconPath=self.iconPath, endFunction=self.Activated, Dictionary=self.Dictionary)
 
     def GetResources(self):
         return {
             'Pixmap' : self.iconPath,
-            'MenuText': self.toolTip,
-            'ToolTip':  self.toolTip
+            'MenuText': QT_TRANSLATE_NOOP("dd_datumFeature", 'Add Datum Feature'),
+            'ToolTip':  QT_TRANSLATE_NOOP("dd_datumFeature", 'Add a datum feature on the selected faces')
             }
 
     def IsActive(self):

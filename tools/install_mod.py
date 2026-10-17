@@ -21,7 +21,7 @@ REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Top-level entries never shipped in the installed copy.
 EXCLUDED_TOP = {".git", ".github", "Doc", "Modernisation", "tools", "tests"}
 # Patterns excluded anywhere in the tree.
-EXCLUDED_NAMES = {"__pycache__", "rcc.exe", ".DS_Store"}
+EXCLUDED_NAMES = {"__pycache__", "rcc.exe", ".DS_Store", "fill_fr.py"}
 EXCLUDED_EXT = {".pyc", ".sfd", ".FCStd1", ".FCBak", ".ts"}
 
 
