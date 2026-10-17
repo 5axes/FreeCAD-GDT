@@ -77,8 +77,17 @@ def console_since_last():
 
 
 def console_problems(text):
+    """Keep error lines, and whole Python tracebacks."""
     keys = ("Traceback", "Error", "error:", "Exception", "<Exception>")
-    return [l for l in text.splitlines() if any(k in l for k in keys)]
+    out, in_tb = [], False
+    for line in text.splitlines():
+        if "Traceback" in line:
+            in_tb = True
+        if in_tb or any(k in line for k in keys):
+            out.append(line)
+        if in_tb and line and not line.startswith((" ", "\t", "Traceback")):
+            in_tb = False
+    return out
 
 
 def record(tid, name, status, detail="", console=""):
@@ -447,6 +456,21 @@ def t_multi_object_selection():
     return ("PASS" if n2 == n + 1 else "FAIL"), "GT {} -> {}".format(n, n2)
 
 
+def t_face_color():
+    """The datum face gets the datum colour and stays opaque (I-05)."""
+    vobj = ctx["box"].ViewObject
+    colors = list(vobj.DiffuseColor)
+    if len(colors) < 6:
+        return "FAIL", "couleurs par face non appliquees : {}".format(colors)
+    face1 = colors[0]  # datum A was put on Face1
+    transp = [round(m.Transparency, 2) for m in vobj.ShapeAppearance] \
+        if hasattr(vobj, "ShapeAppearance") else []
+    blue = face1[2] > 0.9 and face1[0] < 0.1
+    opaque = not transp or transp[0] < 0.5
+    detail = "Face1={} transparence par face={}".format(tuple(round(c, 2) for c in face1), transp)
+    return ("PASS" if blue and opaque else "FAIL"), detail
+
+
 def t_working_plane():
     """While picking the anchor point, the Draft working plane must be the AP (I-01)."""
     checks = ctx.get("wp", [])
@@ -680,6 +704,7 @@ def main():
             ("T17", "GT ajoutee a l'annotation existante", t_gt_existing_annotation),
             ("T18", "Selection multi-objets", t_multi_object_selection),
             ("T19", "Plan de travail Draft aligne sur l'AP", t_working_plane),
+            ("T21", "Couleur de la face referencee (opaque)", t_face_color),
             ("T11", "Rendu Coin des annotations", t_render),
             ("T12", "Rangement dans le groupe du plan", t_groups),
             ("T13", "Inventaire", t_inventory),
@@ -690,7 +715,7 @@ def main():
         ]
         prereq = {"T06": "T05", "T07": "T06", "T08": "T07", "T09": "T06",
                   "T10": "T06", "T11": "T07", "T12": "T07", "T14": "T05",
-                  "T17": "T07", "T18": "T06", "T19": "T07"}
+                  "T17": "T07", "T18": "T06", "T19": "T07", "T21": "T07"}
         status = {}
         for tid, name, func in steps:
             if tid in ("T02", "T03", "T04", "T05") and status.get("T01") == "FAIL":

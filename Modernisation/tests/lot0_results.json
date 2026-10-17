@@ -85,7 +85,7 @@
       "id": "T18",
       "name": "Selection multi-objets",
       "status": "FAIL",
-      "detail": "panneau non ouvert ; console=['Traceback (most recent call last):']",
+      "detail": "panneau non ouvert ; console=['Traceback (most recent call last):', '  File \"C:\\\\Users\\\\lalliard\\\\AppData\\\\Roaming\\\\FreeCAD\\\\v1-1\\\\Mod\\\\FreeCAD-GDT\\\\.\\\\geometricTolerance.py\", line 45, in Activated', '    ContainerOfData = makeContainerOfData()']",
       "console": []
     },
     {
@@ -93,6 +93,13 @@
       "name": "Plan de travail Draft aligne sur l'AP",
       "status": "FAIL",
       "detail": "dd_datumFeature: axe=Vector (0.0, 0.0, 1.0) pos=Vector (0.0, 0.0, 0.0) -> parallele=True dans_plan=False\ndd_geometricTolerance: axe=Vector (0.0, 0.0, 1.0) pos=Vector (0.0, 0.0, 0.0) -> parallele=True dans_plan=False\ndd_geometricTolerance: axe=Vector (0.0, 0.0, 1.0) pos=Vector (0.0, 0.0, 0.0) -> parallele=True dans_plan=False\ndd_geometricTolerance: axe=Vector (0.0, 0.0, 1.0) pos=Vector (0.0, 0.0, 0.0) -> parallele=True dans_plan=False",
+      "console": []
+    },
+    {
+      "id": "T21",
+      "name": "Couleur de la face referencee (opaque)",
+      "status": "FAIL",
+      "detail": "Face1=(1.0, 1.0, 0.0, 0.0) transparence par face=[1.0, 1.0, 0.0, 0.0, 0.0, 0.0]",
       "console": []
     },
     {
@@ -141,7 +148,7 @@
       "id": "T16",
       "name": "Fichiers historiques Doc/*.FCStd",
       "status": "WARN",
-      "detail": "8x.FCStd [OK] {'AnnotationPlane': 4, 'DatumFeature': 2, 'DatumSystem': 2, 'GeometricTolerance': 1, 'Annotation': 3} invalides=[] sansProxy=[] console=[]\nAll around and all over.FCStd [OK] {'AnnotationPlane': 2, 'DatumFeature': 2, 'DatumSystem': 2, 'GeometricTolerance': 1, 'Annotation': 3} invalides=[] sansProxy=[] console=[]\nAssembly.FCStd [PB] {'AnnotationPlane': 2, 'DatumFeature': 3, 'DatumSystem': 4, 'GeometricTolerance': 3, 'Annotation': 4} invalides=[\"Pocket001 ['Touched', 'Invalid', 'Expanded']\"] sansProxy=['Variables'] console=[\"09:13:02  pyException: C:\\\\Users/lalliard/Documents/30_Devel/FreeCAD-GDT/tests\\\\gui_test_gdt.py(620)<class 'ImportError'>: module not permitted: Asm4_libs\"]\nBase.FCStd [OK] {'AnnotationPlane': 4, 'DatumFeature': 3, 'DatumSystem': 5, 'GeometricTolerance': 4, 'Annotation': 5} invalides=[] sansProxy=[] console=[]\nBase2.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]\nCyl.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 1, 'Annotation': 1} invalides=[] sansProxy=[] console=[]\nCylindre.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]\nPave.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]\nPlaque.FCStd [OK] {'AnnotationPlane': 7, 'DatumFeature': 5, 'DatumSystem': 6, 'GeometricTolerance': 0, 'Annotation': 5} invalides=[] sansProxy=[] console=[]\ncube.FCStd [OK] {'AnnotationPlane': 2, 'DatumFeature': 4, 'DatumSystem': 6, 'GeometricTolerance': 9, 'Annotation': 13} invalides=[] sansProxy=[] console=[]\ncube_2.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 3, 'Annotation': 4} invalides=[] sansProxy=[] console=[]\ngroup.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 1, 'Annotation': 2} invalides=[] sansProxy=[] console=[]\norientation planes.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]",
+      "detail": "8x.FCStd [OK] {'AnnotationPlane': 4, 'DatumFeature': 2, 'DatumSystem': 2, 'GeometricTolerance': 1, 'Annotation': 3} invalides=[] sansProxy=[] console=[]\nAll around and all over.FCStd [OK] {'AnnotationPlane': 2, 'DatumFeature': 2, 'DatumSystem': 2, 'GeometricTolerance': 1, 'Annotation': 3} invalides=[] sansProxy=[] console=[]\nAssembly.FCStd [PB] {'AnnotationPlane': 2, 'DatumFeature': 3, 'DatumSystem': 4, 'GeometricTolerance': 3, 'Annotation': 4} invalides=[\"Pocket001 ['Touched', 'Invalid', 'Expanded']\"] sansProxy=['Variables'] console=[\"09:15:46  pyException: C:\\\\Users/lalliard/Documents/30_Devel/FreeCAD-GDT/tests\\\\gui_test_gdt.py(644)<class 'ImportError'>: module not permitted: Asm4_libs\"]\nBase.FCStd [OK] {'AnnotationPlane': 4, 'DatumFeature': 3, 'DatumSystem': 5, 'GeometricTolerance': 4, 'Annotation': 5} invalides=[] sansProxy=[] console=[]\nBase2.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]\nCyl.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 1, 'Annotation': 1} invalides=[] sansProxy=[] console=[]\nCylindre.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]\nPave.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]\nPlaque.FCStd [OK] {'AnnotationPlane': 7, 'DatumFeature': 5, 'DatumSystem': 6, 'GeometricTolerance': 0, 'Annotation': 5} invalides=[] sansProxy=[] console=[]\ncube.FCStd [OK] {'AnnotationPlane': 2, 'DatumFeature': 4, 'DatumSystem': 6, 'GeometricTolerance': 9, 'Annotation': 13} invalides=[] sansProxy=[] console=[]\ncube_2.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 3, 'Annotation': 4} invalides=[] sansProxy=[] console=[]\ngroup.FCStd [OK] {'AnnotationPlane': 1, 'DatumFeature': 1, 'DatumSystem': 1, 'GeometricTolerance': 1, 'Annotation': 2} invalides=[] sansProxy=[] console=[]\norientation planes.FCStd [OK] {'AnnotationPlane': 0, 'DatumFeature': 0, 'DatumSystem': 0, 'GeometricTolerance': 0, 'Annotation': 0} invalides=[] sansProxy=[] console=[]",
       "console": []
     }
   ]
