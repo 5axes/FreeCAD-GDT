@@ -110,3 +110,7 @@ Les tests marqués « – » n'existaient pas encore à ce lot. Ils ont été aj
 - **Saisie du point.** Elle passe par la saisie de coordonnées de Draft, et non par un clic de souris dans la vue 3D. T19 vérifie cependant que le plan utilisé pour projeter les clics est bien celui de l'AP.
 - **Non couverts automatiquement :** double-clic dans l'arborescence, menu contextuel, bouton « Visualiser » de l'inventaire, mode « limites mini / maxi » de la tolérance de diamètre, modification d'un AP ou d'un DF depuis l'inventaire. Ces chemins de code ont été revus et modifiés de façon minimale.
 - **FreeCAD 1.0, Linux :** non testés (voir l'environnement).
+
+## Stabilité du banc
+
+Lors d'un passage, après le rétablissement des fins de ligne CRLF, T27 a échoué : la boîte des préférences n'était pas encore ouverte au bout du délai fixe de 2 s. Le test interroge désormais la fenêtre toutes les 0,5 s, pendant 15 s au maximum. Deux passages consécutifs de la suite complète ont ensuite donné le même résultat (27 PASS + 1 WARN).

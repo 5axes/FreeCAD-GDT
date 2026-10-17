@@ -711,20 +711,25 @@ def t_translations():
 
 def t_preferences():
     """The GDT preference page opens (it is a modal dialog, closed by a timer)."""
-    seen = {}
+    seen = {"tries": 0}
 
     def inspect_and_close():
+        # the dialog may take a few seconds to open: poll every 0.5 s (max 15 s)
         dlg = QtWidgets.QApplication.activeModalWidget()
+        page = dlg.findChild(QtWidgets.QWidget, "GDTPreferences") if dlg is not None else None
+        if page is None and seen["tries"] < 30:
+            seen["tries"] += 1
+            QtCore.QTimer.singleShot(500, inspect_and_close)
+            return
         if dlg is None:
             return
-        page = dlg.findChild(QtWidgets.QWidget, "GDTPreferences")
         seen["page"] = page is not None
         if page is not None:
             seen["labels"] = sorted({l.text() for l in page.findChildren(QtWidgets.QLabel) if l.text()})[:6]
             seen["groups"] = [g.title() for g in page.findChildren(QtWidgets.QGroupBox)]
         dlg.reject()
 
-    QtCore.QTimer.singleShot(2000, inspect_and_close)
+    QtCore.QTimer.singleShot(500, inspect_and_close)
     Gui.showPreferences("GDT", 0)
     pump(5)
     if not seen.get("page"):
