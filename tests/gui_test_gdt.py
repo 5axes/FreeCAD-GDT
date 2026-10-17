@@ -297,7 +297,9 @@ def _create_with_pick(cmd, title, sub, obj, pick_offset, setup=None):
     b.click()
     pump(10)
     tb = getattr(Gui, "draftToolBar", None)
-    if tb is not None and getattr(tb, "pointcallback", None) is not None:
+    waiting = tb is not None and getattr(tb, "pointcallback", None) is not None
+    ctx.setdefault("picks", []).append((cmd, sub, waiting))
+    if waiting:
         record_wp(cmd)
         pick(target)
     close_task_dialog()
@@ -321,6 +323,10 @@ def t_create_df():
     if len(dfs) != 1 or len(ann) != 1:
         return "FAIL", "DF={} Annotation={}".format(len(dfs), len(ann))
     ctx["df"] = dfs[0]
+    vobj = ctx["box"].ViewObject
+    ctx["face1"] = (tuple(vobj.DiffuseColor)[0] if len(vobj.DiffuseColor) >= 6 else None,
+                    [m.Transparency for m in vobj.ShapeAppearance]
+                    if hasattr(vobj, "ShapeAppearance") else [])
     return "DF={} Annotation={} DS auto={}".format(dfs[0].Label, ann[0].Label, len(dss))
 
 
@@ -458,13 +464,10 @@ def t_multi_object_selection():
 
 def t_face_color():
     """The datum face gets the datum colour and stays opaque (I-05)."""
-    vobj = ctx["box"].ViewObject
-    colors = list(vobj.DiffuseColor)
-    if len(colors) < 6:
-        return "FAIL", "couleurs par face non appliquees : {}".format(colors)
-    face1 = colors[0]  # datum A was put on Face1
-    transp = [round(m.Transparency, 2) for m in vobj.ShapeAppearance] \
-        if hasattr(vobj, "ShapeAppearance") else []
+    face1, transp = ctx["face1"]  # colours just after datum A was put on Face1
+    if face1 is None:
+        return "FAIL", "couleurs par face non appliquees"
+    transp = [round(t, 2) for t in transp]
     blue = face1[2] > 0.9 and face1[0] < 0.1
     opaque = not transp or transp[0] < 0.5
     detail = "Face1={} transparence par face={}".format(tuple(round(c, 2) for c in face1), transp)
@@ -477,7 +480,7 @@ def t_working_plane():
     if not checks:
         return "FAIL", "aucune saisie de point enregistree"
     ap = ctx["ap"]
-    msgs, ok = [], True
+    msgs, ok = ["saisies demandees : {}".format(ctx.get("picks"))], True
     for cmd, axis, pos in checks:
         parallel = abs(abs(axis.normalize().dot(ap.Direction)) - 1) < 1e-6
         on_plane = abs((pos - ap.PointWithOffset).dot(ap.Direction)) < 1e-6

@@ -71,10 +71,9 @@ class DatumFeatureCommand:
                         pass
                     else:
                         return False
-            ContainerOfData = makeContainerOfData()
-            if getAnnotationObj(ContainerOfData) == None or getAnnotationObj(ContainerOfData).DF == None:
-                pass
-            else:
+            # IsActive() runs at every GUI refresh: no geometry computation here
+            annotation = findAnnotation(getSelectedFaces())
+            if annotation is not None and annotation.DF is not None:
                 return False
         else:
             return False

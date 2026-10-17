@@ -166,7 +166,7 @@ class GDTGuiClass:
 
             for l in getAllDatumSystemObjects():
                 if l.Primary == obj or l.Secondary == obj or l.Tertiary == obj:
-                    l.touch
+                    l.touch()
 
             obj.Label = data.textName
 
@@ -326,18 +326,12 @@ class fieldLabelButtonWidget_inv:
         self.data.OffsetValue = d
         if self.firstAttempt == False:
             showGrid()
-            if hasattr(FreeCADGui,"Snapper"):
-                if FreeCADGui.Snapper.grid:
-                    FreeCAD.DraftWorkingPlane.alignToPointAndAxis(self.obj.p1, self.obj.Direction, self.data.OffsetValue)
-                    FreeCADGui.Snapper.grid.set()
+            alignWorkingPlane(self.obj.p1, self.obj.Direction, self.data.OffsetValue)
         self.firstAttempt = False
 
     def visualizeFunc(self):
         showGrid()
-        if hasattr(FreeCADGui,"Snapper"):
-            if FreeCADGui.Snapper.grid:
-                FreeCAD.DraftWorkingPlane.alignToPointAndAxis(self.obj.PointWithOffset, self.obj.Direction, 0)
-                FreeCADGui.Snapper.grid.set()
+        alignWorkingPlane(self.obj.PointWithOffset, self.obj.Direction, 0)
         self.inputfield.setText(self.auxText)
 
 class comboLabelWidget_inv:
@@ -411,9 +405,9 @@ class comboLabelWidget_inv:
             self.data.textDS[2] = self.data.combo[self.k].currentText()
             self.data.tertiary = self.List[self.data.combo[self.k].currentIndex()]
         elif self.Text == 'Characteristic:':
+            pos = 0
             if self.obj.Characteristic != '':
-                actualValue = self.obj.Characteristic
-                pos = self.getPos(actualValue)
+                pos = self.getPos(self.obj.Characteristic) or 0
             self.data.combo[self.k].setCurrentIndex(pos)
             self.data.characteristic = makeCharacteristics(self.List[self.data.combo[self.k].currentIndex()])
         elif self.Text == 'Datum system:':

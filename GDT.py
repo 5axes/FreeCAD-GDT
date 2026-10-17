@@ -348,6 +348,25 @@ def getAnnotatedFace(obj):
     "getAnnotatedFace(obj): returns the first face linked by an Annotation"
     return getFaceShape(obj.faces[0][0], obj.faces[0][1][0])
 
+def isCircumferenceFace(face):
+    "isCircumferenceFace(face): True for a cylindrical face bounded by closed edges"
+    return any(edge.Closed for edge in face.Edges) and len(face.Vertexes) == 2
+
+def updateAnnotationAnchor(obj):
+    """Compute the start point (p1) and direction of an Annotation.
+
+    On a cylindrical face the leader starts on the highest seam vertex and
+    follows the annotation plane; otherwise it starts at the centre of the
+    face projected on the annotation plane, along the face normal.
+    """
+    face = getAnnotatedFace(obj)
+    if obj.circumferenceBool:
+        obj.p1 = max((v.Point for v in face.Vertexes), key=lambda p: p.z)
+        obj.Direction = obj.AP.Direction
+    else:
+        obj.p1 = face.CenterOfMass.projectToPlane(obj.AP.PointWithOffset, obj.AP.Direction)
+        obj.Direction = face.normalAt(0,0)
+
 def flattenLinkSubList(value):
     """Normalize a (object, sub-element(s)) list into sorted (name, sub) pairs.
 
@@ -1463,34 +1482,9 @@ class _Annotation(_GDTObject):
                 obj.setEditorMode('highLimit',2)
 
     def execute(self, fp):
-        ''' "Print a short message when doing a recomputation, this method is mandatory" '''
-        # FreeCAD.Console.PrintMessage('Executed\n')
+        "Follow the annotated face, and move the selected point with it"
         auxP1 = fp.p1
-
-        '''
-        print("Face {}".format(fp.faces[0][0]))
-        print("Face {}".format(fp.faces[0][1][0]))
-        '''
-
-        if fp.circumferenceBool:
-            vertexex = fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).Vertexes
-            fp.p1 = vertexex[0].Point if vertexex[0].Point.z > vertexex[1].Point.z else vertexex[1].Point
-            fp.Direction = fp.AP.Direction
-        else:
-            '''
-            print("5@xes _Annotation")
-            print("5@xes fp.faces  : {}".format(fp.faces[0][1][0]))
-            print("5@xes CenterOfMass {}".format(fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).CenterOfMass))
-            print("5@xes AP Direction {}".format(fp.AP.Direction))
-            print("5@xes PointWithOffset {}".format(fp.AP.PointWithOffset))
-            '''
-            fp.p1 = (fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).CenterOfMass).projectToPlane(fp.AP.PointWithOffset, fp.AP.Direction)
-            fp.Direction = fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).normalAt(0,0)
-            '''
-            print("5@xes p1 {}".format(fp.p1))
-            print("5@xes Direction {}".format(fp.Direction))
-            '''
-
+        updateAnnotationAnchor(fp)
         diff = fp.p1-auxP1
 
         if fp.spBool:
@@ -1504,7 +1498,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         obj.addProperty("App::PropertyColor","LineColor","GDT","Line color").LineColor = getRGBLine()
         obj.addProperty("App::PropertyFloat","LineScale","GDT","Line scale").LineScale = getParam("lineScale",1.0)
         obj.addProperty("App::PropertyLength","FontSize","GDT","Font size").FontSize = getTextSize()
-        obj.addProperty("App::PropertyLength","ToleranceFontSize","GDT","Font Tolerance size").FontSize = getToleranceTextSize()
+        obj.addProperty("App::PropertyLength","ToleranceFontSize","GDT","Font Tolerance size").ToleranceFontSize = getToleranceTextSize()
         obj.addProperty("App::PropertyString","FontName","GDT","Font name").FontName = getTextFamily()
         obj.addProperty("App::PropertyColor","FontColor","GDT","Font color").FontColor = getRGBText()
         obj.addProperty("App::PropertyInteger","Decimals","GDT","The number of decimals to show").Decimals = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units").GetInt("Decimals",2)
@@ -1617,7 +1611,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         "If a property of the handled feature has changed we have the chance to handle this here"
         # fp is the handled feature, prop is the name of the property that has changed
         # print("updateData {} / {}".format(fp.ViewObject, prop))
-        if prop in "selectedPoint" and hasattr(fp.ViewObject,"Decimals") and hasattr(fp.ViewObject,"ShowUnit") and fp.spBool:
+        if prop == "selectedPoint" and hasattr(fp.ViewObject,"Decimals") and hasattr(fp.ViewObject,"ShowUnit") and fp.spBool:
             points, segments = getPointsToPlot(fp)
             # print str(points)
             # print str(segments)
@@ -1632,11 +1626,9 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
             plotStrings(self, fp, points)
 
         if prop == "faces" and fp.faces != []:
-            print("updateData {} / {}".format(fp.ViewObject, prop))
-            if (True in [l.Closed for l in fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).Edges] and len(fp.faces[0][0].Shape.getElement(fp.faces[0][1][0]).Vertexes) == 2) :
-                fp.circumferenceBool = True
-            else:
-                fp.circumferenceBool = False
+            circumference = isCircumferenceFace(getAnnotatedFace(fp))
+            if fp.circumferenceBool != circumference:
+                fp.circumferenceBool = circumference
 
     def doubleClicked(self,obj):
         try:
@@ -1695,48 +1687,24 @@ def makeAnnotation(faces, AP, DF=None, GT=[], modify=False, Object=None, diamete
     ''' Explanation
     '''
 
-    if AP is not None:
-        groupPlaneName = "Plane " + AP.Name
-    else:
-        groupPlaneName = "GDT"
-
     if not modify:
-        # print("5@xes makeAnnotation getAllAnnotationObjects = {}".format(getAllAnnotationObjects()))
         obj = FreeCAD.ActiveDocument.addObject("App::DocumentObjectGroupPython",dictionaryAnnotation[len(getAllAnnotationObjects())])
         _Annotation(obj)
 
         if gui:
             _ViewProviderAnnotation(obj.ViewObject)
 
-        group = FreeCAD.ActiveDocument.getObject(groupPlaneName)
-
-        try:
+        # Store the annotation in the group of its annotation plane
+        group = AP.getParentGroup() if AP is not None else None
+        if group is None:
+            group = FreeCAD.ActiveDocument.getObject("GDT")
+        if group is not None:
             group.addObject(obj)
-        except:
-            pass
 
         obj.faces = faces
         obj.AP = AP
-
-        if obj.circumferenceBool:
-            vertexex = obj.faces[0][0].Shape.getElement(obj.faces[0][1][0]).Vertexes
-            index = [l.Point.z for l in vertexex].index(max([l.Point.z for l in vertexex]))
-            obj.p1 = vertexex[index].Point
-            obj.Direction = obj.AP.Direction
-        else:
-            '''
-            print("5@xes makeAnnotation")
-            print("5@xes obj.faces  : {}".format(obj.faces[0][1][0]))
-            print("5@xes CenterOfMass {}".format(obj.faces[0][0].Shape.getElement(obj.faces[0][1][0]).CenterOfMass))
-            print("5@xes AP Direction {}".format(obj.AP.Direction))
-            print("5@xes PointWithOffset {}".format(obj.AP.PointWithOffset))
-            '''
-            obj.p1 = (obj.faces[0][0].Shape.getElement(obj.faces[0][1][0]).CenterOfMass).projectToPlane(obj.AP.PointWithOffset, obj.AP.Direction)
-            obj.Direction = obj.faces[0][0].Shape.getElement(obj.faces[0][1][0]).normalAt(0,0)
-            '''
-            print("5@xes p1 {}".format(obj.p1))
-            print("5@xes Direction {}".format(obj.Direction))
-            '''
+        obj.circumferenceBool = isCircumferenceFace(getAnnotatedFace(obj))
+        updateAnnotationAnchor(obj)
 
     else:
         obj = Object
@@ -1858,23 +1826,21 @@ def makeFeatureControlFrame(toolTip=None):
         return featureControlFrame
 
 class ContainerOfData(object):
-    def __init__(self, faces = []):
-        self.faces = faces
+    def __init__(self, faces = None):
+        "faces: list of (object, subname) pairs, see getSelectedFaces()"
+        self.faces = faces if faces is not None else []
         self.diameter = 0.0
-        print ("ContainerOfData {}".format(object))
 
-        if self.faces != []:
-            _face = self.faces[0][0].Shape.getElement(self.faces[0][1])
+        if self.faces:
+            _face = getFaceShape(self.faces[0][0], self.faces[0][1])
             self.Direction = _face.normalAt(0,0)
-            self.DirectionAxis = _face.Surface.Axis
+            # Only planar / revolved surfaces have an axis (not B-splines)
+            self.DirectionAxis = getattr(_face.Surface, "Axis", self.Direction)
             self.p1 = _face.CenterOfMass
-            try:
-                # get the first Closed
-                edge = [l.Closed for l in _face.Edges].index(True)
-                # print ("Edge {}".format(edge))
-                self.diameter = _face.Edges[edge].Length/pi
-            except:
-                pass
+            # Diameter of the first closed edge (circle of a cylinder)
+            closed = [edge for edge in _face.Edges if edge.Closed]
+            if closed:
+                self.diameter = closed[0].Length/pi
 
         self.circumference = False
         self.toleranceSelect = True
@@ -2064,10 +2030,7 @@ class fieldLabelWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        if hasattr(FreeCADGui,"Snapper"):
-            if FreeCADGui.Snapper.grid:
-                FreeCAD.DraftWorkingPlane.alignToPointAndAxis(self.ContainerOfData.p1, self.ContainerOfData.Direction, 0.0)
-                FreeCADGui.Snapper.grid.set()
+        alignWorkingPlane(self.ContainerOfData.p1, self.ContainerOfData.Direction, 0.0)
         self.FORMAT = makeFormatSpec(0,'Length')
         self.uiloader = FreeCADGui.UiLoader()
         self.inputfield = self.uiloader.createWidget("Gui::InputField")
@@ -2079,10 +2042,7 @@ class fieldLabelWidget:
 
     def valueChanged(self, d):
         self.ContainerOfData.OffsetValue = d
-        if hasattr(FreeCADGui,"Snapper"):
-            if FreeCADGui.Snapper.grid:
-                FreeCAD.DraftWorkingPlane.alignToPointAndAxis(self.ContainerOfData.p1, self.ContainerOfData.Direction, self.ContainerOfData.OffsetValue)
-                FreeCADGui.Snapper.grid.set()
+        alignWorkingPlane(self.ContainerOfData.p1, self.ContainerOfData.Direction, self.ContainerOfData.OffsetValue)
 
 class comboLabelWidget:
     def __init__(self, Text='Label', List=None, Icons=None, ToolTip = None):
@@ -2176,10 +2136,7 @@ class comboLabelWidget:
             self.ContainerOfData.annotationPlane = self.List[comboIndex]
             self.ContainerOfData.Direction = self.List[comboIndex].Direction
             self.ContainerOfData.PointWithOffset = self.List[comboIndex].PointWithOffset
-            if hasattr(FreeCADGui,"Snapper"):
-                if FreeCADGui.Snapper.grid:
-                    FreeCAD.DraftWorkingPlane.alignToPointAndAxis(self.ContainerOfData.PointWithOffset, self.ContainerOfData.Direction, 0.0)
-                    FreeCADGui.Snapper.grid.set()
+            alignWorkingPlane(self.ContainerOfData.PointWithOffset, self.ContainerOfData.Direction, 0.0)
 
     def updateItemsEnabled(self, comboIndex):
         comboIndex0 = comboIndex

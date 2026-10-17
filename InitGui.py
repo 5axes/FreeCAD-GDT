@@ -106,15 +106,10 @@ class GDandTWorkbench ( Workbench ):
     def ContextMenu(self, recipient):
         # "This is executed whenever the user right-clicks on screen"
         # "recipient" will be either "view" or "tree"
-        showCmdList = True
-        if FreeCADGui.Selection.getSelection():
-            for i in range(len(FreeCADGui.Selection.getSelectionEx()[0].SubObjects)):
-                if FreeCADGui.Selection.getSelectionEx()[0].SubObjects[i].ShapeType == 'Face':
-                    pass
-                else:
-                    showCmdList = False
-        else:
-            showCmdList = False
+        # The creation commands are offered only when faces are selected
+        selection = FreeCADGui.Selection.getSelectionEx()
+        showCmdList = bool(selection) and bool(selection[0].SubObjects) and all(
+            sub.ShapeType == 'Face' for sub in selection[0].SubObjects)
         if showCmdList:
             self.appendContextMenu("", "Separator") # Add Separator 5@xes
             self.appendContextMenu("",self.cmdList) # add commands to the context menu
