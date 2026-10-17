@@ -47,11 +47,9 @@ else:
     FreeCAD.Console.PrintMessage("FreeCAD Gui not present. GDT module will have some features disabled.")
     gui = True
 
-try:
-    import PySide
-    from PySide import QtCore,QtGui,QtSvg
-except ImportError:
-    FreeCAD.Console.PrintMessage("Error: Python-pyside package must be installed on your system to use the Geometric Dimensioning & Tolerancing module.")
+# FreeCAD's PySide shim maps to PySide2 (Qt5) or PySide6 (Qt6).
+# Widgets live in QtWidgets in both; QtGui only keeps icons, colours, fonts.
+from PySide import QtCore, QtGui, QtWidgets
 
 __dir__ = os.path.dirname(__file__)
 iconPath = os.path.join( __dir__, 'Resources', 'icons' )
@@ -1902,9 +1900,9 @@ class GDTDialog:
         FreeCADGui.Control.closeDialog()
 
     def getStandardButtons(self): # http://forum.freecadweb.org/viewtopic.php?f=10&t=11801
-        return 0x00200000 #close button
+        return QtWidgets.QDialogButtonBox.Close
 
-class GDTGuiClass(QtGui.QWidget):
+class GDTGuiClass(QtWidgets.QWidget):
 
     def __init__(self, title, idGDT, dialogWidgets, ContainerOfData):
         super(GDTGuiClass, self).__init__()
@@ -1917,16 +1915,16 @@ class GDTGuiClass(QtGui.QWidget):
     def initUI(self, title, idGDT, ContainerOfData):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
         for widg in self.dd_dialogWidgets:
             if widg != None:
                 w = widg.generateWidget(self.idGDT,self.ContainerOfData)
-                if isinstance(w, QtGui.QLayout):
+                if isinstance(w, QtWidgets.QLayout):
                     vbox.addLayout( w )
                 else:
                     vbox.addWidget( w )
-        hbox = QtGui.QHBoxLayout()
-        buttonCreate = QtGui.QPushButton(title)
+        hbox = QtWidgets.QHBoxLayout()
+        buttonCreate = QtWidgets.QPushButton(title)
         buttonCreate.setDefault(True)
         buttonCreate.clicked.connect(self.createObject)
         hbox.addStretch(1)
@@ -1972,9 +1970,19 @@ class GDTGuiClass(QtGui.QWidget):
 
         FreeCADGui.Control.closeDialog()
 
+def connectValueChanged(inputField, slot):
+    """Connect the valueChanged signal of a Gui::InputField to slot(float).
+
+    Under PySide6 only the valueChanged(Base::Quantity) overload is exposed;
+    the slot receives the value in internal units (mm).
+    """
+    def forward(value):
+        slot(value.Value if hasattr(value, "Value") else float(value))
+    inputField.valueChanged.connect(forward)
+
 def GDTDialog_hbox( label, inputWidget):
-    hbox = QtGui.QHBoxLayout()
-    hbox.addWidget( QtGui.QLabel(label) )
+    hbox = QtWidgets.QHBoxLayout()
+    hbox.addWidget( QtWidgets.QLabel(label) )
     if inputWidget != None:
         hbox.addStretch(1)
         hbox.addWidget(inputWidget)
@@ -1989,7 +1997,7 @@ class textLabelWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        self.lineEdit = QtGui.QLineEdit()
+        self.lineEdit = QtWidgets.QLineEdit()
         if self.Mask != None:
             self.lineEdit.setInputMask(self.Mask)
         if self.Dictionary == None:
@@ -2036,7 +2044,7 @@ class fieldLabelWidget:
         self.inputfield = self.uiloader.createWidget("Gui::InputField")
         self.inputfield.setText(self.FORMAT % 0)
         self.ContainerOfData.OffsetValue = 0
-        QtCore.QObject.connect(self.inputfield,QtCore.SIGNAL("valueChanged(double)"),self.valueChanged)
+        connectValueChanged(self.inputfield, self.valueChanged)
 
         return GDTDialog_hbox(self.Text,self.inputfield)
 
@@ -2070,7 +2078,7 @@ class comboLabelWidget:
         else:
             self.k=6
 
-        self.ContainerOfData.combo[self.k] = QtGui.QComboBox()
+        self.ContainerOfData.combo[self.k] = QtWidgets.QComboBox()
         for i in range(len(self.List)):
             if self.Icons != None:
                 self.ContainerOfData.combo[self.k].addItem( QtGui.QIcon(self.Icons[i]), self.List[i] )
@@ -2086,7 +2094,7 @@ class comboLabelWidget:
         self.comboIndex = self.ContainerOfData.combo[self.k].currentIndex()
         if self.k != 0 and self.k != 1:
             self.updateDate(self.comboIndex)
-        self.ContainerOfData.combo[self.k].activated.connect(lambda comboIndex = self.comboIndex: self.updateDate(comboIndex))
+        self.ContainerOfData.combo[self.k].activated.connect(self.updateDate)
         return GDTDialog_hbox(self.Text,self.ContainerOfData.combo[self.k])
 
     def updateDate(self, comboIndex):
@@ -2170,8 +2178,8 @@ class groupBoxWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        self.group = QtGui.QGroupBox(self.Text)
-        vbox = QtGui.QVBoxLayout()
+        self.group = QtWidgets.QGroupBox(self.Text)
+        vbox = QtWidgets.QVBoxLayout()
         for l in self.List:
             vbox.addLayout(l.generateWidget(self.idGDT, self.ContainerOfData))
         self.group.setLayout(vbox)
@@ -2197,15 +2205,15 @@ class fieldLabelComboWidget:
         self.FORMAT = makeFormatSpec(self.DECIMALS,'Length')
         self.AFORMAT = makeFormatSpec(self.DECIMALS,'Angle')
         self.uiloader = FreeCADGui.UiLoader()
-        self.comboCircumference = QtGui.QComboBox()
-        self.combo = QtGui.QComboBox()
+        self.comboCircumference = QtWidgets.QComboBox()
+        self.combo = QtWidgets.QComboBox()
 
         for i in range(len(self.Circumference)):
             self.comboCircumference.addItem(QtGui.QIcon(self.Circumference[i]), '' )
 
-        self.comboCircumference.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
+        self.comboCircumference.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.comboCircumference.setToolTip("Indicates whether the tolerance applies to a given diameter")
-        self.combo.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
+        self.combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
 
         for i in range(len(self.List)):
             if self.Icons != None:
@@ -2218,13 +2226,13 @@ class fieldLabelComboWidget:
 
         self.combo.activated.connect(self.updateDate)
         self.comboCircumference.activated.connect(self.updateDateCircumference)
-        vbox = QtGui.QVBoxLayout()
+        vbox = QtWidgets.QVBoxLayout()
 
-        hbox1 = QtGui.QHBoxLayout()
+        hbox1 = QtWidgets.QHBoxLayout()
         self.inputfield = self.uiloader.createWidget("Gui::InputField")
         self.inputfield.setText(self.FORMAT % 0)
-        QtCore.QObject.connect(self.inputfield,QtCore.SIGNAL("valueChanged(double)"),self.valueChanged)
-        hbox1.addWidget( QtGui.QLabel(self.Text) )
+        connectValueChanged(self.inputfield, self.valueChanged)
+        hbox1.addWidget( QtWidgets.QLabel(self.Text) )
         hbox1.addWidget(self.comboCircumference)
         hbox1.addStretch(1)
         hbox1.addWidget(self.inputfield)
@@ -2232,13 +2240,13 @@ class fieldLabelComboWidget:
         hbox1.addWidget(self.combo)
         vbox.addLayout(hbox1)
 
-        hbox2 = QtGui.QHBoxLayout()
-        self.label = QtGui.QLabel('Diameter:')
+        hbox2 = QtWidgets.QHBoxLayout()
+        self.label = QtWidgets.QLabel('Diameter:')
         self.inputfield2 = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.Diameter,self.DECIMALS,'Length',True)
         self.inputfield2.setText(auxText)
-        QtCore.QObject.connect(self.inputfield2,QtCore.SIGNAL("valueChanged(double)"),self.valueChangedDiameter)
-        self.comboTolerance = QtGui.QComboBox()
+        connectValueChanged(self.inputfield2, self.valueChangedDiameter)
+        self.comboTolerance = QtWidgets.QComboBox()
         symbol = '±'
         self.comboTolerance.addItem( symbol[-1] )
         self.comboTolerance.addItem( 'Limit' )
@@ -2250,28 +2258,28 @@ class fieldLabelComboWidget:
 
         self.updateDateTolerance
         self.comboTolerance.activated.connect(self.updateDateTolerance)
-        self.labelTolerance = QtGui.QLabel(symbol[-1])
-        self.labelLow = QtGui.QLabel('Low')
-        self.labelHigh = QtGui.QLabel('High')
+        self.labelTolerance = QtWidgets.QLabel(symbol[-1])
+        self.labelLow = QtWidgets.QLabel('Low')
+        self.labelHigh = QtWidgets.QLabel('High')
         self.inputfieldTolerance = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.tolerance,self.DECIMALS,'Length',True)
         self.inputfieldTolerance.setText(auxText)
 
-        QtCore.QObject.connect(self.inputfieldTolerance,QtCore.SIGNAL("valueChanged(double)"),self.valueChangedTolerance)
+        connectValueChanged(self.inputfieldTolerance, self.valueChangedTolerance)
         self.inputfieldLow = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.lowLimit,self.DECIMALS,'Length',True)
         self.inputfieldLow.setText(auxText)
-        QtCore.QObject.connect(self.inputfieldLow,QtCore.SIGNAL("valueChanged(double)"),self.valueChangedLow)
+        connectValueChanged(self.inputfieldLow, self.valueChangedLow)
         self.inputfieldHigh = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.highLimit,self.DECIMALS,'Length',True)
         self.inputfieldHigh.setText(auxText)
-        QtCore.QObject.connect(self.inputfieldHigh,QtCore.SIGNAL("valueChanged(double)"),self.valueChangedHigh)
+        connectValueChanged(self.inputfieldHigh, self.valueChangedHigh)
 
         hbox2.addWidget(self.label)
         hbox2.addStretch(1)
         hbox2.addWidget(self.inputfield2)
         vbox.addLayout(hbox2)
-        hbox3 = QtGui.QHBoxLayout()
+        hbox3 = QtWidgets.QHBoxLayout()
         hbox3.addWidget(self.comboTolerance)
         hbox3.addStretch(1)
         hbox3.addWidget(self.labelTolerance)
@@ -2376,11 +2384,11 @@ class CheckBoxWidget:
     def generateWidget( self, idGDT, ContainerOfData ):
         self.idGDT = idGDT
         self.ContainerOfData = ContainerOfData
-        self.checkBox = QtGui.QCheckBox(self.Text)
+        self.checkBox = QtWidgets.QCheckBox(self.Text)
         self.checkBox.setChecked(True)
         global checkBoxState
         checkBoxState = True
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         hbox.addWidget(self.checkBox)
         hbox.addStretch(1)
         self.checkBox.stateChanged.connect(self.updateState)

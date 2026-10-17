@@ -574,6 +574,56 @@ def t_inventory():
     return "{} formulaires".format(n)
 
 
+def _inventory_form(label):
+    """Open the inventory and return (form widget, Modify button, Delete button)."""
+    Gui.runCommand("dd_inventory")
+    pump(10)
+    form = modify = delete = None
+    for b in mw().findChildren(QtWidgets.QPushButton):
+        if b.text() in ("Modify", "Delete") and b.parent() is not None \
+                and b.parent().windowTitle() == label:
+            form = b.parent()
+            if b.text() == "Modify":
+                modify = b
+            else:
+                delete = b
+    return form, modify, delete
+
+
+def t_inventory_modify():
+    gt = ctx["gt"]
+    form, modify, _ = _inventory_form(gt.Label)
+    if modify is None:
+        close_task_dialog()
+        return "FAIL", "formulaire {} introuvable".format(gt.Label)
+    fields = [e for e in form.findChildren(QtWidgets.QLineEdit)
+              if e.metaObject().className() == "Gui::InputField"]
+    fields[0].setText("0.1 mm")
+    pump()
+    modify.click()
+    pump(10)
+    close_task_dialog()
+    ok = abs(gt.ToleranceValue - 0.1) < 1e-9
+    return ("PASS" if ok else "FAIL"), "ToleranceValue={}".format(gt.ToleranceValue)
+
+
+def t_inventory_delete():
+    doc = ctx["doc"]
+    ds = ctx["ds"]
+    label, name = ds.Label, ds.Name
+    n = len(objects_of(doc, "DatumSystem"))
+    _, _, delete = _inventory_form(label)
+    if delete is None:
+        close_task_dialog()
+        return "FAIL", "formulaire {} introuvable".format(label)
+    delete.click()
+    pump(10)
+    close_task_dialog()
+    n2 = len(objects_of(doc, "DatumSystem"))
+    gone = doc.getObject(name) is None
+    return ("PASS" if gone and n2 == n - 1 else "FAIL"), "DatumSystem {} -> {}".format(n, n2)
+
+
 def t_save_reopen():
     doc = ctx["doc"]
     before = gdt_inventory(doc)
@@ -711,6 +761,8 @@ def main():
             ("T11", "Rendu Coin des annotations", t_render),
             ("T12", "Rangement dans le groupe du plan", t_groups),
             ("T13", "Inventaire", t_inventory),
+            ("T22", "Inventaire : modification d'une GT", t_inventory_modify),
+            ("T23", "Inventaire : suppression d'un DS", t_inventory_delete),
             ("T14", "Sauvegarde / reouverture", t_save_reopen),
             ("T15", "Face d'une fonction dans un Body", t_body_face),
             ("T20", "Face non-Tip d'un Body dans un App::Part deplace", t_body_non_tip),
@@ -718,7 +770,8 @@ def main():
         ]
         prereq = {"T06": "T05", "T07": "T06", "T08": "T07", "T09": "T06",
                   "T10": "T06", "T11": "T07", "T12": "T07", "T14": "T05",
-                  "T17": "T07", "T18": "T06", "T19": "T07", "T21": "T07"}
+                  "T17": "T07", "T18": "T06", "T19": "T07", "T21": "T07",
+                  "T22": "T09", "T23": "T08"}
         status = {}
         for tid, name, func in steps:
             if tid in ("T02", "T03", "T04", "T05") and status.get("T01") == "FAIL":

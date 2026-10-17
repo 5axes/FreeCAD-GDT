@@ -51,13 +51,13 @@ class GDTGuiClass:
         inventory = getAllAnnotationPlaneObjects() + getAllDatumSystemObjects() + getAllDatumFeatureObjects() + getAllGeometricToleranceObjects()
 
         for obj in inventory:
-            self.widget = QtGui.QWidget()
+            self.widget = QtWidgets.QWidget()
             self.widget.setWindowTitle( obj.Label )
             self.widget.setWindowIcon( obj.ViewObject.Icon )
             self.widgetsGDT.append(self.widget)
             self.dialogWidgets = []
-            vbox = QtGui.QVBoxLayout()
-            hbox = QtGui.QHBoxLayout()
+            vbox = QtWidgets.QVBoxLayout()
+            hbox = QtWidgets.QHBoxLayout()
             self.data = ContainerOfData()
             self.data.textName = obj.Label
 
@@ -96,15 +96,16 @@ class GDTGuiClass:
 
             for widg in self.dialogWidgets:
                 w = widg.generateWidget()
-                if isinstance(w, QtGui.QLayout):
+                if isinstance(w, QtWidgets.QLayout):
                     vbox.addLayout( w )
                 else:
                     vbox.addWidget( w )
 
-            buttonModify = QtGui.QPushButton('Modify')
-            buttonModify.clicked.connect(lambda obj = obj, data = self.data: self.modifyFunc(obj, data))
-            buttonDelete = QtGui.QPushButton('Delete')
-            buttonDelete.clicked.connect(lambda obj = obj, data = self.data: self.deleteFunc(obj, data))
+            buttonModify = QtWidgets.QPushButton('Modify')
+            # clicked(bool) passes "checked" first: keep it out of the bound arguments
+            buttonModify.clicked.connect(lambda checked=False, obj=obj, data=self.data: self.modifyFunc(obj, data))
+            buttonDelete = QtWidgets.QPushButton('Delete')
+            buttonDelete.clicked.connect(lambda checked=False, obj=obj, data=self.data: self.deleteFunc(obj, data))
 
             hbox.addStretch(1)
             hbox.addWidget( buttonModify )
@@ -148,11 +149,11 @@ class GDTGuiClass:
             remove = False
 
             if data.annotation.DF != None and annotationObj != data.annotation:
-                QtGui.QMessageBox.critical(
-                    QtGui.QApplication.activeWindow(),
+                QtWidgets.QMessageBox.critical(
+                    QtWidgets.QApplication.activeWindow(),
                     'ERROR',
                     'You can not change the DF to an annotation where one already exists',
-                    QtGui.QMessageBox.StandardButton.Abort )
+                    QtWidgets.QMessageBox.StandardButton.Abort )
 
             elif annotationObj != data.annotation :
                 # First Remove
@@ -225,11 +226,11 @@ class GDTGuiClass:
             if ok:
                 FreeCAD.ActiveDocument.removeObject(obj.Name)
             else:
-                QtGui.QMessageBox.critical(
-                    QtGui.QApplication.activeWindow(),
+                QtWidgets.QMessageBox.critical(
+                    QtWidgets.QApplication.activeWindow(),
                     'ERROR',
                     'You can not delete AP in use',
-                    QtGui.QMessageBox.StandardButton.Abort )
+                    QtWidgets.QMessageBox.StandardButton.Abort )
 
         elif "DatumSystem" == getType(obj):
             FreeCAD.ActiveDocument.removeObject(obj.Name)
@@ -276,7 +277,7 @@ class GDTGuiClass:
         FreeCADGui.Control.closeDialog()
 
     def getStandardButtons(self): #http://forum.freecadweb.org/viewtopic.php?f=10&t=11801
-        return 0x00200000 #close button
+        return QtWidgets.QDialogButtonBox.Close
 
 class textLabelWidget_inv:
     def __init__(self, Text='Label', Mask = None, Data = None, Obj = None):
@@ -286,12 +287,12 @@ class textLabelWidget_inv:
         self.obj = Obj
 
     def generateWidget( self ):
-        self.lineEdit = QtGui.QLineEdit()
+        self.lineEdit = QtWidgets.QLineEdit()
         if self.Mask != None:
             self.lineEdit.setInputMask(self.Mask)
         self.lineEdit.setText(self.obj.Label)
         self.text = self.obj.Label
-        self.lineEdit.textChanged.connect(lambda Txt = self.text: self.valueChanged(Txt))
+        self.lineEdit.textChanged.connect(self.valueChanged)
         return GDTDialog_hbox_inv(self.Text, self.lineEdit)
 
     def valueChanged(self, argGDT):
@@ -304,7 +305,7 @@ class fieldLabelButtonWidget_inv:
         self.obj = Obj
 
     def generateWidget( self ):
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         self.data.OffsetValue = self.obj.Offset
         self.DECIMALS = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Units").GetInt("Decimals",2)
         self.FORMAT = makeFormatSpec(self.DECIMALS,'Length')
@@ -313,9 +314,9 @@ class fieldLabelButtonWidget_inv:
         self.auxText = displayExternal(self.obj.Offset,self.DECIMALS,'Length',True)
         self.inputfield.setText(self.auxText)
         self.firstAttempt = True
-        QtCore.QObject.connect(self.inputfield,QtCore.SIGNAL("valueChanged(double)"),lambda Double = self.auxText: self.valueChanged(Double))
+        connectValueChanged(self.inputfield, self.valueChanged)
 
-        self.button = QtGui.QPushButton('Visualize')
+        self.button = QtWidgets.QPushButton('Visualize')
         self.button.clicked.connect(self.visualizeFunc)
         hbox.addLayout( GDTDialog_hbox(self.Text,self.inputfield) )
         hbox.addStretch(1)
@@ -358,7 +359,7 @@ class comboLabelWidget_inv:
             self.k=5
         else:
             self.k=6
-        self.data.combo[self.k] = QtGui.QComboBox()
+        self.data.combo[self.k] = QtWidgets.QComboBox()
         for i in range(len(self.List)):
             if self.List[i] == None:
                 self.data.combo[self.k].addItem( '' )
@@ -378,7 +379,7 @@ class comboLabelWidget_inv:
                 self.data.combo[1].setEnabled(True)
                 if self.data.combo[1].currentIndex() != 0:
                     self.data.combo[2].setEnabled(True)
-        self.data.combo[self.k].activated.connect(lambda comboIndex = self.data.combo[self.k].currentIndex(): self.updateData(comboIndex))
+        self.data.combo[self.k].activated.connect(self.updateData)
 
         return GDTDialog_hbox_inv(self.Text, self.data.combo[self.k])
 
@@ -507,8 +508,8 @@ class groupBoxWidget_inv:
         self.obj = Obj
 
     def generateWidget( self ):
-        self.group = QtGui.QGroupBox(self.Text)
-        vbox = QtGui.QVBoxLayout()
+        self.group = QtWidgets.QGroupBox(self.Text)
+        vbox = QtWidgets.QVBoxLayout()
         for l in self.List:
             vbox.addLayout(l.generateWidget())
         self.group.setLayout(vbox)
@@ -529,8 +530,8 @@ class fieldLabelComboWidget_inv:
         self.FORMAT = makeFormatSpec(self.DECIMALS,'Length')
         self.AFORMAT = makeFormatSpec(self.DECIMALS,'Angle')
         self.uiloader = FreeCADGui.UiLoader()
-        self.comboCircumference = QtGui.QComboBox()
-        self.combo = QtGui.QComboBox()
+        self.comboCircumference = QtWidgets.QComboBox()
+        self.combo = QtWidgets.QComboBox()
         for i in range(len(self.List)):
             if self.Icons != None:
                 self.combo.addItem( QtGui.QIcon(self.Icons[i]), self.List[i] )
@@ -538,9 +539,9 @@ class fieldLabelComboWidget_inv:
                 self.combo.addItem( self.List[i] )
         for i in range(len(self.Circumference)):
             self.comboCircumference.addItem(QtGui.QIcon(self.Circumference[i]), '' )
-        self.comboCircumference.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
+        self.comboCircumference.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         self.comboCircumference.setToolTip("Indicates whether the tolerance applies to a given diameter")
-        self.combo.setSizeAdjustPolicy(QtGui.QComboBox.SizeAdjustPolicy(2))
+        self.combo.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLengthWithIcon)
         actualValue = self.obj.FeatureControlFrame
         pos = self.getPos(actualValue)
         self.combo.setCurrentIndex(pos)
@@ -554,13 +555,13 @@ class fieldLabelComboWidget_inv:
             self.comboCircumference.setCurrentIndex(0)
             self.data.circumference = False
         self.comboCircumference.activated.connect(self.updateDataCircumference)
-        hbox = QtGui.QHBoxLayout()
+        hbox = QtWidgets.QHBoxLayout()
         self.inputfield = self.uiloader.createWidget("Gui::InputField")
         auxText = displayExternal(self.obj.ToleranceValue,self.DECIMALS,'Length',True)
         self.inputfield.setText(auxText)
         self.data.toleranceValue = self.obj.ToleranceValue
-        QtCore.QObject.connect(self.inputfield,QtCore.SIGNAL("valueChanged(double)"),lambda Double = auxText: self.valueChanged(Double))
-        hbox.addWidget( QtGui.QLabel(self.Text) )
+        connectValueChanged(self.inputfield, self.valueChanged)
+        hbox.addWidget( QtWidgets.QLabel(self.Text) )
         hbox.addWidget(self.comboCircumference)
         hbox.addStretch(1)
         hbox.addWidget(self.inputfield)
@@ -592,8 +593,8 @@ class fieldLabelComboWidget_inv:
         self.data.toleranceValue = d
 
 def GDTDialog_hbox_inv( label, inputWidget):
-    hbox = QtGui.QHBoxLayout()
-    hbox.addWidget( QtGui.QLabel(label) )
+    hbox = QtWidgets.QHBoxLayout()
+    hbox.addWidget( QtWidgets.QLabel(label) )
     if inputWidget != None:
         hbox.addStretch(1)
         hbox.addWidget(inputWidget)

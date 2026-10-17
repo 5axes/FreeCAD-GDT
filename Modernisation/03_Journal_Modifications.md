@@ -53,3 +53,30 @@ Résultat de référence (MOD d'origine, FreeCAD 1.1.3) : `Modernisation/tests/l
 ### Tests (`Modernisation/tests/lot1_results.json`)
 
 20 tests PASS. T16 est en WARN : `Assembly.FCStd` exige l'atelier externe Assembly4 (`Asm4_libs`), et `Pocket001` est invalide dans le fichier lui-même. C'est indépendant du MOD et cela se produisait déjà avec le code d'origine. Le banc de test a été complété : la couleur est mesurée juste après la création du DF, et les saisies de point sont tracées.
+
+---
+
+## Lot 2 : modernisation Qt / PySide (Qt 6.8, PySide6 6.8.3)
+
+### Raisonnement technique
+
+Les mesures sous FreeCAD 1.1.3 montrent que :
+
+- la couche `Ext/PySide/QtGui.py` de FreeCAD fusionne `PySide6.QtGui` et `PySide6.QtWidgets`. Les `QtGui.QComboBox`, etc. fonctionnent donc, mais uniquement grâce à cette fusion ;
+- `QtCore.SIGNAL("valueChanged(double)")` (connexion de style ancien) fonctionne encore, alors que la connexion moderne `inputfield.valueChanged[float]` **échoue** : sous PySide6, `Gui::InputField` n'expose que `valueChanged(Base::Quantity)` ;
+- **défaut réel découvert :** avec PySide6, `clicked.connect(lambda obj=obj, data=data: …)` reçoit `obj=False` (le paramètre `checked` du signal `clicked(bool)` prend la place du premier argument par défaut). Vérifié par un script isolé, puis par les tests T22 et T23 rejoués sur le code du lot 1 (`tests/lot1_inventaire_check.json` : T22 et T23 en FAIL). Les boutons **Modify** et **Delete** de l'inventaire étaient donc inopérants sous FreeCAD 1.x.
+
+### Modifications
+
+| ID | Fichier | Modification |
+|---|---|---|
+| Q-02 | GDT.py, inventory.py | `from PySide import QtCore, QtGui, QtWidgets`. Les 12 classes de widgets (`QWidget`, `QComboBox`, `QLabel`, `QLineEdit`, `QPushButton`, `QGroupBox`, `QCheckBox`, `Q[HV]BoxLayout`, `QLayout`, `QMessageBox`, `QApplication`) passent dans `QtWidgets`. `QtGui` ne sert plus qu'à `QIcon`, `QColor` et `QFontDatabase`. L'import inutilisé de `QtSvg` et le `try/except ImportError` inopérant sont supprimés. |
+| Q-01 | GDT.py, inventory.py | Les 8 connexions `QtCore.QObject.connect(…, SIGNAL("valueChanged(double)"), …)` passent par le helper `connectValueChanged()`. Il se branche sur `valueChanged(Quantity)` et transmet `Quantity.Value` (unités internes, mm), ou la valeur flottante sous PySide2. |
+| Q-03 | GDT.py, inventory.py | `getStandardButtons()` renvoie `QtWidgets.QDialogButtonBox.Close` au lieu de `0x00200000`, comme le fait le code de FreeCAD 1.1. |
+| Q-04 | GDT.py, inventory.py | `QComboBox.SizeAdjustPolicy(2)` remplacé par `QComboBox.AdjustToMinimumContentsLengthWithIcon`. |
+| Q-06 (nouveau) | inventory.py | `clicked.connect(lambda checked=False, obj=obj, data=…)` : les boutons Modify et Delete fonctionnent de nouveau. |
+| Q-07 (nouveau) | GDT.py, inventory.py | Les lambdas inutiles sur `activated(int)` et `textChanged(str)` sont remplacées par une connexion directe au slot (même comportement, sans piège d'arguments par défaut). |
+
+### Tests (`Modernisation/tests/lot2_results.json`)
+
+23 tests : 22 PASS, plus T16 en WARN (Assembly4, inchangé). Deux nouveaux tests : **T22** (modifier la valeur d'une GT depuis l'inventaire) et **T23** (supprimer un DS depuis l'inventaire).
