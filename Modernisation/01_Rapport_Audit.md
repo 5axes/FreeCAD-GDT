@@ -2,10 +2,10 @@
 
 | | |
 |---|---|
-| Dépôt analysé | `C:\Users\lalliard\Documents\30_Devel\FreeCAD-GDT` (branche `master`, commit `d693e73`, copie de travail propre) |
+| Dépôt analysé | `FreeCAD-GDT` (branche `master`, commit `d693e73`, copie de travail propre) |
 | Amont | https://github.com/5axes/FreeCAD-GDT |
 | Cible | FreeCAD 1.0 / 1.1, Python 3.x |
-| Environnement de référence | FreeCAD **1.1.3** (R20260725) dans `C:\Logiciel_Cetim\FreeCAD 1.1`, Python **3.11.14**, Qt **6.8.3**, PySide **6.8.3**, numpy 1.26.4, pivy |
+| Environnement de référence | FreeCAD **1.1.3** (R20260725), Python **3.11.14**, Qt **6.8.3**, PySide **6.8.3**, numpy 1.26.4, pivy |
 | Date | 2026-10-17 |
 | Statut | Audit seul. **Aucun fichier de code n'a été modifié.** |
 

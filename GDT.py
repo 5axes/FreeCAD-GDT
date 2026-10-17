@@ -224,6 +224,24 @@ def getLineWidth():
 def getRGBLine():
     return getRGB("lineColor")
 
+def alignWorkingPlane(point, axis, offset=0.0):
+    """Align the Draft working plane (and its grid) with an annotation plane.
+
+    FreeCAD >= 1.0 keeps one working plane per 3D view, obtained with
+    WorkingPlane.get_working_plane(); FreeCAD.DraftWorkingPlane is only a
+    compatibility copy that the point picker overwrites, so aligning it has
+    no effect on the picked points.
+    """
+    try:
+        from WorkingPlane import get_working_plane
+    except ImportError:  # FreeCAD < 1.0
+        FreeCAD.DraftWorkingPlane.alignToPointAndAxis(point, axis, offset)
+        if hasattr(FreeCADGui, "Snapper") and FreeCADGui.Snapper.grid:
+            FreeCADGui.Snapper.grid.set()
+        return
+    # Also refreshes the grid of the active view.
+    get_working_plane().align_to_point_and_axis(point, axis, offset)
+
 def hideGrid():
     if hasattr(FreeCADGui,"Snapper") and getParam("alwaysShowGrid") == False:
         if FreeCADGui.Snapper.grid:
@@ -263,54 +281,105 @@ def select(objt):
         for i in range(len(objt.faces)):
             FreeCADGui.Selection.addSelection(objt.faces[i][0],objt.faces[i][1])
 
+# Face colours applied to the selected faces (preference "changeColor")
+FACE_COLORS = {"PF": (1.0, 0.0, 0.0), "DF": (0.0, 0.0, 1.0), "GT": (1.0, 1.0, 0.0)}
+
+def _colorTarget(obj):
+    """Return the object whose ViewObject displays the faces of ``obj``.
+
+    A PartDesign feature is displayed through its Body, whose face numbering
+    is the one of the Tip: other features cannot be coloured.
+    """
+    if obj.isDerivedFrom("PartDesign::Feature"):
+        body = obj.getParentGeoFeatureGroup()
+        return body if body is not None and body.Tip == obj else None
+    if obj.ViewObject is not None and hasattr(obj.ViewObject, "DiffuseColor"):
+        return obj
+    return None
+
 def setColor(type):
-    paracol = getParam("changeColor",True)
-    if paracol == True :
-        a = FreeCADGui.Selection.getSelectionEx()    # selection SubElementNames
-        aa = FreeCADGui.Selection.getSelection()     # selection object
+    "setColor(type): colours the selected faces according to the GD&T element type"
+    if not getParam("changeColor", True):
+        return
+    rgb = FACE_COLORS.get(type, (0.0, 1.0, 0.0))
+    for sel in FreeCADGui.Selection.getSelectionEx("", 1):
+        target = _colorTarget(sel.Object)
+        if target is None:
+            continue
+        vobj = target.ViewObject
+        # FreeCAD >= 1.0 (ShapeAppearance): alpha 1.0 is opaque.
+        # FreeCAD 0.2x: the 4th component is the transparency, 0.0 is opaque.
+        alpha = 1.0 if hasattr(vobj, "ShapeAppearance") else 0.0
+        nfaces = len(target.Shape.Faces)
+        colors = list(vobj.DiffuseColor)
+        if len(colors) != nfaces:
+            colors = [colors[0]] * nfaces
+        for sub in sel.SubElementNames:
+            if sub.startswith("Face"):
+                index = int(sub[4:]) - 1
+                if index < nfaces:
+                    colors[index] = rgb + (alpha,)
+        vobj.DiffuseColor = colors
 
-        try:
-            cols = colors = []
-            cols = FreeCAD.ActiveDocument.getObject(aa[0].Name).ViewObject.DiffuseColor
+def getSelectedFaces():
+    """Return the selected sub-elements as sorted (object, subname) pairs.
 
-            if len(cols) == 1:
-                for i in aa[0].Shape.Faces:
-                    colors += [(cols[0])]
-            else:
-                colors = cols
+    The object is the top-level object of the selection and the subname is
+    the full path to the face (e.g. "Body.Pad.Face3"), so that the face can
+    be evaluated in global coordinates even inside Body / App::Part
+    containers (see getFaceShape).
+    """
+    faces = []
+    for sel in FreeCADGui.Selection.getSelectionEx("", 0):
+        for sub in sel.SubElementNames:
+            faces.append((sel.Object, sub))
+    faces.sort(key=lambda face: (face[0].Name, face[1]))
+    return faces
 
-            for i in range(len(aa)):
-                fce = int(a[0].SubElementNames[i][4:])-1
-                if type == "PF" :
-                    colors[fce] = (float(1),float(0),float(0),float(0))
-                elif type == "DF" :
-                    colors[fce] = (float(0),float(0),float(1),float(0))
-                elif type == "GT" :
-                    colors[fce] = (float(1),float(1),float(0),float(0))
-                else :
-                    colors[fce] = (float(0),float(1),float(0),float(0))
+def getFaceShape(obj, sub):
+    """Return the face ``sub`` of ``obj`` in global coordinates.
 
-                aa[i].ViewObject.DiffuseColor = colors
-        except Exception:
-            print ("Select one face")
+    ``sub`` is either a plain element name ("Face3", historical documents)
+    or a sub-object path ("Body.Pad.Face3").
+    """
+    return Part.getShape(obj, sub, needSubElement=True)
+
+def getAnnotatedFace(obj):
+    "getAnnotatedFace(obj): returns the first face linked by an Annotation"
+    return getFaceShape(obj.faces[0][0], obj.faces[0][1][0])
+
+def flattenLinkSubList(value):
+    """Normalize a (object, sub-element(s)) list into sorted (name, sub) pairs.
+
+    PropertyLinkSubList groups the sub-elements by object
+    ([(obj, ('Face1', 'Face2'))]) while the selection gives one pair per face
+    ([(obj, 'Face1'), (obj, 'Face2')]).
+    """
+    pairs = []
+    for obj, subs in value:
+        if obj is None:
+            continue
+        if isinstance(subs, str):
+            subs = [subs]
+        for sub in subs:
+            pairs.append((obj.Name, sub))
+    return sorted(pairs)
 
 def makeContainerOfData():
-    ""
-    faces = []
-    for i in range(len(FreeCADGui.Selection.getSelectionEx("",0))):
-        for j in range(len(FreeCADGui.Selection.getSelectionEx("",1)[i].SubElementNames)):
-            faces.append((FreeCADGui.Selection.getSelectionEx("",0)[i].Object, FreeCADGui.Selection.getSelectionEx("",1)[i].SubElementNames[j]))
+    "makeContainerOfData(): returns a ContainerOfData built from the selected faces"
+    return ContainerOfData(getSelectedFaces())
 
-    faces.sort()
-    container = ContainerOfData(faces)
-    return container
-
-def getAnnotationObj(obj):
-    List = getAllAnnotationObjects()
-    for l in List:
-        if l.faces == obj.faces:
+def findAnnotation(faces):
+    "findAnnotation(faces): returns the Annotation attached to exactly these faces"
+    wanted = flattenLinkSubList(faces)
+    for l in getAllAnnotationObjects():
+        if flattenLinkSubList(l.faces) == wanted:
             return l
     return None
+
+def getAnnotationObj(obj):
+    "getAnnotationObj(obj): returns the Annotation attached to the faces of obj"
+    return findAnnotation(obj.faces)
 
 def getAnnotationWithDF(obj):
     List = getAllAnnotationObjects()
@@ -834,12 +903,13 @@ def plotStrings(self, fp, points):
         Write the 2x on the GT if 2 faces
     """
     if fp.GT != [] or fp.DF != None:
-        if numpy.size(fp.faces[0][1]) > 1:
+        numFaces = len(flattenLinkSubList(fp.faces))
+        if numFaces > 1:
             # posNumFaces
             centerPoint = points[3] + Horizontal * (sizeOfLine)
             posNumFaces = centerPoint + Vertical * (sizeOfLine/2)
             # 2x
-            self.textGT[index].string = (str(numpy.size(fp.faces[0][1]))+'x')
+            self.textGT[index].string = (str(numFaces)+'x')
             self.textGTpos[index].translation.setValue([posNumFaces.x, posNumFaces.y, posNumFaces.z])
             self.textGT[index].justification = coin.SoAsciiText.CENTER
             try:
@@ -898,11 +968,11 @@ def displayExternal(internValue,decimals=4,dim='Length',showUnit=True):
         if uom == "µm" :
             decimals = 3
             conversion = 1.0
-            uom == "mm"
+            uom = "mm"
         elif uom == 'thou':
             decimals = 4
             conversion = 25.4
-            uom == "in"
+            uom = "in"
 
     elif dim == 'Angle':
         qty = FreeCAD.Units.Quantity(internValue,FreeCAD.Units.Angle)
@@ -1020,12 +1090,16 @@ class _ViewProviderGDT:
 
 class _AnnotationPlane(_GDTObject):
     "The GDT AnnotationPlane object"
-    def __init__(self, obj):
+    def __init__(self, obj, face=None):
+        "face: (object, subname) of the supporting face, the first selected face by default"
         _GDTObject.__init__(self,obj,"AnnotationPlane")
+        if face is None:
+            face = getSelectedFaces()[0]
         obj.addProperty("App::PropertyFloat","Offset","GDT","The offset value to aply in this annotation plane")
-        obj.addProperty("App::PropertyLinkSub","faces","GDT","Linked face of the object").faces = (FreeCADGui.Selection.getSelectionEx("",0)[0].Object, FreeCADGui.Selection.getSelectionEx("",1)[0].SubElementNames[0])
-        obj.addProperty("App::PropertyVectorDistance","p1","GDT","Center point of Grid").p1 = obj.faces[0].Shape.getElement(obj.faces[1][0]).CenterOfMass
-        obj.addProperty("App::PropertyVector","Direction","GDT","The normal direction of this annotation plane").Direction = obj.faces[0].Shape.getElement(obj.faces[1][0]).normalAt(0,0)
+        obj.addProperty("App::PropertyLinkSub","faces","GDT","Linked face of the object").faces = face
+        shape = getFaceShape(obj.faces[0], obj.faces[1][0])
+        obj.addProperty("App::PropertyVectorDistance","p1","GDT","Center point of Grid").p1 = shape.CenterOfMass
+        obj.addProperty("App::PropertyVector","Direction","GDT","The normal direction of this annotation plane").Direction = shape.normalAt(0,0)
         obj.addProperty("App::PropertyVectorDistance","PointWithOffset","GDT","Center point of Grid with offset applied")
 
     def onChanged(self,vobj,prop):
@@ -1033,10 +1107,10 @@ class _AnnotationPlane(_GDTObject):
             vobj.setEditorMode('PointWithOffset',1)
 
     def execute(self, fp):
-        '''"Print a short message when doing a recomputation, this method is mandatory" '''
-        fp.p1 = fp.faces[0].Shape.getElement(fp.faces[1][0]).CenterOfMass
-        fp.Direction = fp.faces[0].Shape.getElement(fp.faces[1][0]).normalAt(0,0)
-        # print("5@xes AnnotationPlane Direction {}".format(fp.Direction))
+        "Follow the supporting face"
+        shape = getFaceShape(fp.faces[0], fp.faces[1][0])
+        fp.p1 = shape.CenterOfMass
+        fp.Direction = shape.normalAt(0,0)
 
 class _ViewProviderAnnotationPlane(_ViewProviderGDT):
     "A View Provider for the GDT AnnotationPlane object"
@@ -1045,16 +1119,13 @@ class _ViewProviderAnnotationPlane(_ViewProviderGDT):
 
     def updateData(self, obj, prop):
         "called when the base object is changed"
-        if prop in ["Point","Direction","Offset"]:
+        if prop in ["p1","Direction","Offset"]:
             obj.PointWithOffset = obj.p1 + obj.Direction * obj.Offset
 
     def doubleClicked(self,obj):
         showGrid()
-        if hasattr(FreeCADGui,"Snapper"):
-            if FreeCADGui.Snapper.grid:
-                FreeCAD.DraftWorkingPlane.alignToPointAndAxis(self.Object.PointWithOffset, self.Object.Direction, 0)
-                FreeCADGui.Snapper.grid.set()
-                FreeCAD.ActiveDocument.recompute()
+        alignWorkingPlane(self.Object.PointWithOffset, self.Object.Direction, 0)
+        return True
 
     def getIcon(self):
         return(":/dd/icons/annotationPlane.svg")
