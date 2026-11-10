@@ -383,11 +383,20 @@ def _set_tolerance(form, text="0.05 mm"):
         pump()
 
 
+def _choose_by_count(form, count, index):
+    """Choose ``index`` in the visible combo box holding ``count`` items."""
+    for c in form.findChildren(QtWidgets.QComboBox):
+        if c.isVisible() and c.count() == count:
+            choose(c, index)
+            return
+
+
 def t_create_gt():
     doc = ctx["doc"]
 
     def setup(form):
         _set_tolerance(form)
+        _choose_by_count(form, 14, 6)  # characteristic: perpendicularity (symbol in the captures)
         ds_combo = None
         for c in form.findChildren(QtWidgets.QComboBox):
             if c.isVisible() and c.count() > 1 and c.itemText(0) == "" and \
@@ -414,6 +423,8 @@ def t_create_gt_cyl():
 
     def setup(form):
         _set_tolerance(form, "0.02 mm")
+        _choose_by_count(form, 14, 10)  # characteristic: position
+        _choose_by_count(form, 12, 6)   # modifier: maximum material condition
         for c in form.findChildren(QtWidgets.QComboBox):
             if c.isVisible() and c.count() == 2 and c.itemText(0) == "" and c.itemText(1) == "":
                 choose(c, 1)  # diameter symbol

@@ -175,3 +175,28 @@ Aucun changement fonctionnel visé, sauf les points F-11, F-12 et F-14 ci-dessou
 | `Resources/ReadMe.txt` | Préfixe `:/dd` à conserver et procédure de régénération du `.rcc`. |
 
 Résultat final : **27 tests sur 28 réussis**. T16 est en WARN pour deux raisons extérieures au MOD : la dépendance à Assembly4 et la renumérotation des faces dans deux fichiers d'exemple.
+
+---
+
+## Symboles GD&T dans la vue 3D
+
+### Raisonnement technique
+
+- `SoAsciiText` affiche un glyphe manquant pour les caractères GD&T (U+23E4, U+2316, U+24C2…), quelle que soit la police (défaut préexistant, voir lot 6). Trois pistes ont été envisagées. La **géométrie Coin** a été retenue : elle ne dépend d'aucune police, s'imprime comme les traits du cadre et suit `LineWidth` et `FontColor`. La texture SVG dépendait du support du SVG par Coin / `simage` (non vérifié) et du placement de texture existant, dont les indices sont incohérents (`face[indexIcon]` et `points[indexSYMB]`). `SoText2` est un texte en pixels écran, à taille fixe, mal adapté à un cadre dessiné en coordonnées du modèle.
+- Chaque symbole est une liste de polylignes dans une case unité (u dans le sens de lecture, v vers le haut). Elle est projetée dans la case du cadre (repère `Horizontal` / `Vertical`), et les axes sont retournés si le texte est lu dans l'autre sens (rotation de `getTextRotation`).
+- **Aucune propriété stockée ne change.** Le symbole est choisi à partir de `CharacteristicCode` / `FeatureControlFrameCode`. Pour les anciens documents qui n'ont pas ces propriétés, le code est retrouvé à partir du nom de fichier de `CharacteristicIcon` / `FeatureControlFrameIcon`. Le chemin de repli par texture SVG n'est plus utilisé que si le symbole est inconnu.
+
+### Modifications
+
+| Fichier | Modification |
+|---|---|
+| GDT.py | Table `SYMBOL_STROKES` : 14 caractéristiques, 11 modificateurs cerclés (lettres A C F G L M P S T U X) et Ø, construits avec `_arc`, `_arrow` et `_circledLetter`. Fonctions `plotSymbol`, `clearSymbol` et `symbolCodeFromIcon`. |
+| GDT.py | `_ViewProviderAnnotation.attach` : 20 nœuds `SoSeparator` (`SoDrawStyle` partagé, `textColor`, `SoCoordinate3`, `SoIndexedLineSet`). `onChanged("LineWidth")` met aussi à jour l'épaisseur des symboles. |
+| GDT.py | `plotStrings` dessine la caractéristique, le modificateur et les deux Ø (cadre et cote au-dessus) avec `plotSymbol`. Le texte Unicode reste le repli pour un code inconnu. Les cases inutilisées sont vidées. |
+| GDT.py | **Chevauchement de la valeur corrigé :** la case de la valeur gagne une unité de largeur (une demi-unité de marge de chaque côté) et le décalage de −0,3 du texte est retiré. Les positions des lettres de référence se déduisent des points du cadre et suivent automatiquement. |
+| tests/gui_test_gdt.py | T09 choisit Perpendicularité, et T10 Localisation + Ⓜ (helper `_choose_by_count`). Les captures T28 montrent ainsi plusieurs symboles. |
+| Modernisation/tests/gdt_symboles_planche_1.png, _2.png | Planche de contrôle : `Doc/cube.FCStd` (ancien document, sans codes Unicode), avec les 14 caractéristiques et les 11 modificateurs répartis sur les 9 GT, vue de face. |
+
+### Tests (`Modernisation/tests/symboles_results.json`)
+
+28 tests : 27 PASS, plus T16 en WARN (Assembly4, inchangé). Les captures `gdt_render_top.png` et `gdt_render_iso.png` montrent ⌖ Ⓜ, ⟂, ⏤ et Ø. Les planches montrent les 25 symboles dans un ancien document. Limite restante : la largeur des cases ne suit toujours pas la taille de police (voir 05_Fonctionnalites.md).

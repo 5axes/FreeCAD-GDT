@@ -501,7 +501,8 @@ def getPointsToPlotGT(obj, points, segments, Vertical, Horizontal):
         P2 = P0 + Horizontal * (sizeOfLine*2)
         P3 = P1 + Horizontal * (sizeOfLine*2)
         # Length of the framework around the Tolerance Zone
-        lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit))) -2
+        # (one more unit than the characters: margin on both sides of the value)
+        lengthToleranceValue = len(string_encode(displayExternal(obj.GT[i].ToleranceValue, obj.ViewObject.Decimals, 'Length', obj.ViewObject.ShowUnit))) -1
 
         # if obj.GT[i].FeatureControlFrameIcon != '' or obj.GT[i].FeatureControlFrameCode != '' :
         # Add the space for the Control Ine and the diameter
@@ -587,6 +588,120 @@ def getPointsToPlotDF(obj, existGT, points, segments, Vertical, Horizontal):
 
     return newPoints, newSegments
 
+#---------------------------------------------------------------------------
+# GD&T symbols drawn as Coin lines
+#---------------------------------------------------------------------------
+# SoAsciiText shows a missing glyph for the GD&T Unicode characters, whatever
+# the font: the symbols of the feature control frame are drawn as polylines.
+# Each symbol is a list of polylines in a unit cell: u along the reading
+# direction, v upwards, (0, 0) at the bottom-left corner of the cell.
+
+def _arc(cu, cv, ru, rv, a0, a1):
+    "Points of an elliptic arc from angle a0 to a1 (degrees)"
+    n = max(2, int(abs(a1 - a0) / 10))
+    return [(cu + ru * math.cos(math.radians(a0 + (a1 - a0) * k / n)),
+             cv + rv * math.sin(math.radians(a0 + (a1 - a0) * k / n))) for k in range(n + 1)]
+
+def _arrow(u0, v0, u1, v1):
+    "Arrow from (u0, v0) to (u1, v1): shaft and closed head"
+    du, dv = u1 - u0, v1 - v0
+    length = math.hypot(du, dv)
+    du, dv = du / length, dv / length
+    bu, bv = u1 - du * 0.22, v1 - dv * 0.22
+    return [[(u0, v0), (bu, bv)],
+            [(u1, v1), (bu - dv * 0.08, bv + du * 0.08), (bu + dv * 0.08, bv - du * 0.08), (u1, v1)]]
+
+def _cylindricity():
+    r = 0.2
+    du, dv = math.cos(math.radians(60)), math.sin(math.radians(60))
+    lines = [_arc(0.5, 0.5, r, r, 0, 360)]
+    for s in (1, -1):
+        cu, cv = 0.5 + s * dv * r, 0.5 - s * du * r # tangent point
+        lines.append([(cu - du * 0.36, cv - dv * 0.36), (cu + du * 0.36, cv + dv * 0.36)])
+    return lines
+
+# Letters of the modifiers, in a unit box
+_LETTERS = {
+    'A': [[(0, 0), (0.5, 1), (1, 0)], [(0.25, 0.5), (0.75, 0.5)]],
+    'C': [_arc(0.5, 0.5, 0.5, 0.5, 45, 315)],
+    'F': [[(0, 0), (0, 1), (1, 1)], [(0, 0.5), (0.75, 0.5)]],
+    'G': [_arc(0.5, 0.5, 0.5, 0.5, 45, 360) + [(0.55, 0.5)]],
+    'L': [[(0, 1), (0, 0), (1, 0)]],
+    'M': [[(0, 0), (0, 1), (0.5, 0.4), (1, 1), (1, 0)]],
+    'P': [[(0, 0), (0, 1), (0.6, 1)] + _arc(0.6, 0.75, 0.4, 0.25, 90, -90) + [(0, 0.5)]],
+    'S': [_arc(0.5, 0.75, 0.5, 0.25, 30, 270) + _arc(0.5, 0.25, 0.5, 0.25, 90, -150)[1:]],
+    'T': [[(0, 1), (1, 1)], [(0.5, 1), (0.5, 0)]],
+    'U': [[(0, 1), (0, 0.4)] + _arc(0.5, 0.4, 0.5, 0.4, 180, 360) + [(1, 1)]],
+    'X': [[(0, 0), (1, 1)], [(0, 1), (1, 0)]],
+}
+
+def _circledLetter(letter):
+    lines = [_arc(0.5, 0.5, 0.42, 0.42, 0, 360)]
+    for line in _LETTERS[letter]:
+        lines.append([(0.32 + u * 0.36, 0.29 + v * 0.42) for u, v in line])
+    return lines
+
+SYMBOL_STROKES = {
+    '⏤': [[(0.15, 0.5), (0.85, 0.5)]],                                          # Straightness
+    '⏥': [[(0.1, 0.32), (0.65, 0.32), (0.9, 0.68), (0.35, 0.68), (0.1, 0.32)]], # Flatness
+    '○': [_arc(0.5, 0.5, 0.33, 0.33, 0, 360)],                                  # Circularity
+    '⌭': _cylindricity(),                                                       # Cylindricity
+    '⌒': [_arc(0.5, 0.33, 0.35, 0.35, 0, 180)],                                 # Profile of a line
+    '⌓': [_arc(0.5, 0.33, 0.35, 0.35, 0, 180) + [(0.85, 0.33)]],                # Profile of a surface
+    '⏊': [[(0.15, 0.2), (0.85, 0.2)], [(0.5, 0.2), (0.5, 0.85)]],               # Perpendicularity
+    '∠': [[(0.88, 0.22), (0.12, 0.22), (0.82, 0.62)]],                          # Angularity
+    '⫽': [[(0.2, 0.18), (0.5, 0.82)], [(0.5, 0.18), (0.8, 0.82)]],              # Parallelism
+    '⌯': [[(0.12, 0.5), (0.88, 0.5)], [(0.28, 0.28), (0.72, 0.28)], [(0.28, 0.72), (0.72, 0.72)]], # Symmetry
+    '⌖': [_arc(0.5, 0.5, 0.25, 0.25, 0, 360), [(0.1, 0.5), (0.9, 0.5)], [(0.5, 0.1), (0.5, 0.9)]], # Position
+    '◎': [_arc(0.5, 0.5, 0.33, 0.33, 0, 360), _arc(0.5, 0.5, 0.16, 0.16, 0, 360)],                 # Concentricity
+    '↗': _arrow(0.25, 0.15, 0.7, 0.85),                                         # Circular run-out
+    '⌰': _arrow(0.15, 0.15, 0.45, 0.85) + _arrow(0.5, 0.15, 0.8, 0.85) + [[(0.15, 0.15), (0.5, 0.15)]], # Total run-out
+    'Ø': [_arc(0.5, 0.5, 0.25, 0.25, 0, 360), [(0.22, 0.18), (0.78, 0.82)]],   # Diameter
+}
+for _letter in _LETTERS:
+    SYMBOL_STROKES[chr(0x24B6 + ord(_letter) - ord('A'))] = _circledLetter(_letter)
+
+def symbolCodeFromIcon(icon):
+    "Unicode code of a characteristic or modifier given its icon (documents without the codes)"
+    name = os.path.basename(str(icon))
+    if not name:
+        return None
+    for data in (makeCharacteristics(), makeFeatureControlFrame()):
+        for i, c in zip(data.Icon, data.Code):
+            if os.path.basename(i) == name:
+                return c
+    return None
+
+def plotSymbol(self, slot, code, corner, size, Horizontal, Vertical, U, V):
+    """Draw the symbol ``code`` in the square cell of side ``size`` whose
+    bottom-left corner is ``corner`` (in the Horizontal / Vertical frame).
+    U and V are the reading axes of the texts.  Return False when the symbol
+    is unknown (the slot is then left empty)."""
+    strokes = SYMBOL_STROKES.get(code)
+    if not strokes:
+        clearSymbol(self, slot)
+        return False
+    center = corner + (Horizontal + Vertical) * (size / 2)
+    pts = []
+    idx = []
+    for line in strokes:
+        for u, v in line:
+            p = center + U * ((u - 0.5) * size) + V * ((v - 0.5) * size)
+            idx.append(len(pts))
+            pts.append([p.x, p.y, p.z])
+        idx.append(-1)
+    self.symbolData[slot].point.setNum(len(pts))
+    self.symbolData[slot].point.setValues(0, len(pts), pts)
+    self.symbolLines[slot].coordIndex.setNum(len(idx))
+    self.symbolLines[slot].coordIndex.setValues(0, len(idx), idx)
+    self.textSYMB[slot].string = ""
+    return True
+
+def clearSymbol(self, slot):
+    if self.symbolLines[slot].coordIndex.getNum():
+        self.symbolLines[slot].coordIndex.setNum(0)
+        self.symbolData[slot].point.setNum(0)
+
 # Draw the Text for the Tolerance
 def plotStrings(self, fp, points):
     if fp.ViewObject.LineScale > 0:
@@ -610,6 +725,11 @@ def plotStrings(self, fp, points):
     sZ = 1/(sizeOfLine*2)
     dS = FreeCAD.Vector(Horizontal) * sZ
     dT = FreeCAD.Vector(Vertical) * sZ
+    # Reading axes of the texts: the symbols are drawn along them
+    textRotation = FreeCAD.Rotation(*rotation)
+    U = FreeCAD.Vector(Horizontal) if textRotation.multVec(X).dot(Horizontal) >= 0 else Horizontal * -1
+    V = FreeCAD.Vector(Vertical) if textRotation.multVec(Y).dot(Vertical) >= 0 else Vertical * -1
+    cell = sizeOfLine * 2
 
     """ Define a Geometrix Tolerance """
     if fp.GT != []:
@@ -640,13 +760,18 @@ def plotStrings(self, fp, points):
             auxPoint = points[3+displacement] + Vertical * (-sizeOfLine*2)
             self.points[indexSYMB].point.setValues([[auxPoint.x,auxPoint.y,auxPoint.z],[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z],[points[3+displacement].x,points[3+displacement].y,points[3+displacement].z]])
 
-            try:
+            code = getattr(fp.GT[i], "CharacteristicCode", None)
+            if code is None:
+                code = symbolCodeFromIcon(fp.GT[i].CharacteristicIcon)
+            if plotSymbol(self, indexSYMB, code, auxPoint, cell, Horizontal, Vertical, U, V):
+                pass
+            elif hasattr(fp.GT[i], "CharacteristicCode"):
                 #Unicode display
                 self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].CharacteristicCode) # Characteristic Code
                 symbolPoint = auxPoint + Horizontal + Vertical * 0.5
                 self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
                 self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
-            except AttributeError:
+            else:
                 # Documents without CharacteristicCode: draw the SVG icon
                 self.face[indexIcon].numVertices = 4
                 self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
@@ -669,12 +794,17 @@ def plotStrings(self, fp, points):
 
                 self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[points[7+displacement].x,points[7+displacement].y,points[7+displacement].z],[points[6+displacement].x,points[6+displacement].y,points[6+displacement].z],[auxPoint2.x,auxPoint2.y,auxPoint2.z]])
 
-                try:
-                    self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].FeatureControlFrameCode) #Diameter
+                code = getattr(fp.GT[i], "FeatureControlFrameCode", None)
+                if code is None:
+                    code = symbolCodeFromIcon(fp.GT[i].FeatureControlFrameIcon)
+                if plotSymbol(self, indexSYMB, code, auxPoint1, cell, Horizontal, Vertical, U, V):
+                    pass
+                elif hasattr(fp.GT[i], "FeatureControlFrameCode"):
+                    self.textSYMB[indexSYMB].string = u"{}".format(fp.GT[i].FeatureControlFrameCode) # Modifier
                     symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5
                     self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
                     self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
-                except AttributeError:
+                else:
                     # Documents without FeatureControlFrameCode: draw the SVG icon
                     self.face[indexIcon].numVertices = 4
                     self.svgPos[indexIcon].directionS.setValue(dS.x, dS.y, dS.z)
@@ -697,14 +827,12 @@ def plotStrings(self, fp, points):
 
                 self.points[indexSYMB].point.setValues([[points[5+displacement].x,points[5+displacement].y,points[5+displacement].z],[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[points[4+displacement].x,points[4+displacement].y,points[4+displacement].z]])
 
-                self.textSYMB[indexSYMB].string = u"\u00D8" #Diameter
-                symbolPoint = points[5+displacement] + Horizontal + Vertical*0.5
-                self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
-                self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
+                corner = points[5+displacement] + Horizontal * (sizeOfLine*0.3) + Vertical * (sizeOfLine*0.45)
+                plotSymbol(self, indexSYMB, u"\u00D8", corner, sizeOfLine*1.1, Horizontal, Vertical, U, V) #Diameter
                 indexSYMB+=1
 
             self.textGT[index].string = string_encode(displayExternal(fp.GT[i].ToleranceValue, fp.ViewObject.Decimals, 'Length', fp.ViewObject.ShowUnit))
-            self.textGTpos[index].translation.setValue([posToleranceValue.x-(sizeOfLine*0.3), posToleranceValue.y, posToleranceValue.z])
+            self.textGTpos[index].translation.setValue([posToleranceValue.x, posToleranceValue.y, posToleranceValue.z])
             self.textGT[index].justification = coin.SoAsciiText.CENTER
             index+=1
             displacement+=6
@@ -746,10 +874,8 @@ def plotStrings(self, fp, points):
             self.points[indexSYMB].point.setValues([[auxPoint1.x,auxPoint1.y,auxPoint1.z],[auxPoint2.x,auxPoint2.y,auxPoint2.z],[auxPoint3.x,auxPoint3.y,auxPoint3.z],[auxPoint4.x,auxPoint4.y,auxPoint4.z]])
 
 
-            self.textSYMB[indexSYMB].string = u"\u00D8" #Diameter
-            symbolPoint = auxPoint1 + Horizontal + Vertical * 0.5
-            self.textSYMBpos[indexSYMB].translation.setValue([symbolPoint.x,symbolPoint.y,symbolPoint.z])
-            self.textSYMB[indexSYMB].justification = coin.SoAsciiText.CENTER
+            corner = auxPoint1 + Horizontal * (sizeOfLine*0.4) + Vertical * (sizeOfLine*0.45)
+            plotSymbol(self, indexSYMB, u"\u00D8", corner, sizeOfLine*1.1, Horizontal, Vertical, U, V) #Diameter
             indexSYMB+=1
 
             posDiameterTolerance = auxPoint2 + Vertical * (sizeOfLine/2)
@@ -795,12 +921,15 @@ def plotStrings(self, fp, points):
         for i in range(indexSYMB,len(self.textSYMB)):
             self.textSYMB[i].string = ""
             self.face[i].numVertices = 0
+            clearSymbol(self, i)
 
         for i in range(indexIcon,len(self.svg)):
             self.svg[i].filename = ""
 
 
     else:
+        for i in range(len(self.symbolLines)):
+            clearSymbol(self, i)
         for i in range(len(self.textGT)):
             if str(self.textGT[i].string) != "" or str(self.svg[i].filename) != "":
                 self.textGT[i].string = ""
@@ -1460,6 +1589,9 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
         self.points = []
         self.face = []
         self.textureTransform = []
+        self.symbolData = []
+        self.symbolLines = []
+        self.symbolStyle = coin.SoDrawStyle()
 
         for i in range(20):
             self.textGT.append(coin.SoAsciiText())
@@ -1498,9 +1630,19 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
             image.addChild(self.points[i])
             image.addChild(self.face[i])
 
+            # GD&T symbol drawn as lines (see plotSymbol)
+            self.symbolData.append(coin.SoCoordinate3())
+            self.symbolLines.append(coin.SoIndexedLineSet())
+            symbol = coin.SoSeparator()
+            symbol.addChild(self.symbolStyle)
+            symbol.addChild(self.textColor)
+            symbol.addChild(self.symbolData[i])
+            symbol.addChild(self.symbolLines[i])
+
             self.node.addChild(labelGT)
             self.node.addChild(labelSYMB)
             self.node.addChild(image)
+            self.node.addChild(symbol)
 
         self.drawstyle = coin.SoDrawStyle()
         self.drawstyle.style = coin.SoDrawStyle.LINES
@@ -1572,6 +1714,7 @@ class _ViewProviderAnnotation(_ViewProviderGDT):
             if hasattr(self,"drawstyle"):
                 w = vobj.getPropertyByName("LineWidth")
                 self.drawstyle.lineWidth = w
+                self.symbolStyle.lineWidth = w
         elif (prop == "FontColor") and hasattr(vobj,"FontColor"):
             if hasattr(self,"textColor"):
                 c = vobj.getPropertyByName("FontColor")
